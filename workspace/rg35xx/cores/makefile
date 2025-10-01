@@ -30,6 +30,7 @@ picodrive_REPO = https://github.com/irixxxx/picodrive
 picodrive_MAKEFILE = Makefile.libretro
 
 pokemini_REPO = https://github.com/libretro/PokeMini
+pokemini_HASH = 78656d4615691c393e65e48672ce5fff5b1f97d3
 pokemini_MAKEFILE = Makefile.libretro
 
 snes9x2005_plus_REPO = https://github.com/libretro/snes9x2005
