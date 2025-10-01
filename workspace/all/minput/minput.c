@@ -7,6 +7,7 @@
 #include "defines.h"
 #include "api.h"
 #include "utils.h"
+#include "i18n.h"
 
 static int getButtonWidth(char* label) {
 	SDL_Surface* text;

@@ -4,6 +4,7 @@
 *.elf
 *.dtb
 *.zip
+*po~
 
 build
 releases

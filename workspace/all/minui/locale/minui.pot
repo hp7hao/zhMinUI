@@ -1,0 +1,90 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-10-01 10:14-0400\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../common/api.c:1631
+msgid ""
+"Quicksave created,\n"
+"powering off"
+msgstr ""
+
+#: ../../common/api.c:1631
+msgid "Powering off"
+msgstr ""
+
+#: ../../common/api.c:1632
+msgid ""
+"Quicksave created,\n"
+"power off now"
+msgstr ""
+
+#: ../../common/api.c:1632
+msgid "Power off now"
+msgstr ""
+
+#: ../../minui/minui.c:1540
+msgid "Model"
+msgstr ""
+
+#: ../../minui/minui.c:1543
+msgid "Release"
+msgstr ""
+
+#: ../../minui/minui.c:1545
+msgid "Commit"
+msgstr ""
+
+#: ../../minui/minui.c:1587 ../../minui/minui.c:1658
+msgid "POWER"
+msgstr ""
+
+#: ../../minui/minui.c:1587 ../../minui/minui.c:1658
+msgid "MENU"
+msgstr ""
+
+#: ../../minui/minui.c:1587 ../../minui/minui.c:1659
+msgid "SLEEP"
+msgstr ""
+
+#: ../../minui/minui.c:1589 ../../minui/minui.c:1664 ../../minui/minui.c:1669
+msgid "BACK"
+msgstr ""
+
+#: ../../minui/minui.c:1651
+msgid "Empty folder"
+msgstr ""
+
+#: ../../minui/minui.c:1656
+msgid "RESUME"
+msgstr ""
+
+#: ../../minui/minui.c:1659
+msgid "INFO"
+msgstr ""
+
+#: ../../minui/minui.c:1669 ../../minui/minui.c:1672
+msgid "OPEN"
+msgstr ""
+
+#: ../../clock/clock.c:292
+msgid "AM"
+msgstr ""
+
+#: ../../clock/clock.c:292
+msgid "PM"
+msgstr ""

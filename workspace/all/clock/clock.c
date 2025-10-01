@@ -8,6 +8,7 @@
 #include "defines.h"
 #include "api.h"
 #include "utils.h"
+#include "i18n.h"
 
 enum {
 	CURSOR_YEAR,
@@ -288,7 +289,7 @@ int main(int argc , char* argv[]) {
 			int ampm_w;
 			if (!show_24hour) {
 				x += SCALE1(10); // space
-				SDL_Surface* text = TTF_RenderUTF8_Blended(font.large, am_selected ? "AM" : "PM", COLOR_WHITE);
+				SDL_Surface* text = TTF_RenderUTF8_Blended(font.large, am_selected ? _("AM") : _("PM"), COLOR_WHITE);
 				ampm_w = text->w + SCALE1(2);
 				SDL_BlitSurface(text, NULL, screen, &(SDL_Rect){x,y-SCALE1(3)});
 				SDL_FreeSurface(text);

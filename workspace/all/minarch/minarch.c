@@ -18,6 +18,7 @@
 #include "api.h"
 #include "utils.h"
 #include "scaler.h"
+#include "i18n.h"
 
 ///////////////////////////////////////
 
@@ -3787,7 +3788,7 @@ static int Menu_options(MenuList* list) {
 						
 						if (item->desc) desc = item->desc;
 					}
-					text = TTF_RenderUTF8_Blended(font.small, item->name, text_color);
+					text = TTF_RenderUTF8_Blended(font.small, _(item->name), text_color);
 					SDL_BlitSurface(text, NULL, screen, &(SDL_Rect){
 						ox+SCALE1(OPTION_PADDING),
 						oy+SCALE1((j*BUTTON_SIZE)+1)
@@ -3844,7 +3845,7 @@ static int Menu_options(MenuList* list) {
 						
 						if (item->desc) desc = item->desc;
 					}
-					text = TTF_RenderUTF8_Blended(font.small, item->name, text_color);
+					text = TTF_RenderUTF8_Blended(font.small, _(item->name), text_color);
 					SDL_BlitSurface(text, NULL, screen, &(SDL_Rect){
 						ox+SCALE1(OPTION_PADDING),
 						oy+SCALE1((j*BUTTON_SIZE)+1)
@@ -3914,7 +3915,7 @@ static int Menu_options(MenuList* list) {
 						
 						if (item->desc) desc = item->desc;
 					}
-					text = TTF_RenderUTF8_Blended(font.small, item->name, text_color);
+					text = TTF_RenderUTF8_Blended(font.small, _(item->name), text_color);
 					SDL_BlitSurface(text, NULL, screen, &(SDL_Rect){
 						ox+SCALE1(OPTION_PADDING),
 						oy+SCALE1((j*BUTTON_SIZE)+1)
@@ -4432,7 +4433,7 @@ static void Menu_loop(void) {
 			// list
 			oy = (((DEVICE_HEIGHT / FIXED_SCALE) - PADDING * 2) - (MENU_ITEM_COUNT * PILL_SIZE)) / 2;
 			for (int i=0; i<MENU_ITEM_COUNT; i++) {
-				char* item = menu.items[i];
+				char* item = _(menu.items[i]);
 				SDL_Color text_color = COLOR_WHITE;
 				
 				if (i==selected) {
@@ -4667,6 +4668,9 @@ static void* coreThread(void *arg) {
 
 int main(int argc , char* argv[]) {
 	LOG_info("MinArch\n");
+
+	// Initialize i18n
+	I18N_init();
 
 	setOverclock(overclock); // default to normal
 	// force a stack overflow to ensure asan is linked and actually working

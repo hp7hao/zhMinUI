@@ -17,6 +17,7 @@
 #include "defines.h"
 #include "api.h"
 #include "utils.h"
+#include "i18n.h"
 
 ///////////////////////////////
 
@@ -157,10 +158,10 @@ SDL_Surface* GFX_init(int mode) {
 	font.small 	= TTF_OpenFont(FONT_PATH, SCALE1(FONT_SMALL));
 	font.tiny 	= TTF_OpenFont(FONT_PATH, SCALE1(FONT_TINY));
 	
-	TTF_SetFontStyle(font.large, TTF_STYLE_BOLD);
-	TTF_SetFontStyle(font.medium, TTF_STYLE_BOLD);
-	TTF_SetFontStyle(font.small, TTF_STYLE_BOLD);
-	TTF_SetFontStyle(font.tiny, TTF_STYLE_BOLD);
+	TTF_SetFontStyle(font.large, TTF_STYLE_NORMAL);
+	TTF_SetFontStyle(font.medium, TTF_STYLE_NORMAL);
+	TTF_SetFontStyle(font.small, TTF_STYLE_NORMAL);
+	TTF_SetFontStyle(font.tiny, TTF_STYLE_NORMAL);
 	
 	return gfx.screen;
 }
@@ -1627,8 +1628,8 @@ void PWR_powerOff(void) {
 		gfx.screen = GFX_resize(w,h,p);
 		
 		char* msg;
-		if (HAS_POWER_BUTTON || HAS_POWEROFF_BUTTON) msg = exists(AUTO_RESUME_PATH) ? "Quicksave created,\npowering off" : "Powering off";
-		else msg = exists(AUTO_RESUME_PATH) ? "Quicksave created,\npower off now" : "Power off now";
+		if (HAS_POWER_BUTTON || HAS_POWEROFF_BUTTON) msg = exists(AUTO_RESUME_PATH) ? _("Quicksave created,\npowering off") : _("Powering off");
+		else msg = exists(AUTO_RESUME_PATH) ? _("Quicksave created,\npower off now") : _("Power off now");
 		
 		// LOG_info("PWR_powerOff %s (%ix%i)\n", gfx.screen, gfx.screen->w, gfx.screen->h);
 		

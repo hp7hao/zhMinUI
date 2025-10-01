@@ -30,7 +30,9 @@ RELEASE_NAME=$(RELEASE_BASE)-$(RELEASE_DOT)
 export MAKEFLAGS=--no-print-directory
 
 all: setup $(PLATFORMS) special package done
-	
+
+tmp: setup $(PLATFORMS)
+
 shell:
 	make -f makefile.toolchain PLATFORM=$(PLATFORM)
 
@@ -53,6 +55,12 @@ system:
 	cp ./workspace/all/syncsettings/build/$(PLATFORM)/syncsettings.elf ./build/SYSTEM/$(PLATFORM)/bin/
 	cp ./workspace/all/clock/build/$(PLATFORM)/clock.elf ./build/EXTRAS/Tools/$(PLATFORM)/Clock.pak/
 	cp ./workspace/all/minput/build/$(PLATFORM)/minput.elf ./build/EXTRAS/Tools/$(PLATFORM)/Input.pak/
+	
+	# copy locale files
+	if [ -d ./workspace/all/minui/build/locale ]; then \
+		mkdir -p ./build/SYSTEM/locale && \
+		cp -r ./workspace/all/minui/build/locale/* ./build/SYSTEM/locale/; \
+	fi
 
 cores: # TODO: can't assume every platform will have the same stock cores (platform should be responsible for copy too)
 	# stock cores

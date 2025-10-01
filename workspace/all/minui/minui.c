@@ -6,10 +6,10 @@
 #include <ctype.h>
 #include <unistd.h>
 #include <fcntl.h>
-
 #include "defines.h"
 #include "api.h"
 #include "utils.h"
+#include "i18n.h"
 
 ///////////////////////////////////////
 
@@ -1307,6 +1307,10 @@ int main (int argc, char *argv[]) {
 	simple_mode = exists(SIMPLE_MODE_PATH);
 
 	LOG_info("MinUI\n");
+	
+	// Initialize i18n
+	I18N_init();
+	
 	InitSettings();
 	
 	SDL_Surface* screen = GFX_init(MODE_MAIN);
@@ -1533,12 +1537,12 @@ int main (int argc, char *argv[]) {
 					tmp[0] = '\0';
 					
 					// TODO: not sure if I want bare PLAT_* calls here
-					char* extra_key = "Model";
+					char* extra_key = _("Model");
 					char* extra_val = PLAT_getModel(); 
 					
-					SDL_Surface* release_txt = TTF_RenderUTF8_Blended(font.large, "Release", COLOR_DARK_TEXT);
+					SDL_Surface* release_txt = TTF_RenderUTF8_Blended(font.large, _("Release"), COLOR_DARK_TEXT);
 					SDL_Surface* version_txt = TTF_RenderUTF8_Blended(font.large, release, COLOR_WHITE);
-					SDL_Surface* commit_txt = TTF_RenderUTF8_Blended(font.large, "Commit", COLOR_DARK_TEXT);
+					SDL_Surface* commit_txt = TTF_RenderUTF8_Blended(font.large, _("Commit"), COLOR_DARK_TEXT);
 					SDL_Surface* hash_txt = TTF_RenderUTF8_Blended(font.large, commit, COLOR_WHITE);
 					
 					SDL_Surface* key_txt = TTF_RenderUTF8_Blended(font.large, extra_key, COLOR_DARK_TEXT);
@@ -1580,9 +1584,9 @@ int main (int argc, char *argv[]) {
 				
 				// buttons (duped and trimmed from below)
 				if (show_setting && !GetHDMI()) GFX_blitHardwareHints(screen, show_setting);
-				else GFX_blitButtonGroup((char*[]){ BTN_SLEEP==BTN_POWER?"POWER":"MENU","SLEEP",  NULL }, 0, screen, 0);
+				else GFX_blitButtonGroup((char*[]){ BTN_SLEEP==BTN_POWER?_("POWER"):_("MENU"),_("SLEEP"),  NULL }, 0, screen, 0);
 				
-				GFX_blitButtonGroup((char*[]){ "B","BACK",  NULL }, 0, screen, 1);
+				GFX_blitButtonGroup((char*[]){ "B",_("BACK"),  NULL }, 0, screen, 1);
 			}
 			else {
 				// list
@@ -1644,28 +1648,28 @@ int main (int argc, char *argv[]) {
 				}
 				else {
 					// TODO: for some reason screen's dimensions end up being 0x0 in GFX_blitMessage...
-					GFX_blitMessage(font.large, "Empty folder", screen, &(SDL_Rect){0,0,screen->w,screen->h}); //, NULL);
+					GFX_blitMessage(font.large, _("Empty folder"), screen, &(SDL_Rect){0,0,screen->w,screen->h}); //, NULL);
 				}
 			
 				// buttons
 				if (show_setting && !GetHDMI()) GFX_blitHardwareHints(screen, show_setting);
-				else if (can_resume) GFX_blitButtonGroup((char*[]){ "X","RESUME",  NULL }, 0, screen, 0);
+				else if (can_resume) GFX_blitButtonGroup((char*[]){ "X",_("RESUME"),  NULL }, 0, screen, 0);
 				else GFX_blitButtonGroup((char*[]){ 
-					BTN_SLEEP==BTN_POWER?"POWER":"MENU",
-					BTN_SLEEP==BTN_POWER||simple_mode?"SLEEP":"INFO",  
+					BTN_SLEEP==BTN_POWER?_("POWER"):_("MENU"),
+					BTN_SLEEP==BTN_POWER||simple_mode?_("SLEEP"):_("INFO"),  
 					NULL }, 0, screen, 0);
 			
 				if (total==0) {
 					if (stack->count>1) {
-						GFX_blitButtonGroup((char*[]){ "B","BACK",  NULL }, 0, screen, 1);
+						GFX_blitButtonGroup((char*[]){ "B",_("BACK"),  NULL }, 0, screen, 1);
 					}
 				}
 				else {
 					if (stack->count>1) {
-						GFX_blitButtonGroup((char*[]){ "B","BACK", "A","OPEN", NULL }, 1, screen, 1);
+						GFX_blitButtonGroup((char*[]){ "B",_("BACK"), "A",_("OPEN"), NULL }, 1, screen, 1);
 					}
 					else {
-						GFX_blitButtonGroup((char*[]){ "A","OPEN", NULL }, 0, screen, 1);
+						GFX_blitButtonGroup((char*[]){ "A",_("OPEN"), NULL }, 0, screen, 1);
 					}
 				}
 			}
