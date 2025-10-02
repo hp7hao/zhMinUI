@@ -1541,7 +1541,7 @@ void PWR_update(int* _dirty, int* _show_setting, PWR_callback_t before_sleep, PW
 		power_pressed_at = now;
 	}
 	
-	#define SLEEP_DELAY 30000 // 30 seconds
+	#define SLEEP_DELAY 120000 // 120 seconds
 	if (now-last_input_at>=SLEEP_DELAY && PWR_preventAutosleep()) last_input_at = now;
 	
 	if (
@@ -1677,7 +1677,7 @@ static void PWR_waitForWake(void) {
 			break;
 		}
 		SDL_Delay(200);
-		if (pwr.can_poweroff && SDL_GetTicks()-sleep_ticks>=120000) { // increased to two minutes
+		if (pwr.can_poweroff && SDL_GetTicks()-sleep_ticks>=300000) { // 300 seconds (5 minutes)
 			if (pwr.is_charging) sleep_ticks += 60000; // check again in a minute
 			else PWR_powerOff();
 		}
