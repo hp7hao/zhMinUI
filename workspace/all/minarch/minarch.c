@@ -3756,38 +3756,23 @@ static int Menu_options(MenuList* list) {
 			SDL_Surface* text;
 
 			if (type==MENU_LIST) {
-				int mw = list->max_width;
-				if (!mw) {
-					// get the width of the widest item
-					for (int i=0; i<count; i++) {
-						MenuItem* item = &items[i];
-						int w = 0;
-						TTF_SizeUTF8(font.small, item->name, &w, NULL);
-						w += SCALE1(OPTION_PADDING*2);
-						if (w>mw) mw = w;
-					}
-					// cache the result
-					list->max_width = mw = MIN(mw, screen->w - SCALE1(PADDING *2));
-				}
-				
-				int ox = (screen->w - mw) / 2;
 				int oy = SCALE1(PADDING + PILL_SIZE);
 				int selected_row = selected - start;
 				for (int i=start,j=0; i<end; i++,j++) {
 					MenuItem* item = &items[i];
 					SDL_Color text_color = COLOR_WHITE;
 
-					// int ox = (screen->w - w) / 2; // if we're centering these (but I don't think we should after seeing it)
+					// Calculate individual text width for each item
+					int text_width = 0;
+					TTF_SizeUTF8(font.small, _(item->name), &text_width, NULL);
+					int item_width = text_width + SCALE1(OPTION_PADDING*2);
+					int ox = (screen->w - item_width) / 2; // Center each item individually
+					
 					if (j==selected_row) {
-						// move out of conditional if centering
-						int w = 0;
-						TTF_SizeUTF8(font.small, item->name, &w, NULL);
-						w += SCALE1(OPTION_PADDING*2);
-						
 						GFX_blitPill(ASSET_BUTTON, screen, &(SDL_Rect){
 							ox,
 							oy+SCALE1(j*BUTTON_SIZE),
-							w,
+							item_width,
 							SCALE1(BUTTON_SIZE)
 						});
 						text_color = COLOR_BLACK;
@@ -3897,7 +3882,6 @@ static int Menu_options(MenuList* list) {
 				for (int i=start,j=0; i<end; i++,j++) {
 					MenuItem* item = &items[i];
 					SDL_Color text_color = COLOR_WHITE;
-
 					if (j==selected_row) {
 						// gray pill
 						GFX_blitPill(ASSET_OPTION, screen, &(SDL_Rect){

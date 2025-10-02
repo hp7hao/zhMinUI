@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-01 23:58-0400\n"
+"POT-Creation-Date: 2025-10-02 00:27-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -38,7 +38,7 @@ msgid "BRIGHTNESS"
 msgstr ""
 
 #: ../../common/api.c:786 ../../minui/minui.c:1587 ../../minui/minui.c:1658
-#: ../../minarch/minarch.c:4436 ../../minput/minput.c:215
+#: ../../minarch/minarch.c:4420 ../../minput/minput.c:215
 msgid "MENU"
 msgstr ""
 
@@ -75,17 +75,17 @@ msgid "Commit"
 msgstr ""
 
 #: ../../minui/minui.c:1587 ../../minui/minui.c:1658
-#: ../../minarch/minarch.c:4436 ../../minput/minput.c:219
+#: ../../minarch/minarch.c:4420 ../../minput/minput.c:219
 msgid "POWER"
 msgstr ""
 
 #: ../../minui/minui.c:1587 ../../minui/minui.c:1659
-#: ../../minarch/minarch.c:4436
+#: ../../minarch/minarch.c:4420
 msgid "SLEEP"
 msgstr ""
 
 #: ../../minui/minui.c:1589 ../../minui/minui.c:1664 ../../minui/minui.c:1669
-#: ../../minarch/minarch.c:4437
+#: ../../minarch/minarch.c:4421
 msgid "BACK"
 msgstr ""
 
@@ -580,7 +580,7 @@ msgstr ""
 msgid "Save Changes"
 msgstr ""
 
-#: ../../minarch/minarch.c:4437
+#: ../../minarch/minarch.c:4421
 msgid "OKAY"
 msgstr ""
 
