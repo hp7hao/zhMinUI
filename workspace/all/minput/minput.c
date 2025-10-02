@@ -193,9 +193,9 @@ int main(int argc , char* argv[]) {
 				GFX_blitPill(ASSET_DARK_GRAY_PILL, screen, &(SDL_Rect){x,y,SCALE1(98)});
 				x += SCALE1(BUTTON_MARGIN);
 				y += SCALE1(BUTTON_MARGIN);
-				blitButton("VOL. -", screen, PAD_isPressed(BTN_MINUS), x, y, w);
+				blitButton(_("VOL. -"), screen, PAD_isPressed(BTN_MINUS), x, y, w);
 				x += w + SCALE1(BUTTON_MARGIN);
-				blitButton("VOL. +", screen, PAD_isPressed(BTN_PLUS), x, y, w);
+				blitButton(_("VOL. +"), screen, PAD_isPressed(BTN_PLUS), x, y, w);
 				x += w + SCALE1(BUTTON_MARGIN);
 			}
 			
@@ -212,11 +212,11 @@ int main(int argc , char* argv[]) {
 				x += SCALE1(BUTTON_MARGIN);
 				y += SCALE1(BUTTON_MARGIN);
 				if (has_menu) {
-					blitButton("MENU", screen, PAD_isPressed(BTN_MENU), x, y, w);
+					blitButton(_("MENU"), screen, PAD_isPressed(BTN_MENU), x, y, w);
 					x += w + SCALE1(BUTTON_MARGIN);
 				}
 				if (has_power) {
-					blitButton("POWER", screen, PAD_isPressed(BTN_POWER), x, y, w);
+					blitButton(_("POWER"), screen, PAD_isPressed(BTN_POWER), x, y, w);
 					x += w + SCALE1(BUTTON_MARGIN);
 				}
 			}
@@ -230,12 +230,12 @@ int main(int argc , char* argv[]) {
 				GFX_blitPill(ASSET_DARK_GRAY_PILL, screen, &(SDL_Rect){x,y,SCALE1(130)});
 				x += SCALE1(BUTTON_MARGIN);
 				y += SCALE1(BUTTON_MARGIN);
-				blitButton("SELECT", screen, PAD_isPressed(BTN_SELECT), x, y, w);
+				blitButton(_("SELECT"), screen, PAD_isPressed(BTN_SELECT), x, y, w);
 				x += w + SCALE1(BUTTON_MARGIN);
-				blitButton("START", screen, PAD_isPressed(BTN_START), x, y, w);
+				blitButton(_("START"), screen, PAD_isPressed(BTN_START), x, y, w);
 				x += w + SCALE1(BUTTON_MARGIN);
 				
-				SDL_Surface* text = TTF_RenderUTF8_Blended(font.tiny, "QUIT", COLOR_LIGHT_TEXT);
+				SDL_Surface* text = TTF_RenderUTF8_Blended(font.tiny, _("QUIT"), COLOR_LIGHT_TEXT);
 				SDL_BlitSurface(text, NULL, screen, &(SDL_Rect){x,y+(SCALE1(BUTTON_SIZE)-text->h)/2});
 				SDL_FreeSurface(text);
 			}

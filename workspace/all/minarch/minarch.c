@@ -3051,11 +3051,11 @@ static struct {
 	.preview_exists = 0,
 	
 	.items = {
-		[ITEM_CONT] = "Continue",
-		[ITEM_SAVE] = "Save",
-		[ITEM_LOAD] = "Load",
-		[ITEM_OPTS] = "Options",
-		[ITEM_QUIT] = "Quit",
+		[ITEM_CONT] = N_("Continue"),
+		[ITEM_SAVE] = N_("Save"),
+		[ITEM_LOAD] = N_("Load"),
+		[ITEM_OPTS] = N_("Options"),
+		[ITEM_QUIT] = N_("Quit"),
 	}
 };
 
@@ -3071,7 +3071,7 @@ void Menu_init(void) {
 
 	sprintf(menu.slot_path, "%s/%s.txt", menu.minui_dir, game.name);
 	
-	if (simple_mode) menu.items[ITEM_OPTS] = "Reset";
+	if (simple_mode) menu.items[ITEM_OPTS] = N_("Reset");
 	
 	if (game.m3u_path[0]) {
 		char* tmp;
@@ -3567,11 +3567,11 @@ static int OptionQuicksave_onConfirm(MenuList* list, int i) {
 static MenuList options_menu = {
 	.type = MENU_LIST,
 	.items = (MenuItem[]) {
-		{"Frontend", "MinUI (" BUILD_DATE " " BUILD_HASH ")",.on_confirm=OptionFrontend_openMenu},
-		{"Emulator",.on_confirm=OptionEmulator_openMenu},
-		{"Controls",.on_confirm=OptionControls_openMenu},
-		{"Shortcuts",.on_confirm=OptionShortcuts_openMenu}, 
-		{"Save Changes",.on_confirm=OptionSaveChanges_openMenu},
+		{N_("Frontend"), "zhMinUI (" BUILD_DATE " " BUILD_HASH ")",.on_confirm=OptionFrontend_openMenu},
+		{N_("Emulator"),.on_confirm=OptionEmulator_openMenu},
+		{N_("Controls"),.on_confirm=OptionControls_openMenu},
+		{N_("Shortcuts"),.on_confirm=OptionShortcuts_openMenu}, 
+		{N_("Save Changes"),.on_confirm=OptionSaveChanges_openMenu},
 		{NULL},
 		{NULL},
 		{NULL},
@@ -4427,8 +4427,8 @@ static void Menu_loop(void) {
 			SDL_FreeSurface(text);
 			
 			if (show_setting && !GetHDMI()) GFX_blitHardwareHints(screen, show_setting);
-			else GFX_blitButtonGroup((char*[]){ BTN_SLEEP==BTN_POWER?"POWER":"MENU","SLEEP", NULL }, 0, screen, 0);
-			GFX_blitButtonGroup((char*[]){ "B","BACK", "A","OKAY", NULL }, 1, screen, 1);
+			else GFX_blitButtonGroup((char*[]){ BTN_SLEEP==BTN_POWER?_("POWER"):_("MENU"),_("SLEEP"), NULL }, 0, screen, 0);
+			GFX_blitButtonGroup((char*[]){ "B",_("BACK"), "A",_("OKAY"), NULL }, 1, screen, 1);
 			
 			// list
 			oy = (((DEVICE_HEIGHT / FIXED_SCALE) - PADDING * 2) - (MENU_ITEM_COUNT * PILL_SIZE)) / 2;
