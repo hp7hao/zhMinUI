@@ -35,7 +35,7 @@ for po_file in "${LOCALE_DIR}"/*.po; do
     if [ -f "$po_file" ]; then
         locale=$(basename "$po_file" .po)
         echo "  Updating $locale..."
-        msgmerge --update "$po_file" "${LOCALE_DIR}/minui.pot" 2>/dev/null || true
+        msgmerge --update --no-fuzzy-matching --previous "$po_file" "${LOCALE_DIR}/minui.pot" 2>/dev/null || true
     fi
 done
 

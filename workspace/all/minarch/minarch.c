@@ -609,44 +609,44 @@ typedef struct OptionList {
 } OptionList;
 
 static char* onoff_labels[] = {
-	"Off",
-	"On",
+	N_("Off"),
+	N_("On"),
 	NULL
 };
 static char* scaling_labels[] = {
-	"Native",
-	"Aspect",
-	"Fullscreen",
-	"Cropped",
+	N_("Native"),
+	N_("Aspect"),
+	N_("Fullscreen"),
+	N_("Cropped"),
 	NULL
 };
 static char* effect_labels[] = {
-	"None",
-	"Line",
-	"Grid",
+	N_("None"),
+	N_("Line"),
+	N_("Grid"),
 	NULL
 };
 static char* sharpness_labels[] = {
-	"Sharp",
-	"Crisp",
-	"Soft",
+	N_("Sharp"),
+	N_("Crisp"),
+	N_("Soft"),
 	NULL
 };
 static char* tearing_labels[] = {
-	"Off",
-	"Lenient",
-	"Strict",
+	N_("Off"),
+	N_("Lenient"),
+	N_("Strict"),
 	NULL
 };
 static char* max_ff_labels[] = {
-	"None",
-	"2x",
-	"3x",
-	"4x",
-	"5x",
-	"6x",
-	"7x",
-	"8x",
+	N_("None"),
+	N_("2x"),
+	N_("3x"),
+	N_("4x"),
+	N_("5x"),
+	N_("6x"),
+	N_("7x"),
+	N_("8x"),
 	NULL,
 };
 
@@ -689,36 +689,36 @@ typedef struct ButtonMapping {
 } ButtonMapping;
 
 static ButtonMapping default_button_mapping[] = { // used if pak.cfg doesn't exist or doesn't have bindings
-	{"Up",			RETRO_DEVICE_ID_JOYPAD_UP,		BTN_ID_DPAD_UP},
-	{"Down",		RETRO_DEVICE_ID_JOYPAD_DOWN,	BTN_ID_DPAD_DOWN},
-	{"Left",		RETRO_DEVICE_ID_JOYPAD_LEFT,	BTN_ID_DPAD_LEFT},
-	{"Right",		RETRO_DEVICE_ID_JOYPAD_RIGHT,	BTN_ID_DPAD_RIGHT},
-	{"A Button",	RETRO_DEVICE_ID_JOYPAD_A,		BTN_ID_A},
-	{"B Button",	RETRO_DEVICE_ID_JOYPAD_B,		BTN_ID_B},
-	{"X Button",	RETRO_DEVICE_ID_JOYPAD_X,		BTN_ID_X},
-	{"Y Button",	RETRO_DEVICE_ID_JOYPAD_Y,		BTN_ID_Y},
-	{"Start",		RETRO_DEVICE_ID_JOYPAD_START,	BTN_ID_START},
-	{"Select",		RETRO_DEVICE_ID_JOYPAD_SELECT,	BTN_ID_SELECT},
-	{"L1 Button",	RETRO_DEVICE_ID_JOYPAD_L,		BTN_ID_L1},
-	{"R1 Button",	RETRO_DEVICE_ID_JOYPAD_R,		BTN_ID_R1},
-	{"L2 Button",	RETRO_DEVICE_ID_JOYPAD_L2,		BTN_ID_L2},
-	{"R2 Button",	RETRO_DEVICE_ID_JOYPAD_R2,		BTN_ID_R2},
-	{"L3 Button",	RETRO_DEVICE_ID_JOYPAD_L3,		BTN_ID_L3},
-	{"R3 Button",	RETRO_DEVICE_ID_JOYPAD_R3,		BTN_ID_R3},
+	{N_("Up"),			RETRO_DEVICE_ID_JOYPAD_UP,		BTN_ID_DPAD_UP},
+	{N_("Down"),		RETRO_DEVICE_ID_JOYPAD_DOWN,	BTN_ID_DPAD_DOWN},
+	{N_("Left"),		RETRO_DEVICE_ID_JOYPAD_LEFT,	BTN_ID_DPAD_LEFT},
+	{N_("Right"),		RETRO_DEVICE_ID_JOYPAD_RIGHT,	BTN_ID_DPAD_RIGHT},
+	{N_("A Button"),	RETRO_DEVICE_ID_JOYPAD_A,		BTN_ID_A},
+	{N_("B Button"),	RETRO_DEVICE_ID_JOYPAD_B,		BTN_ID_B},
+	{N_("X Button"),	RETRO_DEVICE_ID_JOYPAD_X,		BTN_ID_X},
+	{N_("Y Button"),	RETRO_DEVICE_ID_JOYPAD_Y,		BTN_ID_Y},
+	{N_("Start"),		RETRO_DEVICE_ID_JOYPAD_START,	BTN_ID_START},
+	{N_("Select"),		RETRO_DEVICE_ID_JOYPAD_SELECT,	BTN_ID_SELECT},
+	{N_("L1 Button"),	RETRO_DEVICE_ID_JOYPAD_L,		BTN_ID_L1},
+	{N_("R1 Button"),	RETRO_DEVICE_ID_JOYPAD_R,		BTN_ID_R1},
+	{N_("L2 Button"),	RETRO_DEVICE_ID_JOYPAD_L2,		BTN_ID_L2},
+	{N_("R2 Button"),	RETRO_DEVICE_ID_JOYPAD_R2,		BTN_ID_R2},
+	{N_("L3 Button"),	RETRO_DEVICE_ID_JOYPAD_L3,		BTN_ID_L3},
+	{N_("R3 Button"),	RETRO_DEVICE_ID_JOYPAD_R3,		BTN_ID_R3},
 	{NULL,0,0}
 };
 static ButtonMapping button_label_mapping[] = { // used to lookup the retro_id and local btn_id from button name
-	{"NONE",	-1,								BTN_ID_NONE},
-	{"UP",		RETRO_DEVICE_ID_JOYPAD_UP,		BTN_ID_DPAD_UP},
-	{"DOWN",	RETRO_DEVICE_ID_JOYPAD_DOWN,	BTN_ID_DPAD_DOWN},
-	{"LEFT",	RETRO_DEVICE_ID_JOYPAD_LEFT,	BTN_ID_DPAD_LEFT},
-	{"RIGHT",	RETRO_DEVICE_ID_JOYPAD_RIGHT,	BTN_ID_DPAD_RIGHT},
+	{N_("NONE"),	-1,								BTN_ID_NONE},
+	{N_("UP"),		RETRO_DEVICE_ID_JOYPAD_UP,		BTN_ID_DPAD_UP},
+	{N_("DOWN"),	RETRO_DEVICE_ID_JOYPAD_DOWN,	BTN_ID_DPAD_DOWN},
+	{N_("LEFT"),	RETRO_DEVICE_ID_JOYPAD_LEFT,	BTN_ID_DPAD_LEFT},
+	{N_("RIGHT"),	RETRO_DEVICE_ID_JOYPAD_RIGHT,	BTN_ID_DPAD_RIGHT},
 	{"A",		RETRO_DEVICE_ID_JOYPAD_A,		BTN_ID_A},
 	{"B",		RETRO_DEVICE_ID_JOYPAD_B,		BTN_ID_B},
 	{"X",		RETRO_DEVICE_ID_JOYPAD_X,		BTN_ID_X},
 	{"Y",		RETRO_DEVICE_ID_JOYPAD_Y,		BTN_ID_Y},
-	{"START",	RETRO_DEVICE_ID_JOYPAD_START,	BTN_ID_START},
-	{"SELECT",	RETRO_DEVICE_ID_JOYPAD_SELECT,	BTN_ID_SELECT},
+	{N_("START"),	RETRO_DEVICE_ID_JOYPAD_START,	BTN_ID_START},
+	{N_("SELECT"),	RETRO_DEVICE_ID_JOYPAD_SELECT,	BTN_ID_SELECT},
 	{"L1",		RETRO_DEVICE_ID_JOYPAD_L,		BTN_ID_L1},
 	{"R1",		RETRO_DEVICE_ID_JOYPAD_R,		BTN_ID_R1},
 	{"L2",		RETRO_DEVICE_ID_JOYPAD_L2,		BTN_ID_L2},
@@ -730,12 +730,12 @@ static ButtonMapping button_label_mapping[] = { // used to lookup the retro_id a
 static ButtonMapping core_button_mapping[RETRO_BUTTON_COUNT+1] = {0};
 
 static const char* device_button_names[LOCAL_BUTTON_COUNT] = {
-	[BTN_ID_DPAD_UP]	= "UP",
-	[BTN_ID_DPAD_DOWN]	= "DOWN",
-	[BTN_ID_DPAD_LEFT]	= "LEFT",
-	[BTN_ID_DPAD_RIGHT]	= "RIGHT",
-	[BTN_ID_SELECT]		= "SELECT",
-	[BTN_ID_START]		= "START",
+	[BTN_ID_DPAD_UP]	= N_("UP"),
+	[BTN_ID_DPAD_DOWN]	= N_("DOWN"),
+	[BTN_ID_DPAD_LEFT]	= N_("LEFT"),
+	[BTN_ID_DPAD_RIGHT]	= N_("RIGHT"),
+	[BTN_ID_SELECT]		= N_("SELECT"),
+	[BTN_ID_START]		= N_("START"),
 	[BTN_ID_Y]			= "Y",
 	[BTN_ID_X]			= "X",
 	[BTN_ID_B]			= "B",
@@ -751,52 +751,62 @@ static const char* device_button_names[LOCAL_BUTTON_COUNT] = {
 
 // NOTE: these must be in BTN_ID_ order also off by 1 because of NONE (which is -1 in BTN_ID_ land)
 static char* button_labels[] = {
-	"NONE", // displayed by default
-	"UP",
-	"DOWN",
-	"LEFT",
-	"RIGHT",
+	N_("NONE"), // displayed by default
+	N_("UP"),
+	N_("DOWN"),
+	N_("LEFT"),
+	N_("RIGHT"),
 	"A",
 	"B",
 	"X",
 	"Y",
-	"START",
-	"SELECT",
+	N_("START"),
+	N_("SELECT"),
 	"L1",
 	"R1",
 	"L2",
 	"R2",
 	"L3",
 	"R3",
-	"MENU+UP",
-	"MENU+DOWN",
-	"MENU+LEFT",
-	"MENU+RIGHT",
-	"MENU+A",
-	"MENU+B",
-	"MENU+X",
-	"MENU+Y",
-	"MENU+START",
-	"MENU+SELECT",
-	"MENU+L1",
-	"MENU+R1",
-	"MENU+L2",
-	"MENU+R2",
-	"MENU+L3",
-	"MENU+R3",
+	N_("MENU+UP"),
+	N_("MENU+DOWN"),
+	N_("MENU+LEFT"),
+	N_("MENU+RIGHT"),
+	N_("MENU+A"),
+	N_("MENU+B"),
+	N_("MENU+X"),
+	N_("MENU+Y"),
+	N_("MENU+START"),
+	N_("MENU+SELECT"),
+	N_("MENU+L1"),
+	N_("MENU+R1"),
+	N_("MENU+L2"),
+	N_("MENU+R2"),
+	N_("MENU+L3"),
+	N_("MENU+R3"),
 	NULL,
 };
 static char* overclock_labels[] = {
-	"Powersave",
-	"Normal",
-	"Performance",
+	N_("Powersave"),
+	N_("Normal"),
+	N_("Performance"),
+	NULL,
+};
+
+// Core button name placeholders for gettext extraction
+// These are used by emulator cores like SFC that provide "L" and "R" buttons
+// The actual core button names are assigned at runtime, but we need these
+// placeholders so xgettext can extract them for translation
+static char* core_button_placeholders[] = {
+	N_("L Button"), // SFC L button (full form)
+	N_("R Button"), // SFC R button (full form)
 	NULL,
 };
 
 // TODO: this should be provided by the core
 static char* gamepad_labels[] = {
-	"Standard",
-	"DualShock",
+	N_("Standard"),
+	N_("DualShock"),
 	NULL,
 };
 static char* gamepad_values[] = {
@@ -813,10 +823,10 @@ enum {
 
 static inline char* getScreenScalingDesc(void) {
 	if (GFX_supportsOverscan()) {
-		return "Native uses integer scaling. Aspect uses core\nreported aspect ratio. Fullscreen has non-square\npixels. Cropped is integer scaled then cropped.";
+		return _("Native uses integer scaling. Aspect uses core\nreported aspect ratio. Fullscreen has non-square\npixels. Cropped is integer scaled then cropped.");
 	}
 	else {
-		return "Native uses integer scaling.\nAspect uses core reported aspect ratio.\nFullscreen has non-square pixels.";
+		return _("Native uses integer scaling.\nAspect uses core reported aspect ratio.\nFullscreen has non-square pixels.");
 	}
 }
 static inline int getScreenScalingCount(void) {
@@ -841,7 +851,7 @@ static struct Config {
 		.options = (Option[]){
 			[FE_OPT_SCALING] = {
 				.key	= "minarch_screen_scaling", 
-				.name	= "Screen Scaling",
+				.name	= N_("Screen Scaling"),
 				.desc	= NULL, // will call getScreenScalingDesc()
 				.default_value = 1,
 				.value = 1,
@@ -851,8 +861,8 @@ static struct Config {
 			},
 			[FE_OPT_EFFECT] = {
 				.key	= "minarch_screen_effect",
-				.name	= "Screen Effect",
-				.desc	= "Grid simulates an LCD grid.\nLine simulates CRT scanlines.\nEffects usually look best at native scaling.",
+				.name	= N_("Screen Effect"),
+				.desc	= N_("Grid simulates an LCD grid.\nLine simulates CRT scanlines.\nEffects usually look best at native scaling."),
 				.default_value = 0,
 				.value = 0,
 				.count = 3,
@@ -861,8 +871,8 @@ static struct Config {
 			},
 			[FE_OPT_SHARPNESS] = {
 				.key	= "minarch_screen_sharpness",
-				.name	= "Screen Sharpness",
-				.desc	= "Sharp uses nearest neighbor sampling.\nCrisp integer upscales before linear sampling.\nSoft uses linear sampling.",
+				.name	= N_("Screen Sharpness"),
+				.desc	= N_("Sharp uses nearest neighbor sampling.\nCrisp integer upscales before linear sampling.\nSoft uses linear sampling."),
 				.default_value = 2,
 				.value = 2,
 				.count = 3,
@@ -871,8 +881,8 @@ static struct Config {
 			},
 			[FE_OPT_TEARING] = {
 				.key	= "minarch_prevent_tearing",
-				.name	= "Prevent Tearing",
-				.desc	= "Wait for vsync before drawing the next frame.\nLenient only waits when within frame budget.\nStrict always waits.",
+				.name	= N_("Prevent Tearing"),
+				.desc	= N_("Wait for vsync before drawing the next frame.\nLenient only waits when within frame budget.\nStrict always waits."),
 				.default_value = VSYNC_LENIENT,
 				.value = VSYNC_LENIENT,
 				.count = 3,
@@ -881,8 +891,8 @@ static struct Config {
 			},
 			[FE_OPT_OVERCLOCK] = {
 				.key	= "minarch_cpu_speed",
-				.name	= "CPU Speed",
-				.desc	= "Over- or underclock the CPU to prioritize\npure performance or power savings.",
+				.name	= N_("CPU Speed"),
+				.desc	= N_("Over- or underclock the CPU to prioritize\npure performance or power savings."),
 				.default_value = 1,
 				.value = 1,
 				.count = 3,
@@ -891,8 +901,8 @@ static struct Config {
 			},
 			[FE_OPT_THREAD] = {
 				.key	= "minarch_thread_video",
-				.name	= "Prioritize Audio",
-				.desc	= "Can eliminate crackle but\nmay cause dropped frames.\nOnly turn on if necessary.",
+				.name	= N_("Prioritize Audio"),
+				.desc	= N_("Can eliminate crackle but\nmay cause dropped frames.\nOnly turn on if necessary."),
 				.default_value = 0,
 				.value = 0,
 				.count = 2,
@@ -901,8 +911,8 @@ static struct Config {
 			},
 			[FE_OPT_DEBUG] = {
 				.key	= "minarch_debug_hud",
-				.name	= "Debug HUD",
-				.desc	= "Show frames per second, cpu load,\nresolution, and scaler information.",
+				.name	= N_("Debug HUD"),
+				.desc	= N_("Show frames per second, cpu load,\nresolution, and scaler information."),
 				.default_value = 0,
 				.value = 0,
 				.count = 2,
@@ -911,8 +921,8 @@ static struct Config {
 			},
 			[FE_OPT_MAXFF] = {
 				.key	= "minarch_max_ff_speed",
-				.name	= "Max FF Speed",
-				.desc	= "Fast forward will not exceed the\nselected speed (but may be less\ndepending on game and emulator).",
+				.name	= N_("Max FF Speed"),
+				.desc	= N_("Fast forward will not exceed the\nselected speed (but may be less\ndepending on game and emulator)."),
 				.default_value = 3, // 4x
 				.value = 3, // 4x
 				.count = 8,
@@ -930,14 +940,14 @@ static struct Config {
 	},
 	.controls = default_button_mapping,
 	.shortcuts = (ButtonMapping[]){
-		[SHORTCUT_SAVE_STATE]			= {"Save State",		-1, BTN_ID_NONE, 0},
-		[SHORTCUT_LOAD_STATE]			= {"Load State",		-1, BTN_ID_NONE, 0},
-		[SHORTCUT_RESET_GAME]			= {"Reset Game",		-1, BTN_ID_NONE, 0},
-		[SHORTCUT_SAVE_QUIT]			= {"Save & Quit",		-1, BTN_ID_NONE, 0},
-		[SHORTCUT_CYCLE_SCALE]			= {"Cycle Scaling",		-1, BTN_ID_NONE, 0},
-		[SHORTCUT_CYCLE_EFFECT]			= {"Cycle Effect",		-1, BTN_ID_NONE, 0},
-		[SHORTCUT_TOGGLE_FF]			= {"Toggle FF",			-1, BTN_ID_NONE, 0},
-		[SHORTCUT_HOLD_FF]				= {"Hold FF",			-1, BTN_ID_NONE, 0},
+		[SHORTCUT_SAVE_STATE]			= {N_("Save State"),		-1, BTN_ID_NONE, 0},
+		[SHORTCUT_LOAD_STATE]			= {N_("Load State"),		-1, BTN_ID_NONE, 0},
+		[SHORTCUT_RESET_GAME]			= {N_("Reset Game"),		-1, BTN_ID_NONE, 0},
+		[SHORTCUT_SAVE_QUIT]			= {N_("Save & Quit"),		-1, BTN_ID_NONE, 0},
+		[SHORTCUT_CYCLE_SCALE]			= {N_("Cycle Scaling"),		-1, BTN_ID_NONE, 0},
+		[SHORTCUT_CYCLE_EFFECT]			= {N_("Cycle Effect"),		-1, BTN_ID_NONE, 0},
+		[SHORTCUT_TOGGLE_FF]			= {N_("Toggle FF"),		-1, BTN_ID_NONE, 0},
+		[SHORTCUT_HOLD_FF]				= {N_("Hold FF"),		-1, BTN_ID_NONE, 0},
 		{NULL}
 	},
 };
@@ -1408,7 +1418,7 @@ static void Option_setValue(Option* item, const char* value) {
 
 // TODO: does this also need to be applied to OptionList_vars()?
 static const char* option_key_name[] = {
-	"pcsx_rearmed_analog_combo", "DualShock Toggle Combo",
+	"pcsx_rearmed_analog_combo", N_("DualShock Toggle Combo"),
 	NULL
 };
 static const char* getOptionNameFromKey(const char* key, const char* name) {
@@ -3374,9 +3384,7 @@ static int OptionControls_optionChanged(MenuList* list, int i) {
 }
 static MenuList OptionControls_menu = {
 	.type = MENU_INPUT,
-	.desc = "Press A to set and X to clear."
-		"\nSupports single button and MENU+button." // TODO: not supported on nano because POWER doubles as MENU
-	,
+	.desc = N_("Press A to set and X to clear.\nSupports single button and MENU+button."), // TODO: not supported on nano because POWER doubles as MENU
 	.on_confirm = OptionControls_bind,
 	.on_change = OptionControls_unbind,
 	.items = NULL
@@ -3392,8 +3400,8 @@ static int OptionControls_openMenu(MenuList* list, int i) {
 		
 		if (has_custom_controllers) {
 			MenuItem* item = &OptionControls_menu.items[k++];
-			item->name = "Controller";
-			item->desc = "Select the type of controller.";
+			item->name = N_("Controller");
+			item->desc = N_("Select the type of controller.");
 			item->value = gamepad_type;
 			item->values = gamepad_labels;
 			item->on_change = OptionControls_optionChanged;
@@ -3407,7 +3415,7 @@ static int OptionControls_openMenu(MenuList* list, int i) {
 			
 			MenuItem* item = &OptionControls_menu.items[k++];
 			item->id = j;
-			item->name = button->name;
+			item->name = _(button->name);
 			item->desc = NULL;
 			item->value = button->local + 1;
 			if (button->mod) item->value += LOCAL_BUTTON_COUNT;
@@ -3474,18 +3482,16 @@ static int OptionShortcuts_unbind(MenuList* list, int i) {
 }
 static MenuList OptionShortcuts_menu = {
 	.type = MENU_INPUT,
-	.desc = "Press A to set and X to clear." 
-		"\nSupports single button and MENU+button." // TODO: not supported on nano because POWER doubles as MENU
-	,
+	.desc = N_("Press A to set and X to clear.\nSupports single button and MENU+button."), // TODO: not supported on nano because POWER doubles as MENU
 	.on_confirm = OptionShortcuts_bind,
 	.on_change = OptionShortcuts_unbind,
 	.items = NULL
 };
 static char* getSaveDesc(void) {
 	switch (config.loaded) {
-		case CONFIG_NONE:		return "Using defaults."; break;
-		case CONFIG_CONSOLE:	return "Using console config."; break;
-		case CONFIG_GAME:		return "Using game config."; break;
+		case CONFIG_NONE:		return _("Using defaults."); break;
+		case CONFIG_CONSOLE:	return _("Using console config."); break;
+		case CONFIG_GAME:		return _("Using game config."); break;
 	}
 	return NULL;
 }
@@ -3546,9 +3552,9 @@ static MenuList OptionSaveChanges_menu = {
 	.type = MENU_LIST,
 	.on_confirm = OptionSaveChanges_onConfirm,
 	.items = (MenuItem[]){
-		{"Save for console"},
-		{"Save for game"},
-		{"Restore defaults"},
+		{N_("Save for console")},
+		{N_("Save for game")},
+		{N_("Restore defaults")},
 		{NULL},
 	}
 };
@@ -3821,7 +3827,7 @@ static int Menu_options(MenuList* list) {
 					}
 					
 					if (item->value>=0) {
-						text = TTF_RenderUTF8_Blended(font.tiny, item->values[item->value], COLOR_WHITE); // always white
+						text = TTF_RenderUTF8_Blended(font.tiny, _(item->values[item->value]), COLOR_WHITE); // always white
 						SDL_BlitSurface(text, NULL, screen, &(SDL_Rect){
 							ox + mw - text->w - SCALE1(OPTION_PADDING),
 							oy+SCALE1((j*BUTTON_SIZE)+3)
@@ -3869,7 +3875,7 @@ static int Menu_options(MenuList* list) {
 						// so only calculate rw for the first item...
 						if (!mrw || type!=MENU_INPUT) {
 							for (int j=0; item->values[j]; j++) {
-								TTF_SizeUTF8(font.tiny, item->values[j], &rw, NULL);
+								TTF_SizeUTF8(font.tiny, _(item->values[j]), &rw, NULL);
 								if (lw+rw>w) w = lw+rw;
 								if (rw>mrw) mrw = rw;
 							}
@@ -3926,7 +3932,7 @@ static int Menu_options(MenuList* list) {
 						// buh
 					}
 					else if (item->value>=0) {
-						text = TTF_RenderUTF8_Blended(font.tiny, item->values[item->value], COLOR_WHITE); // always white
+						text = TTF_RenderUTF8_Blended(font.tiny, _(item->values[item->value]), COLOR_WHITE); // always white
 						SDL_BlitSurface(text, NULL, screen, &(SDL_Rect){
 							ox + mw - text->w - SCALE1(OPTION_PADDING),
 							oy+SCALE1((j*BUTTON_SIZE)+3)
@@ -3949,8 +3955,8 @@ static int Menu_options(MenuList* list) {
 			
 			if (desc) {
 				int w,h;
-				GFX_sizeText(font.tiny, desc, SCALE1(12), &w,&h);
-				GFX_blitText(font.tiny, desc, SCALE1(12), COLOR_WHITE, screen, &(SDL_Rect){
+				GFX_sizeText(font.tiny, _(desc), SCALE1(12), &w,&h);
+				GFX_blitText(font.tiny, _(desc), SCALE1(12), COLOR_WHITE, screen, &(SDL_Rect){
 					(screen->w - w) / 2,
 					screen->h - SCALE1(PADDING) - h,
 					w,h

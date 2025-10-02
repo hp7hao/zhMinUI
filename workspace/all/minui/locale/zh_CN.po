@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: MinUI\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-01 21:40-0400\n"
+"POT-Creation-Date: 2025-10-01 23:58-0400\n"
 "PO-Revision-Date: 2025-10-01 12:00+0800\n"
 "Last-Translator: \n"
 "Language-Team: Chinese (Simplified)\n"
@@ -15,7 +15,9 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../../common/api.c:781 ../../minput/minput.c:233
+#: ../../common/api.c:781 ../../minarch/minarch.c:721
+#: ../../minarch/minarch.c:737 ../../minarch/minarch.c:764
+#: ../../minput/minput.c:233
 msgid "SELECT"
 msgstr "选择"
 
@@ -23,7 +25,9 @@ msgstr "选择"
 msgid "VOLUME"
 msgstr ""
 
-#: ../../common/api.c:782 ../../minput/minput.c:235
+#: ../../common/api.c:782 ../../minarch/minarch.c:720
+#: ../../minarch/minarch.c:738 ../../minarch/minarch.c:763
+#: ../../minput/minput.c:235
 msgid "START"
 msgstr "开始"
 
@@ -32,7 +36,7 @@ msgid "BRIGHTNESS"
 msgstr "亮度"
 
 #: ../../common/api.c:786 ../../minui/minui.c:1587 ../../minui/minui.c:1658
-#: ../../minarch/minarch.c:4430 ../../minput/minput.c:215
+#: ../../minarch/minarch.c:4436 ../../minput/minput.c:215
 msgid "MENU"
 msgstr "菜单"
 
@@ -73,17 +77,17 @@ msgid "Commit"
 msgstr "提交"
 
 #: ../../minui/minui.c:1587 ../../minui/minui.c:1658
-#: ../../minarch/minarch.c:4430 ../../minput/minput.c:219
+#: ../../minarch/minarch.c:4436 ../../minput/minput.c:219
 msgid "POWER"
 msgstr "电源"
 
 #: ../../minui/minui.c:1587 ../../minui/minui.c:1659
-#: ../../minarch/minarch.c:4430
+#: ../../minarch/minarch.c:4436
 msgid "SLEEP"
 msgstr "休眠"
 
 #: ../../minui/minui.c:1589 ../../minui/minui.c:1664 ../../minui/minui.c:1669
-#: ../../minarch/minarch.c:4431
+#: ../../minarch/minarch.c:4437
 msgid "BACK"
 msgstr "返回"
 
@@ -103,51 +107,509 @@ msgstr "信息"
 msgid "OPEN"
 msgstr "打开"
 
-#: ../../minarch/minarch.c:3054
+#: ../../minarch/minarch.c:612 ../../minarch/minarch.c:636
+msgid "Off"
+msgstr "关闭"
+
+#: ../../minarch/minarch.c:613
+msgid "On"
+msgstr "开启"
+
+#: ../../minarch/minarch.c:617
+msgid "Native"
+msgstr "原生"
+
+#: ../../minarch/minarch.c:618
+msgid "Aspect"
+msgstr "宽高比"
+
+#: ../../minarch/minarch.c:619
+msgid "Fullscreen"
+msgstr "全屏"
+
+#: ../../minarch/minarch.c:620
+msgid "Cropped"
+msgstr "裁剪"
+
+#: ../../minarch/minarch.c:624 ../../minarch/minarch.c:642
+msgid "None"
+msgstr "无"
+
+#: ../../minarch/minarch.c:625
+msgid "Line"
+msgstr "线条"
+
+#: ../../minarch/minarch.c:626
+msgid "Grid"
+msgstr "网格"
+
+#: ../../minarch/minarch.c:630
+msgid "Sharp"
+msgstr "锐利"
+
+#: ../../minarch/minarch.c:631
+msgid "Crisp"
+msgstr "清晰"
+
+#: ../../minarch/minarch.c:632
+msgid "Soft"
+msgstr "柔和"
+
+#: ../../minarch/minarch.c:637
+msgid "Lenient"
+msgstr "宽松"
+
+#: ../../minarch/minarch.c:638
+msgid "Strict"
+msgstr "严格"
+
+#: ../../minarch/minarch.c:643
+msgid "2x"
+msgstr "2倍"
+
+#: ../../minarch/minarch.c:644
+msgid "3x"
+msgstr "3倍"
+
+#: ../../minarch/minarch.c:645
+msgid "4x"
+msgstr "4倍"
+
+#: ../../minarch/minarch.c:646
+msgid "5x"
+msgstr "5倍"
+
+#: ../../minarch/minarch.c:647
+msgid "6x"
+msgstr "6倍"
+
+#: ../../minarch/minarch.c:648
+msgid "7x"
+msgstr "7倍"
+
+#: ../../minarch/minarch.c:649
+msgid "8x"
+msgstr "8倍"
+
+#: ../../minarch/minarch.c:692
+msgid "Up"
+msgstr "上"
+
+#: ../../minarch/minarch.c:693
+msgid "Down"
+msgstr "下"
+
+#: ../../minarch/minarch.c:694
+msgid "Left"
+msgstr "左"
+
+#: ../../minarch/minarch.c:695
+msgid "Right"
+msgstr "右"
+
+#: ../../minarch/minarch.c:696
+msgid "A Button"
+msgstr "A 键"
+
+#: ../../minarch/minarch.c:697
+msgid "B Button"
+msgstr "B 键"
+
+#: ../../minarch/minarch.c:698
+msgid "X Button"
+msgstr "X 键"
+
+#: ../../minarch/minarch.c:699
+msgid "Y Button"
+msgstr "Y 键"
+
+#: ../../minarch/minarch.c:700
+msgid "Start"
+msgstr "开始"
+
+#: ../../minarch/minarch.c:701
+msgid "Select"
+msgstr "选择"
+
+#: ../../minarch/minarch.c:702
+msgid "L1 Button"
+msgstr "L1 键"
+
+#: ../../minarch/minarch.c:703
+msgid "R1 Button"
+msgstr "R1 键"
+
+#: ../../minarch/minarch.c:704
+msgid "L2 Button"
+msgstr "L2 键"
+
+#: ../../minarch/minarch.c:705
+msgid "R2 Button"
+msgstr "R2 键"
+
+#: ../../minarch/minarch.c:706
+msgid "L3 Button"
+msgstr "L3 键"
+
+#: ../../minarch/minarch.c:707
+msgid "R3 Button"
+msgstr "R3 键"
+
+#: ../../minarch/minarch.c:711 ../../minarch/minarch.c:754
+msgid "NONE"
+msgstr "无"
+
+#: ../../minarch/minarch.c:712 ../../minarch/minarch.c:733
+#: ../../minarch/minarch.c:755
+msgid "UP"
+msgstr "上"
+
+#: ../../minarch/minarch.c:713 ../../minarch/minarch.c:734
+#: ../../minarch/minarch.c:756
+msgid "DOWN"
+msgstr "下"
+
+#: ../../minarch/minarch.c:714 ../../minarch/minarch.c:735
+#: ../../minarch/minarch.c:757
+msgid "LEFT"
+msgstr "左"
+
+#: ../../minarch/minarch.c:715 ../../minarch/minarch.c:736
+#: ../../minarch/minarch.c:758
+msgid "RIGHT"
+msgstr "右"
+
+#: ../../minarch/minarch.c:771
+msgid "MENU+UP"
+msgstr "菜单+上"
+
+#: ../../minarch/minarch.c:772
+msgid "MENU+DOWN"
+msgstr "菜单+下"
+
+#: ../../minarch/minarch.c:773
+msgid "MENU+LEFT"
+msgstr "菜单+左"
+
+#: ../../minarch/minarch.c:774
+msgid "MENU+RIGHT"
+msgstr "菜单+右"
+
+#: ../../minarch/minarch.c:775
+msgid "MENU+A"
+msgstr "菜单+A"
+
+#: ../../minarch/minarch.c:776
+msgid "MENU+B"
+msgstr "菜单+B"
+
+#: ../../minarch/minarch.c:777
+msgid "MENU+X"
+msgstr "菜单+X"
+
+#: ../../minarch/minarch.c:778
+msgid "MENU+Y"
+msgstr "菜单+Y"
+
+#: ../../minarch/minarch.c:779
+msgid "MENU+START"
+msgstr "菜单+开始"
+
+#: ../../minarch/minarch.c:780
+msgid "MENU+SELECT"
+msgstr "菜单+选择"
+
+#: ../../minarch/minarch.c:781
+msgid "MENU+L1"
+msgstr "菜单+L1"
+
+#: ../../minarch/minarch.c:782
+msgid "MENU+R1"
+msgstr "菜单+R1"
+
+#: ../../minarch/minarch.c:783
+msgid "MENU+L2"
+msgstr "菜单+L2"
+
+#: ../../minarch/minarch.c:784
+msgid "MENU+R2"
+msgstr "菜单+R2"
+
+#: ../../minarch/minarch.c:785
+msgid "MENU+L3"
+msgstr "菜单+L3"
+
+#: ../../minarch/minarch.c:786
+msgid "MENU+R3"
+msgstr "菜单+R3"
+
+#: ../../minarch/minarch.c:790
+msgid "Powersave"
+msgstr "省电"
+
+#: ../../minarch/minarch.c:791
+msgid "Normal"
+msgstr "正常"
+
+#: ../../minarch/minarch.c:792
+msgid "Performance"
+msgstr "性能"
+
+#: ../../minarch/minarch.c:801
+msgid "L Button"
+msgstr "L 键"
+
+#: ../../minarch/minarch.c:802
+msgid "R Button"
+msgstr "R 键"
+
+#: ../../minarch/minarch.c:808
+msgid "Standard"
+msgstr "标准"
+
+#: ../../minarch/minarch.c:809
+msgid "DualShock"
+msgstr "DualShock"
+
+#: ../../minarch/minarch.c:826
+msgid ""
+"Native uses integer scaling. Aspect uses core\n"
+"reported aspect ratio. Fullscreen has non-square\n"
+"pixels. Cropped is integer scaled then cropped."
+msgstr ""
+"原生使用整数缩放。宽高比使用核心\n"
+"报告的宽高比。全屏具有非方形\n"
+"像素。裁剪是整数缩放后裁剪。"
+
+#: ../../minarch/minarch.c:829
+msgid ""
+"Native uses integer scaling.\n"
+"Aspect uses core reported aspect ratio.\n"
+"Fullscreen has non-square pixels."
+msgstr ""
+"原生使用整数缩放。\n"
+"宽高比使用核心报告的宽高比。\n"
+"全屏具有非方形像素。"
+
+#: ../../minarch/minarch.c:854
+msgid "Screen Scaling"
+msgstr "屏幕缩放"
+
+#: ../../minarch/minarch.c:864
+msgid "Screen Effect"
+msgstr "屏幕效果"
+
+#: ../../minarch/minarch.c:865
+msgid ""
+"Grid simulates an LCD grid.\n"
+"Line simulates CRT scanlines.\n"
+"Effects usually look best at native scaling."
+msgstr ""
+"网格模拟LCD网格。\n"
+"线条模拟CRT扫描线。\n"
+"效果在原生缩放下通常效果最佳。"
+
+#: ../../minarch/minarch.c:874
+msgid "Screen Sharpness"
+msgstr "屏幕锐度"
+
+#: ../../minarch/minarch.c:875
+msgid ""
+"Sharp uses nearest neighbor sampling.\n"
+"Crisp integer upscales before linear sampling.\n"
+"Soft uses linear sampling."
+msgstr ""
+"锐利使用最近邻采样。\n"
+"清晰先整数放大再线性采样。\n"
+"柔和使用线性采样。"
+
+#: ../../minarch/minarch.c:884
+msgid "Prevent Tearing"
+msgstr "防止撕裂"
+
+#: ../../minarch/minarch.c:885
+msgid ""
+"Wait for vsync before drawing the next frame.\n"
+"Lenient only waits when within frame budget.\n"
+"Strict always waits."
+msgstr ""
+"绘制下一帧前等待垂直同步。\n"
+"宽松模式仅在帧预算内等待。\n"
+"严格模式总是等待。"
+
+#: ../../minarch/minarch.c:894
+msgid "CPU Speed"
+msgstr "CPU速度"
+
+#: ../../minarch/minarch.c:895
+msgid ""
+"Over- or underclock the CPU to prioritize\n"
+"pure performance or power savings."
+msgstr ""
+"超频或降频CPU以优先考虑\n"
+"纯性能或省电。"
+
+#: ../../minarch/minarch.c:904
+msgid "Prioritize Audio"
+msgstr "优先音频"
+
+#: ../../minarch/minarch.c:905
+msgid ""
+"Can eliminate crackle but\n"
+"may cause dropped frames.\n"
+"Only turn on if necessary."
+msgstr ""
+"可以消除爆音但\n"
+"可能导致掉帧。\n"
+"仅在必要时开启。"
+
+#: ../../minarch/minarch.c:914
+msgid "Debug HUD"
+msgstr "调试HUD"
+
+#: ../../minarch/minarch.c:915
+msgid ""
+"Show frames per second, cpu load,\n"
+"resolution, and scaler information."
+msgstr ""
+"显示每秒帧数、CPU负载、\n"
+"分辨率和缩放器信息。"
+
+#: ../../minarch/minarch.c:924
+msgid "Max FF Speed"
+msgstr "最大快进速度"
+
+#: ../../minarch/minarch.c:925
+msgid ""
+"Fast forward will not exceed the\n"
+"selected speed (but may be less\n"
+"depending on game and emulator)."
+msgstr ""
+"快进不会超过\n"
+"选择的速度（但可能更慢\n"
+"取决于游戏和模拟器）。"
+
+#: ../../minarch/minarch.c:943
+msgid "Save State"
+msgstr "保存状态"
+
+#: ../../minarch/minarch.c:944
+msgid "Load State"
+msgstr "加载状态"
+
+#: ../../minarch/minarch.c:945
+msgid "Reset Game"
+msgstr "重置游戏"
+
+#: ../../minarch/minarch.c:946
+msgid "Save & Quit"
+msgstr "保存并退出"
+
+#: ../../minarch/minarch.c:947
+msgid "Cycle Scaling"
+msgstr "循环缩放"
+
+#: ../../minarch/minarch.c:948
+msgid "Cycle Effect"
+msgstr "循环效果"
+
+#: ../../minarch/minarch.c:949
+msgid "Toggle FF"
+msgstr "切换快进"
+
+#: ../../minarch/minarch.c:950
+msgid "Hold FF"
+msgstr "按住快进"
+
+#: ../../minarch/minarch.c:1421
+msgid "DualShock Toggle Combo"
+msgstr "DualShock切换组合"
+
+#: ../../minarch/minarch.c:3064
 msgid "Continue"
 msgstr "继续"
 
-#: ../../minarch/minarch.c:3055
+#: ../../minarch/minarch.c:3065
 msgid "Save"
 msgstr "保存"
 
-#: ../../minarch/minarch.c:3056
+#: ../../minarch/minarch.c:3066
 msgid "Load"
 msgstr "加载"
 
-#: ../../minarch/minarch.c:3057
+#: ../../minarch/minarch.c:3067
 msgid "Options"
 msgstr "选项"
 
-#: ../../minarch/minarch.c:3058
+#: ../../minarch/minarch.c:3068
 msgid "Quit"
 msgstr "退出"
 
-#: ../../minarch/minarch.c:3074
+#: ../../minarch/minarch.c:3084
 msgid "Reset"
 msgstr "重置"
 
-#: ../../minarch/minarch.c:3570
+#: ../../minarch/minarch.c:3387 ../../minarch/minarch.c:3485
+msgid ""
+"Press A to set and X to clear.\n"
+"Supports single button and MENU+button."
+msgstr ""
+"按A键设置，按X键清除。\n"
+"支持单键和菜单+按键组合。"
+
+#: ../../minarch/minarch.c:3403
+msgid "Controller"
+msgstr "控制器"
+
+#: ../../minarch/minarch.c:3404
+msgid "Select the type of controller."
+msgstr "选择控制器类型。"
+
+#: ../../minarch/minarch.c:3492
+msgid "Using defaults."
+msgstr "使用全局默认设置"
+
+#: ../../minarch/minarch.c:3493
+msgid "Using console config."
+msgstr "使用平台默认设置"
+
+#: ../../minarch/minarch.c:3494
+msgid "Using game config."
+msgstr "使用游戏默认设置"
+
+#: ../../minarch/minarch.c:3555
+msgid "Save for console"
+msgstr "保存为平台设置"
+
+#: ../../minarch/minarch.c:3556
+msgid "Save for game"
+msgstr "保存为游戏设置"
+
+#: ../../minarch/minarch.c:3557
+msgid "Restore defaults"
+msgstr "恢复默认"
+
+#: ../../minarch/minarch.c:3576
 msgid "Frontend"
 msgstr "前端"
 
-#: ../../minarch/minarch.c:3571
+#: ../../minarch/minarch.c:3577
 msgid "Emulator"
 msgstr "模拟器"
 
-#: ../../minarch/minarch.c:3572
+#: ../../minarch/minarch.c:3578
 msgid "Controls"
 msgstr "按键设置"
 
-#: ../../minarch/minarch.c:3573
+#: ../../minarch/minarch.c:3579
 msgid "Shortcuts"
 msgstr "快捷键"
 
-#: ../../minarch/minarch.c:3574
+#: ../../minarch/minarch.c:3580
 msgid "Save Changes"
 msgstr "保存更改"
 
-#: ../../minarch/minarch.c:4431
+#: ../../minarch/minarch.c:4437
 msgid "OKAY"
 msgstr "确定"
 
@@ -171,11 +633,20 @@ msgstr "音量 +"
 msgid "QUIT"
 msgstr "退出"
 
-#~ msgid "Save for console"
-#~ msgstr "保存到主机"
+#~ msgid "L1"
+#~ msgstr "L1"
 
-#~ msgid "Save for game"
-#~ msgstr "保存到游戏"
+#~ msgid "R1"
+#~ msgstr "R1"
 
-#~ msgid "Restore defaults"
-#~ msgstr "恢复默认"
+#~ msgid "L2"
+#~ msgstr "L2"
+
+#~ msgid "R2"
+#~ msgstr "R2"
+
+#~ msgid "L3"
+#~ msgstr "L3"
+
+#~ msgid "R3"
+#~ msgstr "R3"
