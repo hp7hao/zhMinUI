@@ -532,27 +532,32 @@ void GFX_updateThemeColors(void) {
 }
 
 void GFX_drawFilledCircle(SDL_Surface* dst, int cx, int cy, int radius, Uint32 color) {
-	// Restore original diameter
-	// Advanced anti-aliased circle drawing with sub-pixel precision
+	// Draw circle with visual diameter matching rectangle height
+	// Use very conservative anti-aliasing to match rectangle height exactly
 	for (int y = -radius; y <= radius; y++) {
 		for (int x = -radius; x <= radius; x++) {
 			// Calculate distance with sub-pixel precision
 			float dist = sqrtf((float)(x*x + y*y));
 			
-			if (dist <= radius - 1.0f) {
+			if (dist <= radius - 0.25f) {
 				// Full pixel for interior
 				SDL_Rect pixel = {cx + x, cy + y, 1, 1};
 				SDL_FillRect(dst, &pixel, color);
-			} else if (dist <= radius + 1.0f) {
-				// Anti-aliased edge with improved algorithm
-				float coverage = 1.0f - (dist - (radius - 1.0f)) / 2.0f;
-				if (coverage > 0.1f) {  // Very low threshold for maximum smoothness
+			} else if (dist <= radius + 0.25f) {
+				// Very conservative anti-aliasing to match rectangle height exactly
+				float coverage = 1.0f - (dist - (radius - 0.25f)) / 0.5f;
+				if (coverage > 0.5f) {  // High threshold for minimal visual extension
 					SDL_Rect pixel = {cx + x, cy + y, 1, 1};
 					SDL_FillRect(dst, &pixel, color);
 				}
 			}
 		}
 	}
+}
+
+// Calculate vertical offset to center text in a container of given height
+int GFX_getTextVerticalCenter(SDL_Surface* text_surface, int container_height) {
+	return (container_height - text_surface->h) / 2;
 }
 
 void GFX_blitPill(int asset, SDL_Surface* dst, SDL_Rect* dst_rect) {
@@ -673,7 +678,7 @@ void GFX_blitButton(char* hint, char*button, SDL_Surface* dst, SDL_Rect* dst_rec
 
 		// label
 		text = TTF_RenderUTF8_Blended(font.medium, button, COLOR_BUTTON_TEXT);
-		SDL_BlitSurface(text, NULL, dst, &(SDL_Rect){dst_rect->x+(SCALE1(BUTTON_SIZE)-text->w)/2,dst_rect->y+(SCALE1(BUTTON_SIZE)-text->h)/2});
+		SDL_BlitSurface(text, NULL, dst, &(SDL_Rect){dst_rect->x+(SCALE1(BUTTON_SIZE)-text->w)/2,dst_rect->y+GFX_getTextVerticalCenter(text, SCALE1(BUTTON_SIZE))});
 		ox += SCALE1(BUTTON_SIZE);
 		SDL_FreeSurface(text);
 	}
@@ -683,7 +688,7 @@ void GFX_blitButton(char* hint, char*button, SDL_Surface* dst, SDL_Rect* dst_rec
 		ox += SCALE1(BUTTON_SIZE)/4;
 		
 		int oy = special_case ? SCALE1(-2) : 0;
-		SDL_BlitSurface(text, NULL, dst, &(SDL_Rect){ox+dst_rect->x,oy+dst_rect->y+(SCALE1(BUTTON_SIZE)-text->h)/2,text->w,text->h});
+		SDL_BlitSurface(text, NULL, dst, &(SDL_Rect){ox+dst_rect->x,oy+dst_rect->y+GFX_getTextVerticalCenter(text, SCALE1(BUTTON_SIZE)),text->w,text->h});
 		ox += text->w;
 		ox += SCALE1(BUTTON_SIZE)/4;
 		SDL_FreeSurface(text);
@@ -693,7 +698,7 @@ void GFX_blitButton(char* hint, char*button, SDL_Surface* dst, SDL_Rect* dst_rec
 
 	// hint text
 	text = TTF_RenderUTF8_Blended(font.small, hint, COLOR_WHITE);
-	SDL_BlitSurface(text, NULL, dst, &(SDL_Rect){ox+dst_rect->x,dst_rect->y+(SCALE1(BUTTON_SIZE)-text->h)/2,text->w,text->h});
+	SDL_BlitSurface(text, NULL, dst, &(SDL_Rect){ox+dst_rect->x,dst_rect->y+GFX_getTextVerticalCenter(text, SCALE1(BUTTON_SIZE)),text->w,text->h});
 	SDL_FreeSurface(text);
 }
 void GFX_blitMessage(TTF_Font* font, char* msg, SDL_Surface* dst, SDL_Rect* dst_rect) {
@@ -1439,13 +1444,19 @@ int PAD_tappedMenu(uint32_t now) {
 	static uint32_t menu_start = 0;
 	static int ignore_menu = 0; 
 	if (PAD_justPressed(BTN_MENU)) {
+		printf("[INFO] PAD_tappedMenu: BTN_MENU pressed\n");
 		ignore_menu = 0;
 		menu_start = now;
 	}
 	else if (PAD_isPressed(BTN_MENU) && BTN_MOD_BRIGHTNESS==BTN_MENU && (PAD_justPressed(BTN_MOD_PLUS) || PAD_justPressed(BTN_MOD_MINUS))) {
+		printf("[INFO] PAD_tappedMenu: ignoring menu due to brightness control\n");
 		ignore_menu = 1;
 	}
-	return (!ignore_menu && PAD_justReleased(BTN_MENU) && now-menu_start<MENU_DELAY);
+	int result = (!ignore_menu && PAD_justReleased(BTN_MENU) && now-menu_start<MENU_DELAY);
+	if (result) {
+		printf("[INFO] PAD_tappedMenu: returning true (menu tapped)\n");
+	}
+	return result;
 }
 
 ///////////////////////////////

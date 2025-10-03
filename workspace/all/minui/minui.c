@@ -1369,15 +1369,13 @@ int main (int argc, char *argv[]) {
 		NULL
 	};
 	
-	// Language options
-	const char* language_options[] = {
-		N_("English"),
-		N_("中文"),
-		NULL
-	};
+	// Language options - get from i18n module
+	const char** language_options = I18N_getLanguageOptions();
+	const char** language_values = I18N_getLanguageValues();
 	
 	// Theme options - get from theme system
-	const char** theme_options = THEME_getAllNames();
+	const char** theme_options = THEME_getDisplayOptions();
+	const char** theme_values = THEME_getConfigValues();
 	
 	// Font options - get from font system
 	int font_count = FONT_getCount();
@@ -1396,7 +1394,7 @@ int main (int argc, char *argv[]) {
 	
 	// Background Mode options
 	const char* background_mode_options[] = {
-		N_("黑白"),
+		N_("Monochrome"),
 		N_("Theme"),
 		NULL
 	};
@@ -1416,10 +1414,12 @@ int main (int argc, char *argv[]) {
 	int current_background_mode_index = 0;
 	
 	// Map language names to indices
-	if (strcmp(current_language, "中文") == 0) current_language_index = 1;
+	printf("[INFO] Initial language from config: '%s'\n", current_language);
+	current_language_index = I18N_getLanguageIndex(current_language);
+	printf("[INFO] Language index found: %d\n", current_language_index);
 	
 	// Map theme names to indices using theme system
-	current_theme_index = THEME_getIndexByName(current_theme);
+	current_theme_index = THEME_getDisplayIndex(current_theme);
 	
 	// Map font names to indices
 	for (int i = 0; i < font_count; i++) {
@@ -1504,11 +1504,12 @@ int main (int argc, char *argv[]) {
 				// Decrease current value
 				switch (settings_menu_selected) {
 					case 0: // Language
-						current_language_index = (current_language_index - 1 + 2) % 2;
+						current_language_index = (current_language_index - 1 + I18N_getLanguageCount()) % I18N_getLanguageCount();
 						{
-							const char* languages[] = {"English", "中文"};
-							CONFIG_setLanguage(languages[current_language_index]);
-							I18N_updateLanguage(languages[current_language_index]);
+							const char* language_code = I18N_getLanguageCode(current_language_index);
+							printf("[INFO] Language change: index=%d, code=%s\n", current_language_index, language_code);
+							CONFIG_setLanguage(language_code);
+							I18N_updateLanguage(language_code);
 						}
 						break;
 					case 1: // UI Mode
@@ -1520,9 +1521,9 @@ int main (int argc, char *argv[]) {
 						}
 						break;
 					case 2: // Theme
-						current_theme_index = (current_theme_index - 1 + THEME_getCount()) % THEME_getCount();
+						current_theme_index = (current_theme_index - 1 + THEME_getDisplayCount()) % THEME_getDisplayCount();
 						{
-							const char* theme_name = THEME_getNameByIndex(current_theme_index);
+							const char* theme_name = THEME_getConfigValues()[current_theme_index];
 							CONFIG_setTheme(theme_name);
 							GFX_updateThemeColors(); // Update asset colors for new theme
 						}
@@ -1530,7 +1531,7 @@ int main (int argc, char *argv[]) {
 					case 3: // Background Mode
 						current_background_mode_index = (current_background_mode_index - 1 + 2) % 2;
 						{
-							const char* background_modes[] = {"黑白", "Theme"};
+							const char* background_modes[] = {"Monochrome", "Theme"};
 							CONFIG_setBackgroundMode(background_modes[current_background_mode_index]);
 							GFX_updateThemeColors(); // Update colors for new background mode
 						}
@@ -1550,11 +1551,12 @@ int main (int argc, char *argv[]) {
 				// Increase current value
 				switch (settings_menu_selected) {
 					case 0: // Language
-						current_language_index = (current_language_index + 1) % 2;
+						current_language_index = (current_language_index + 1) % I18N_getLanguageCount();
 						{
-							const char* languages[] = {"English", "中文"};
-							CONFIG_setLanguage(languages[current_language_index]);
-							I18N_updateLanguage(languages[current_language_index]);
+							const char* language_code = I18N_getLanguageCode(current_language_index);
+							printf("[INFO] Language change: index=%d, code=%s\n", current_language_index, language_code);
+							CONFIG_setLanguage(language_code);
+							I18N_updateLanguage(language_code);
 						}
 						break;
 					case 1: // UI Mode
@@ -1566,9 +1568,9 @@ int main (int argc, char *argv[]) {
 						}
 						break;
 					case 2: // Theme
-						current_theme_index = (current_theme_index + 1) % THEME_getCount();
+						current_theme_index = (current_theme_index + 1) % THEME_getDisplayCount();
 						{
-							const char* theme_name = THEME_getNameByIndex(current_theme_index);
+							const char* theme_name = THEME_getConfigValues()[current_theme_index];
 							CONFIG_setTheme(theme_name);
 							GFX_updateThemeColors(); // Update asset colors for new theme
 						}
@@ -1576,7 +1578,7 @@ int main (int argc, char *argv[]) {
 					case 3: // Background Mode
 						current_background_mode_index = (current_background_mode_index + 1) % 2;
 						{
-							const char* background_modes[] = {"黑白", "Theme"};
+							const char* background_modes[] = {"Monochrome", "Theme"};
 							CONFIG_setBackgroundMode(background_modes[current_background_mode_index]);
 							GFX_updateThemeColors(); // Update colors for new background mode
 						}
@@ -1606,6 +1608,7 @@ int main (int argc, char *argv[]) {
 		}
 		else {
 			if (PAD_tappedMenu(now)) {
+				printf("[INFO] Menu button pressed - opening main menu\n");
 				show_main_menu = 1;
 				main_menu_selected = 0;
 				dirty = 1;
@@ -1798,13 +1801,7 @@ int main (int argc, char *argv[]) {
 						text_color = COLOR_BLACK; // Use background color for text on accent
 					}
 					else {
-						// Draw shadow for unselected items
-						SDL_Surface* shadow_text = TTF_RenderUTF8_Blended(font.large, item, COLOR_BLACK);
-						SDL_BlitSurface(shadow_text, NULL, screen, &(SDL_Rect){
-							menu_x + (menu_w - shadow_text->w) / 2 + SCALE1(2),
-							item_y + SCALE1(4) + SCALE1(1)
-						});
-						SDL_FreeSurface(shadow_text);
+						// No shadow for unselected items
 					}
 					
 					// Draw item text
@@ -1842,7 +1839,7 @@ int main (int argc, char *argv[]) {
 							sprintf(value_text, "%s", _(ui_mode_options[current_ui_mode_index]));
 							break;
 						case 2: // Theme
-							sprintf(value_text, "%s", _(theme_options[current_theme_index]));
+							sprintf(value_text, "%s", _(THEME_getDisplayName(current_theme_index)));
 							break;
 						case 3: // Background Mode
 							sprintf(value_text, "%s", _(background_mode_options[current_background_mode_index]));
@@ -1870,13 +1867,7 @@ int main (int argc, char *argv[]) {
 						text_color = COLOR_BLACK; // Use background color for text on accent
 					}
 					else {
-						// Draw shadow for unselected items
-						SDL_Surface* shadow_text = TTF_RenderUTF8_Blended(font.small, item, COLOR_BLACK);
-						SDL_BlitSurface(shadow_text, NULL, screen, &(SDL_Rect){
-							menu_x + (menu_w - shadow_text->w) / 2 + SCALE1(2),
-							item_y + SCALE1(4) + SCALE1(1)
-						});
-						SDL_FreeSurface(shadow_text);
+						// No shadow for unselected items
 					}
 					
 					// Draw item text
@@ -2001,7 +1992,7 @@ int main (int argc, char *argv[]) {
 								text->h
 							}, screen, &(SDL_Rect){
 								SCALE1(PADDING+BUTTON_PADDING),
-								SCALE1(PADDING+(j*PILL_SIZE)+4)
+								SCALE1(PADDING+(j*PILL_SIZE)) + GFX_getTextVerticalCenter(text, SCALE1(PILL_SIZE))
 							});
 						
 							GFX_truncateText(font.large, entry_name, display_name, available_width, SCALE1(BUTTON_PADDING*2));
@@ -2014,7 +2005,7 @@ int main (int argc, char *argv[]) {
 							text->h
 						}, screen, &(SDL_Rect){
 							SCALE1(PADDING+BUTTON_PADDING),
-							SCALE1(PADDING+(j*PILL_SIZE)+4)
+							SCALE1(PADDING+(j*PILL_SIZE)) + GFX_getTextVerticalCenter(text, SCALE1(PILL_SIZE))
 						});
 						SDL_FreeSurface(text);
 					}

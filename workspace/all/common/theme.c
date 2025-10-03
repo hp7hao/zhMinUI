@@ -3,6 +3,7 @@
 #include <string.h>
 #include "theme.h"
 #include "config.h"
+#include "i18n.h"
 
 ///////////////////////////////////////
 // Theme System Module
@@ -68,118 +69,91 @@ static const ThemeVariant theme_variants[] = {
 
 #define THEME_COUNT (sizeof(theme_variants) / sizeof(theme_variants[0]))
 
-// Static array for theme names
-static const char* theme_names[THEME_COUNT + 1];
 
-// Initialize theme names array
-static void init_theme_names(void) {
-    static int initialized = 0;
-    if (initialized) return;
-    
-    for (int i = 0; i < THEME_COUNT; i++) {
-        theme_names[i] = theme_variants[i].name;
-    }
-    theme_names[THEME_COUNT] = NULL;
-    initialized = 1;
+// Theme display options - original names for UI (will be translated at runtime)
+static char* theme_display_options[] = {
+    N_("Default"),
+    N_("Blue"),
+    N_("Green"),
+    N_("Purple"),
+    N_("Orange"),
+    N_("Red"),
+    N_("Cyan"),
+    N_("Pink"),
+    N_("Yellow"),
+    NULL
+};
+
+// Theme config values - original names for config
+static const char* theme_config_values[] = {
+    "Default",
+    "Blue",
+    "Green",
+    "Purple",
+    "Orange",
+    "Red",
+    "Cyan",
+    "Pink",
+    "Yellow",
+    NULL
+};
+
+// Get theme display options
+const char** THEME_getDisplayOptions(void) {
+    return theme_display_options;
 }
 
-// Get all available theme names
-const char** THEME_getAllNames(void) {
-    init_theme_names();
-    return theme_names;
+// Get theme config values
+const char** THEME_getConfigValues(void) {
+    return theme_config_values;
 }
 
-// Get theme count
-int THEME_getCount(void) {
+// Get theme display count
+int THEME_getDisplayCount(void) {
     return THEME_COUNT;
 }
 
-// Get theme by name (returns a Theme struct based on UI mode)
-const Theme* THEME_getByName(const char* name) {
-    static Theme current_theme;
-    const char* ui_mode = CONFIG_getUIMode();
-    
+// Get theme display index by name
+int THEME_getDisplayIndex(const char* theme_name) {
     for (int i = 0; i < THEME_COUNT; i++) {
-        if (strcmp(theme_variants[i].name, name) == 0) {
-            // Fill current_theme based on UI mode
-            current_theme.name = theme_variants[i].name;
-            if (strcmp(ui_mode, "Light") == 0) {
-                current_theme.foreground = theme_variants[i].light_foreground;
-                current_theme.background = theme_variants[i].light_background;
-                current_theme.accent = theme_variants[i].light_accent;
-            } else {
-                current_theme.foreground = theme_variants[i].dark_foreground;
-                current_theme.background = theme_variants[i].dark_background;
-                current_theme.accent = theme_variants[i].dark_accent;
-            }
-            return &current_theme;
-        }
-    }
-    
-    // Return default theme if not found
-    current_theme.name = theme_variants[0].name;
-    if (strcmp(ui_mode, "Light") == 0) {
-        current_theme.foreground = theme_variants[0].light_foreground;
-        current_theme.background = theme_variants[0].light_background;
-        current_theme.accent = theme_variants[0].light_accent;
-    } else {
-        current_theme.foreground = theme_variants[0].dark_foreground;
-        current_theme.background = theme_variants[0].dark_background;
-        current_theme.accent = theme_variants[0].dark_accent;
-    }
-    return &current_theme;
-}
-
-// Get theme by index
-const Theme* THEME_getByIndex(int index) {
-    if (index >= 0 && index < THEME_COUNT) {
-        return THEME_getByName(theme_variants[index].name);
-    }
-    return THEME_getByName(theme_variants[0].name); // Return default theme if invalid index
-}
-
-// Get theme index by name
-int THEME_getIndexByName(const char* name) {
-    for (int i = 0; i < THEME_COUNT; i++) {
-        if (strcmp(theme_variants[i].name, name) == 0) {
+        if (strcmp(theme_name, theme_config_values[i]) == 0) {
             return i;
         }
     }
-    return 0; // Return default theme index if not found
+    return 0; // Default to first theme
 }
 
-// Get theme name by index
-const char* THEME_getNameByIndex(int index) {
+// Get theme display name by index
+const char* THEME_getDisplayName(int index) {
     if (index >= 0 && index < THEME_COUNT) {
-        return theme_variants[index].name;
+        return _(theme_display_options[index]);
     }
-    return theme_variants[0].name; // Return default theme name if invalid index
+    return _(theme_display_options[0]); // Default to first theme
 }
 
-// Get current theme colors
-SDL_Color THEME_getForeground(const char* theme_name) {
-    const Theme* theme = THEME_getByName(theme_name);
-    return theme->foreground;
-}
-
-SDL_Color THEME_getBackground(const char* theme_name) {
-    const Theme* theme = THEME_getByName(theme_name);
-    return theme->background;
-}
-
-SDL_Color THEME_getAccent(const char* theme_name) {
-    const Theme* theme = THEME_getByName(theme_name);
-    return theme->accent;
-}
-
-// This function is no longer needed as THEME_getByName now handles UI mode internally
 
 // Get current theme colors based on UI mode and background mode
 SDL_Color THEME_getCurrentForeground(void) {
     const char* current_theme = CONFIG_getTheme();
+    const char* ui_mode = CONFIG_getUIMode();
     
-    // Foreground color is always based on UI mode and theme, not affected by background mode
-    return THEME_getForeground(current_theme);
+    // Find theme variant and return appropriate foreground color
+    for (int i = 0; i < THEME_COUNT; i++) {
+        if (strcmp(theme_variants[i].name, current_theme) == 0) {
+            if (strcmp(ui_mode, "Light") == 0) {
+                return theme_variants[i].light_foreground;
+            } else {
+                return theme_variants[i].dark_foreground;
+            }
+        }
+    }
+    
+    // Return default theme foreground
+    if (strcmp(ui_mode, "Light") == 0) {
+        return theme_variants[0].light_foreground;
+    } else {
+        return theme_variants[0].dark_foreground;
+    }
 }
 
 SDL_Color THEME_getCurrentBackground(void) {
@@ -188,7 +162,7 @@ SDL_Color THEME_getCurrentBackground(void) {
     const char* background_mode = CONFIG_getBackgroundMode();
     
     // Background mode only affects background color
-    if (strcmp(background_mode, "黑白") == 0) {
+    if (strcmp(background_mode, "Monochrome") == 0) {
         if (strcmp(ui_mode, "Light") == 0) {
             return (SDL_Color){0xff, 0xff, 0xff, 255}; // White background
         } else {
@@ -197,12 +171,43 @@ SDL_Color THEME_getCurrentBackground(void) {
     }
     
     // Otherwise use theme background color
-    return THEME_getBackground(current_theme);
+    for (int i = 0; i < THEME_COUNT; i++) {
+        if (strcmp(theme_variants[i].name, current_theme) == 0) {
+            if (strcmp(ui_mode, "Light") == 0) {
+                return theme_variants[i].light_background;
+            } else {
+                return theme_variants[i].dark_background;
+            }
+        }
+    }
+    
+    // Return default theme background
+    if (strcmp(ui_mode, "Light") == 0) {
+        return theme_variants[0].light_background;
+    } else {
+        return theme_variants[0].dark_background;
+    }
 }
 
 SDL_Color THEME_getCurrentAccent(void) {
     const char* current_theme = CONFIG_getTheme();
+    const char* ui_mode = CONFIG_getUIMode();
     
-    // Accent color is always based on UI mode and theme, not affected by background mode
-    return THEME_getAccent(current_theme);
+    // Find theme variant and return appropriate accent color
+    for (int i = 0; i < THEME_COUNT; i++) {
+        if (strcmp(theme_variants[i].name, current_theme) == 0) {
+            if (strcmp(ui_mode, "Light") == 0) {
+                return theme_variants[i].light_accent;
+            } else {
+                return theme_variants[i].dark_accent;
+            }
+        }
+    }
+    
+    // Return default theme accent
+    if (strcmp(ui_mode, "Light") == 0) {
+        return theme_variants[0].light_accent;
+    } else {
+        return theme_variants[0].dark_accent;
+    }
 }

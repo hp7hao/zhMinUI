@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: MinUI\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-03 01:18-0400\n"
+"POT-Creation-Date: 2025-10-03 01:43-0400\n"
 "PO-Revision-Date: 2025-10-01 12:00+0800\n"
 "Last-Translator: \n"
 "Language-Team: Chinese (Simplified)\n"
@@ -109,8 +109,8 @@ msgid "Light"
 msgstr "浅色"
 
 #: ../../minui/minui.c:1399
-msgid "黑白"
-msgstr ""
+msgid "Monochrome"
+msgstr "黑白"
 
 #: ../../minui/minui.c:1913
 msgid "Model"
@@ -681,6 +681,42 @@ msgstr "音量 +"
 msgid "QUIT"
 msgstr "退出"
 
+#: ../../minui/minui.c:1845
+msgid "Default"
+msgstr "默认"
+
+#: ../../minui/minui.c:1845
+msgid "Blue"
+msgstr "蓝色"
+
+#: ../../minui/minui.c:1845
+msgid "Green"
+msgstr "绿色"
+
+#: ../../minui/minui.c:1845
+msgid "Purple"
+msgstr "紫色"
+
+#: ../../minui/minui.c:1845
+msgid "Orange"
+msgstr "橙色"
+
+#: ../../minui/minui.c:1845
+msgid "Red"
+msgstr "红色"
+
+#: ../../minui/minui.c:1845
+msgid "Cyan"
+msgstr "青色"
+
+#: ../../minui/minui.c:1845
+msgid "Pink"
+msgstr "粉色"
+
+#: ../../minui/minui.c:1845
+msgid "Yellow"
+msgstr "黄色"
+
 #~ msgid "Default"
 #~ msgstr "默认"
 
@@ -707,9 +743,6 @@ msgstr "退出"
 
 #~ msgid "Yellow"
 #~ msgstr "黄色"
-
-#~ msgid "Monochrome"
-#~ msgstr "单色"
 
 #~ msgid "L1"
 #~ msgstr "L1"

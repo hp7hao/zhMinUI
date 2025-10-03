@@ -20,6 +20,8 @@
 #include "scaler.h"
 #include "config.h"
 #include "i18n.h"
+#include "theme.h"
+#include "font.h"
 
 ///////////////////////////////////////
 
@@ -3783,7 +3785,7 @@ static int Menu_options(MenuList* list) {
 					text = TTF_RenderUTF8_Blended(font.small, _(item->name), text_color);
 					SDL_BlitSurface(text, NULL, screen, &(SDL_Rect){
 						ox+SCALE1(OPTION_PADDING),
-						oy+SCALE1((j*BUTTON_SIZE)+1)
+						oy+SCALE1(j*BUTTON_SIZE) + GFX_getTextVerticalCenter(text, SCALE1(BUTTON_SIZE))
 					});
 					SDL_FreeSurface(text);
 				}
@@ -3816,7 +3818,7 @@ static int Menu_options(MenuList* list) {
 						text = TTF_RenderUTF8_Blended(font.tiny, _(item->values[item->value]), COLOR_WHITE); // always white
 						SDL_BlitSurface(text, NULL, screen, &(SDL_Rect){
 							ox + mw - text->w - SCALE1(OPTION_PADDING),
-							oy+SCALE1((j*BUTTON_SIZE)+3)
+							oy+SCALE1(j*BUTTON_SIZE) + GFX_getTextVerticalCenter(text, SCALE1(BUTTON_SIZE))
 						});
 						SDL_FreeSurface(text);
 					}
@@ -3840,7 +3842,7 @@ static int Menu_options(MenuList* list) {
 					text = TTF_RenderUTF8_Blended(font.small, _(item->name), text_color);
 					SDL_BlitSurface(text, NULL, screen, &(SDL_Rect){
 						ox+SCALE1(OPTION_PADDING),
-						oy+SCALE1((j*BUTTON_SIZE)+1)
+						oy+SCALE1(j*BUTTON_SIZE) + GFX_getTextVerticalCenter(text, SCALE1(BUTTON_SIZE))
 					});
 					SDL_FreeSurface(text);
 				}
@@ -3909,7 +3911,7 @@ static int Menu_options(MenuList* list) {
 					text = TTF_RenderUTF8_Blended(font.small, _(item->name), text_color);
 					SDL_BlitSurface(text, NULL, screen, &(SDL_Rect){
 						ox+SCALE1(OPTION_PADDING),
-						oy+SCALE1((j*BUTTON_SIZE)+1)
+						oy+SCALE1(j*BUTTON_SIZE) + GFX_getTextVerticalCenter(text, SCALE1(BUTTON_SIZE))
 					});
 					SDL_FreeSurface(text);
 					
@@ -3920,7 +3922,7 @@ static int Menu_options(MenuList* list) {
 						text = TTF_RenderUTF8_Blended(font.tiny, _(item->values[item->value]), COLOR_WHITE); // always white
 						SDL_BlitSurface(text, NULL, screen, &(SDL_Rect){
 							ox + mw - text->w - SCALE1(OPTION_PADDING),
-							oy+SCALE1((j*BUTTON_SIZE)+3)
+							oy+SCALE1(j*BUTTON_SIZE) + GFX_getTextVerticalCenter(text, SCALE1(BUTTON_SIZE))
 						});
 						SDL_FreeSurface(text);
 					}
@@ -4413,7 +4415,7 @@ static void Menu_loop(void) {
 				text->h
 			}, screen, &(SDL_Rect){
 				SCALE1(PADDING+BUTTON_PADDING),
-				SCALE1(PADDING+4)
+				SCALE1(PADDING) + GFX_getTextVerticalCenter(text, SCALE1(PILL_SIZE))
 			});
 			SDL_FreeSurface(text);
 			
@@ -4457,13 +4459,7 @@ static void Menu_loop(void) {
 					text_color = COLOR_BLACK;
 				}
 				else {
-					// shadow
-					text = TTF_RenderUTF8_Blended(font.large, item, COLOR_BLACK);
-					SDL_BlitSurface(text, NULL, screen, &(SDL_Rect){
-						SCALE1(2 + PADDING + BUTTON_PADDING),
-						SCALE1(1 + PADDING + oy + (i * PILL_SIZE) + 4)
-					});
-					SDL_FreeSurface(text);
+					// No shadow for unselected items
 				}
 				
 				// text
@@ -4662,6 +4658,9 @@ int main(int argc , char* argv[]) {
 
 	// Initialize i18n (automatically loads language from config)
 	I18N_init();
+	
+	// Force reload config to ensure we get the latest settings
+	CONFIG_load();
 	
 	// Example: Get accent color from config for UI theming
 	// int accent_color = CONFIG_getAccentColor();

@@ -15,82 +15,127 @@ typedef struct MinUIConfig {
     char theme[16];         // "Default", "Blue", "Green", "Purple", "Orange", "Red", "Cyan", "Pink", "Yellow", "Monochrome"
     char font[64];          // Font filename from res/fonts folder
     char ui_mode[16];       // "Dark" or "Light"
-    char background_mode[16]; // "黑白" or "Theme"
+    char background_mode[16]; // "Monochrome" or "Theme"
 } MinUIConfig;
 
-static MinUIConfig config = {"English", "Default", "BoutiqueBitmap7x7_1.7.ttf", "Dark", "黑白"}; // Default values
+static MinUIConfig config = {"en_US", "Default", "BoutiqueBitmap7x7_1.7.ttf", "Dark", "Monochrome"}; // Default values
 static int config_loaded = 0;
 
 void CONFIG_load(void) {
     if (config_loaded) return;
     
+    printf("CONFIG_load: Checking for config file at %s\n", CONFIG_PATH);
+    
     if (exists(CONFIG_PATH)) {
+        printf("CONFIG_load: Config file exists, loading...\n");
         char config_content[512];
-        getFile(CONFIG_PATH, config_content, 512);
-        trimTrailingNewlines(config_content);
+        memset(config_content, 0, 512); // Clear buffer first
         
-        // Parse language setting
-        char* lang_line = strstr(config_content, "language=");
-        if (lang_line) {
-            char* lang_value = lang_line + 9;
-            char* end = strchr(lang_value, '\n');
-            if (end) *end = '\0';
-            strncpy(config.language, lang_value, 15);
-            config.language[15] = '\0';
+        // Read file manually to ensure proper null termination
+        FILE* file = fopen(CONFIG_PATH, "r");
+        if (file) {
+            size_t bytes_read = fread(config_content, 1, 511, file); // Leave room for null terminator
+            config_content[bytes_read] = '\0'; // Ensure null termination
+            fclose(file);
+        } else {
+            printf("CONFIG_load: Failed to open config file\n");
+            return;
         }
+        printf("CONFIG_load: Config content: %s", config_content);
         
-        // Parse theme setting
-        char* theme_line = strstr(config_content, "theme=");
-        if (theme_line) {
-            char* theme_value = theme_line + 6;
-            char* end = strchr(theme_value, '\n');
-            if (end) *end = '\0';
-            strncpy(config.theme, theme_value, 15);
-            config.theme[15] = '\0';
+        // Parse config file line by line
+        char* line = strtok(config_content, "\n");
+        while (line != NULL) {
+            // Skip empty lines
+            if (strlen(line) == 0) {
+                line = strtok(NULL, "\n");
+                continue;
+            }
+            
+            // Find the = character
+            char* equals_pos = strchr(line, '=');
+            if (equals_pos != NULL) {
+                // Split key and value
+                *equals_pos = '\0'; // Terminate key string
+                char* key = line;
+                char* value = equals_pos + 1;
+                
+                // Strip whitespace from key and value
+                // Trim leading whitespace from key
+                while (*key == ' ' || *key == '\t') key++;
+                // Trim trailing whitespace from key
+                char* key_end = key + strlen(key) - 1;
+                while (key_end > key && (*key_end == ' ' || *key_end == '\t' || *key_end == '\r')) {
+                    *key_end = '\0';
+                    key_end--;
+                }
+                
+                // Trim leading whitespace from value
+                while (*value == ' ' || *value == '\t') value++;
+                // Trim trailing whitespace from value
+                char* value_end = value + strlen(value) - 1;
+                while (value_end > value && (*value_end == ' ' || *value_end == '\t' || *value_end == '\r')) {
+                    *value_end = '\0';
+                    value_end--;
+                }
+                
+                printf("CONFIG_load: Found key='%s', value='%s'\n", key, value);
+                
+                // Set config values based on key
+                if (strcmp(key, "language") == 0) {
+                    strncpy(config.language, value, 15);
+                    config.language[15] = '\0';
+                } else if (strcmp(key, "theme") == 0) {
+                    strncpy(config.theme, value, 15);
+                    config.theme[15] = '\0';
+                } else if (strcmp(key, "font") == 0) {
+                    strncpy(config.font, value, 63);
+                    config.font[63] = '\0';
+                } else if (strcmp(key, "ui_mode") == 0) {
+                    strncpy(config.ui_mode, value, 15);
+                    config.ui_mode[15] = '\0';
+                } else if (strcmp(key, "background_mode") == 0) {
+                    strncpy(config.background_mode, value, 15);
+                    config.background_mode[15] = '\0';
+                }
+            }
+            
+            line = strtok(NULL, "\n");
         }
-        
-        // Parse font setting
-        char* font_line = strstr(config_content, "font=");
-        if (font_line) {
-            char* font_value = font_line + 5;
-            char* end = strchr(font_value, '\n');
-            if (end) *end = '\0';
-            strncpy(config.font, font_value, 63);
-            config.font[63] = '\0';
-        }
-        
-        // Parse UI mode setting
-        char* ui_mode_line = strstr(config_content, "ui_mode=");
-        if (ui_mode_line) {
-            char* ui_mode_value = ui_mode_line + 8;
-            char* end = strchr(ui_mode_value, '\n');
-            if (end) *end = '\0';
-            strncpy(config.ui_mode, ui_mode_value, 15);
-            config.ui_mode[15] = '\0';
-        }
-        
-        // Parse background mode setting
-        char* background_mode_line = strstr(config_content, "background_mode=");
-        if (background_mode_line) {
-            char* background_mode_value = background_mode_line + 16;
-            char* end = strchr(background_mode_value, '\n');
-            if (end) *end = '\0';
-            strncpy(config.background_mode, background_mode_value, 15);
-            config.background_mode[15] = '\0';
-        }
+    } else {
+        printf("CONFIG_load: Config file does not exist, using defaults\n");
     }
+    
+    printf("CONFIG_load: Final config - language=%s, theme=%s, font=%s, ui_mode=%s, background_mode=%s\n", 
+        config.language, config.theme, config.font, config.ui_mode, config.background_mode);
     
     config_loaded = 1;
 }
 
 void CONFIG_save(void) {
     // Create directory if it doesn't exist
-    system("mkdir -p /mnt/SDCARD/.userdata/shared");
+    char dir_path[256];
+    strncpy(dir_path, CONFIG_PATH, 255);
+    dir_path[255] = '\0';
+    
+    // Find the last '/' to get directory path
+    char* last_slash = strrchr(dir_path, '/');
+    if (last_slash) {
+        *last_slash = '\0'; // Remove filename, keep directory path
+        char mkdir_cmd[512];
+        sprintf(mkdir_cmd, "mkdir -p %s", dir_path);
+        system(mkdir_cmd);
+    }
     
     // Write all settings
     char config_content[512];
     sprintf(config_content, "language=%s\ntheme=%s\nfont=%s\nui_mode=%s\nbackground_mode=%s\n", 
         config.language, config.theme, config.font, config.ui_mode, config.background_mode);
+    
+    // Debug: Print config content to console
+    printf("CONFIG_save: Writing to %s\n", CONFIG_PATH);
+    printf("CONFIG_save: Content: %s", config_content);
+    
     putFile(CONFIG_PATH, config_content);
 }
 

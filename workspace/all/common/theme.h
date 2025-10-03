@@ -14,30 +14,12 @@ typedef struct Theme {
     SDL_Color accent;
 } Theme;
 
-// Get all available theme names
-const char** THEME_getAllNames(void);
-
-// Get theme count
-int THEME_getCount(void);
-
-// Get theme by name
-const Theme* THEME_getByName(const char* name);
-
-// Get theme by index
-const Theme* THEME_getByIndex(int index);
-
-// Get theme index by name
-int THEME_getIndexByName(const char* name);
-
-// Get theme name by index
-const char* THEME_getNameByIndex(int index);
-
-// Get current theme colors
-SDL_Color THEME_getForeground(const char* theme_name);
-SDL_Color THEME_getBackground(const char* theme_name);
-SDL_Color THEME_getAccent(const char* theme_name);
-
-// This function is no longer needed
+// Theme options for UI
+const char** THEME_getDisplayOptions(void);
+const char** THEME_getConfigValues(void);
+int THEME_getDisplayCount(void);
+int THEME_getDisplayIndex(const char* theme_name);
+const char* THEME_getDisplayName(int index);
 
 // Get current theme colors based on UI mode
 SDL_Color THEME_getCurrentForeground(void);

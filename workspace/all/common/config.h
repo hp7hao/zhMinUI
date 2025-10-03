@@ -17,7 +17,7 @@ const char* CONFIG_getLanguage(void);        // "English" or "中文"
 const char* CONFIG_getTheme(void);           // "Default", "Blue", "Green", "Purple", "Orange", "Red", "Cyan", "Pink", "Yellow", "Monochrome"
 const char* CONFIG_getFont(void);            // Font filename from res/fonts folder
 const char* CONFIG_getUIMode(void);          // "Dark" or "Light"
-const char* CONFIG_getBackgroundMode(void);  // "黑白" or "Theme"
+const char* CONFIG_getBackgroundMode(void);  // "Monochrome" or "Theme"
 
 // Setter functions
 void CONFIG_setLanguage(const char* value);
