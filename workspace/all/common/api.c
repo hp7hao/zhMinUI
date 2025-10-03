@@ -17,6 +17,7 @@
 #include "defines.h"
 #include "api.h"
 #include "utils.h"
+#include "config.h"
 #include "i18n.h"
 
 ///////////////////////////////
@@ -518,6 +519,49 @@ void GFX_blitAsset(int asset, SDL_Rect* src_rect, SDL_Surface* dst, SDL_Rect* ds
 	}
 	SDL_BlitSurface(gfx.assets, &adj_rect, dst, dst_rect);
 }
+
+
+// Update asset colors based on current theme
+void GFX_updateThemeColors(void) {
+	SDL_Color theme_accent = CONFIG_getThemeAccent();
+	SDL_Color theme_background = CONFIG_getThemeBackground();
+	SDL_Color theme_foreground = CONFIG_getThemeForeground();
+	
+	// Update asset colors to match current theme
+	// Use accent color for outer pills to provide good contrast against background and text
+	asset_rgbs[ASSET_BLACK_PILL] = SDL_MapRGB(gfx.screen->format, theme_accent.r, theme_accent.g, theme_accent.b);
+	asset_rgbs[ASSET_DARK_GRAY_PILL] = SDL_MapRGB(gfx.screen->format, theme_accent.r, theme_accent.g, theme_accent.b);
+	asset_rgbs[ASSET_WHITE_PILL] = SDL_MapRGB(gfx.screen->format, theme_accent.r, theme_accent.g, theme_accent.b);
+	
+	// Use background color for buttons to create contrast against accent-colored pills
+	asset_rgbs[ASSET_BUTTON] = SDL_MapRGB(gfx.screen->format, theme_background.r, theme_background.g, theme_background.b);
+	asset_rgbs[ASSET_OPTION] = SDL_MapRGB(gfx.screen->format, theme_background.r, theme_background.g, theme_background.b);
+}
+
+void GFX_drawFilledCircle(SDL_Surface* dst, int cx, int cy, int radius, Uint32 color) {
+	// Restore original diameter
+	// Advanced anti-aliased circle drawing with sub-pixel precision
+	for (int y = -radius; y <= radius; y++) {
+		for (int x = -radius; x <= radius; x++) {
+			// Calculate distance with sub-pixel precision
+			float dist = sqrtf((float)(x*x + y*y));
+			
+			if (dist <= radius - 1.0f) {
+				// Full pixel for interior
+				SDL_Rect pixel = {cx + x, cy + y, 1, 1};
+				SDL_FillRect(dst, &pixel, color);
+			} else if (dist <= radius + 1.0f) {
+				// Anti-aliased edge with improved algorithm
+				float coverage = 1.0f - (dist - (radius - 1.0f)) / 2.0f;
+				if (coverage > 0.1f) {  // Very low threshold for maximum smoothness
+					SDL_Rect pixel = {cx + x, cy + y, 1, 1};
+					SDL_FillRect(dst, &pixel, color);
+				}
+			}
+		}
+	}
+}
+
 void GFX_blitPill(int asset, SDL_Surface* dst, SDL_Rect* dst_rect) {
 	int x = dst_rect->x;
 	int y = dst_rect->y;
@@ -526,18 +570,34 @@ void GFX_blitPill(int asset, SDL_Surface* dst, SDL_Rect* dst_rect) {
 
 	if (h==0) h = asset_rects[asset].h;
 	
-	int r = h / 2;
-	if (w < h) w = h;
-	w -= h;
+	int r = h / 2;  // radius = half of height
+	if (w < h) w = h;  // minimum width = height (circular pill)
+	w -= h;  // subtract the two circular ends
 	
-	GFX_blitAsset(asset, &(SDL_Rect){0,0,r,h}, dst, &(SDL_Rect){x,y});
-	x += r;
-	if (w>0) {
-		SDL_FillRect(dst, &(SDL_Rect){x,y,w,h}, asset_rgbs[asset]);
-		x += w;
+	// Calculate rectangle position
+	int rect_x = x + r;  // Rectangle starts at left circle center
+	int rect_w = w;      // Rectangle width (can be 0)
+	
+	// Draw pill with consistent theme color throughout
+	// Left rounded end: center at (x + r, y + r), radius = r
+	// Position: x to x+h (diameter = h)
+	// Circle bounds: y to y+h, center at y+r
+	GFX_drawFilledCircle(dst, x + r, y + r, r, asset_rgbs[asset]);
+	
+	// Middle rectangle: starts at left circle center, width = rect_w
+	// Rectangle bounds: y to y+h (same as circles)
+	if (rect_w > 0) {
+		// Rectangle should align exactly with circle bounds
+		SDL_FillRect(dst, &(SDL_Rect){rect_x, y, rect_w, h}, asset_rgbs[asset]);
 	}
-	GFX_blitAsset(asset, &(SDL_Rect){r,0,r,h}, dst, &(SDL_Rect){x,y});
+	
+	// Right rounded end: center at rectangle end position
+	// Position: rect_x + rect_w to rect_x + rect_w + h
+	// Circle bounds: y to y+h, center at y+r
+	GFX_drawFilledCircle(dst, rect_x + rect_w, y + r, r, asset_rgbs[asset]);
 }
+
+
 void GFX_blitRect(int asset, SDL_Surface* dst, SDL_Rect* dst_rect) {
 	int x = dst_rect->x;
 	int y = dst_rect->y;

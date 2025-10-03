@@ -31,21 +31,60 @@
 #define RESUME_SLOT_PATH "/tmp/resume_slot.txt"
 #define NOUI_PATH "/tmp/noui"
 
-#define TRIAD_WHITE 		0xff,0xff,0xff
-#define TRIAD_BLACK 		0x00,0x00,0x00
-#define TRIAD_LIGHT_GRAY 	0x7f,0x7f,0x7f
-#define TRIAD_GRAY 			0x99,0x99,0x99
-#define TRIAD_DARK_GRAY 	0x26,0x26,0x26
+// ========================================
+// THEME-AWARE COLOR DEFINITIONS
+// ========================================
+// These definitions automatically use the current theme colors
+// For seamless integration with existing code that uses defines.h
 
-#define TRIAD_LIGHT_TEXT 	0xcc,0xcc,0xcc
-#define TRIAD_DARK_TEXT 	0x66,0x66,0x66
+// Include theme system for dynamic color access
+#include "theme.h"
+#include "config.h"
 
-#define COLOR_WHITE			(SDL_Color){TRIAD_WHITE}
-#define COLOR_GRAY			(SDL_Color){TRIAD_GRAY}
-#define COLOR_BLACK			(SDL_Color){TRIAD_BLACK}
-#define COLOR_LIGHT_TEXT	(SDL_Color){TRIAD_LIGHT_TEXT}
-#define COLOR_DARK_TEXT		(SDL_Color){TRIAD_DARK_TEXT}
-#define COLOR_BUTTON_TEXT	(SDL_Color){TRIAD_GRAY}
+// Theme-aware color definitions (automatically use current theme)
+#define COLOR_FOREGROUND		CONFIG_getThemeForeground()
+#define COLOR_BACKGROUND		CONFIG_getThemeBackground()
+#define COLOR_ACCENT			CONFIG_getThemeAccent()
+
+// Extended theme colors (calculated from current theme)
+#define COLOR_ACCENT_LIGHT		(SDL_Color){0xcc,0xcc,0xcc}  // Light accent for text
+#define COLOR_ACCENT_DARK		(SDL_Color){0x66,0x66,0x66}  // Dark accent for text
+#define COLOR_ACCENT_MEDIUM		(SDL_Color){0x7f,0x7f,0x7f}  // Medium accent
+#define COLOR_ACCENT_DARKER		(SDL_Color){0x26,0x26,0x26}  // Darker accent for UI elements
+
+// Legacy names for backward compatibility (now theme-aware)
+#define COLOR_WHITE			COLOR_FOREGROUND
+#define COLOR_BLACK			COLOR_BACKGROUND
+#define COLOR_GRAY			COLOR_ACCENT
+#define COLOR_LIGHT_GRAY	COLOR_ACCENT_LIGHT
+#define COLOR_DARK_GRAY		COLOR_ACCENT_DARK
+#define COLOR_DARKER_GRAY	COLOR_ACCENT_DARKER
+#define COLOR_LIGHT_TEXT	COLOR_ACCENT_LIGHT
+#define COLOR_DARK_TEXT		COLOR_ACCENT_DARK
+#define COLOR_BUTTON_TEXT	COLOR_ACCENT
+
+// Theme-aware RGB values with proper TRIAD gradient relationship
+#define COLOR_WHITE_RGB 		CONFIG_getThemeForeground().r,CONFIG_getThemeForeground().g,CONFIG_getThemeForeground().b
+#define COLOR_BLACK_RGB 		CONFIG_getThemeBackground().r,CONFIG_getThemeBackground().g,CONFIG_getThemeBackground().b
+#define COLOR_GRAY_RGB 			CONFIG_getThemeAccent().r,CONFIG_getThemeAccent().g,CONFIG_getThemeAccent().b
+
+// TRIAD gradient: Create proper light/dark variations of accent color
+#define COLOR_LIGHT_GRAY_RGB 	((CONFIG_getThemeForeground().r + CONFIG_getThemeAccent().r) / 2), \
+								((CONFIG_getThemeForeground().g + CONFIG_getThemeAccent().g) / 2), \
+								((CONFIG_getThemeForeground().b + CONFIG_getThemeAccent().b) / 2)
+#define COLOR_DARK_GRAY_RGB 	((CONFIG_getThemeAccent().r + CONFIG_getThemeBackground().r) / 2), \
+								((CONFIG_getThemeAccent().g + CONFIG_getThemeBackground().g) / 2), \
+								((CONFIG_getThemeAccent().b + CONFIG_getThemeBackground().b) / 2)
+#define COLOR_DARKER_GRAY_RGB 	((CONFIG_getThemeAccent().r * 2 + CONFIG_getThemeBackground().r) / 3), \
+								((CONFIG_getThemeAccent().g * 2 + CONFIG_getThemeBackground().g) / 3), \
+								((CONFIG_getThemeAccent().b * 2 + CONFIG_getThemeBackground().b) / 3)
+
+// TRIAD values for SDL_MapRGB usage (now theme-aware!)
+#define TRIAD_WHITE		COLOR_WHITE_RGB
+#define TRIAD_BLACK		COLOR_BLACK_RGB
+#define TRIAD_LIGHT_GRAY	COLOR_LIGHT_GRAY_RGB
+#define TRIAD_GRAY		COLOR_GRAY_RGB
+#define TRIAD_DARK_GRAY		COLOR_DARK_GRAY_RGB
 
 // all before scale
 #define PILL_SIZE 30

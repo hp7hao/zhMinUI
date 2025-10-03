@@ -10,6 +10,8 @@
 #include "api.h"
 #include "utils.h"
 #include "i18n.h"
+#include "config.h"
+#include "theme.h"
 
 ///////////////////////////////////////
 
@@ -1316,6 +1318,9 @@ int main (int argc, char *argv[]) {
 	SDL_Surface* screen = GFX_init(MODE_MAIN);
 	// LOG_info("- graphics init: %lu\n", SDL_GetTicks() - main_begin);
 	
+	// Initialize theme colors for assets
+	GFX_updateThemeColors();
+	
 	PAD_init();
 	// LOG_info("- input init: %lu\n", SDL_GetTicks() - main_begin);
 	
@@ -1337,6 +1342,54 @@ int main (int argc, char *argv[]) {
 	int show_version = 0;
 	int show_setting = 0; // 1=brightness,2=volume
 	int was_online = PLAT_isOnline();
+	
+	// Main menu variables
+	int show_main_menu = 0;
+	int main_menu_selected = 0;
+	const char* main_menu_items[] = {
+		N_("Settings"),
+		N_("Shutdown"),
+		NULL
+	};
+	const int main_menu_count = 2;
+	
+	// Settings menu variables
+	int show_settings_menu = 0;
+	int settings_menu_selected = 0;
+	int settings_menu_count = 2; // Language, Theme
+	
+	// Settings options
+	const char* settings_options[] = {
+		N_("Language"),
+		N_("Theme"),
+		NULL
+	};
+	
+	// Language options
+	const char* language_options[] = {
+		N_("English"),
+		N_("中文"),
+		NULL
+	};
+	
+	// Theme options - get from theme system
+	const char** theme_options = THEME_getAllNames();
+	
+	// MinUI settings (loaded from config module)
+	const char* current_language = CONFIG_getLanguage();
+	const char* current_theme = CONFIG_getTheme();
+	
+	// Convert to indices for UI display
+	int current_language_index = 0;
+	int current_theme_index = 0;
+	
+	// Map language names to indices
+	if (strcmp(current_language, "中文") == 0) current_language_index = 1;
+	
+	// Map theme names to indices using theme system
+	current_theme_index = THEME_getIndexByName(current_theme);
+	
+	// Accent color will be calculated inside the loop to ensure it's always current
 	
 	// LOG_info("- loop start: %lu\n", SDL_GetTicks() - main_begin);
 	while (!quit) {
@@ -1361,9 +1414,101 @@ int main (int argc, char *argv[]) {
 				if (!HAS_POWER_BUTTON && !simple_mode) PWR_disableSleep();
 			}
 		}
+		else if (show_main_menu) {
+			// Handle main menu navigation
+			if (PAD_justRepeated(BTN_UP)) {
+				main_menu_selected = (main_menu_selected - 1 + main_menu_count) % main_menu_count;
+				dirty = 1;
+			}
+			else if (PAD_justRepeated(BTN_DOWN)) {
+				main_menu_selected = (main_menu_selected + 1) % main_menu_count;
+				dirty = 1;
+			}
+			else if (PAD_justPressed(BTN_A)) {
+				// Handle menu selection
+				switch (main_menu_selected) {
+					case 0: // Settings
+						show_main_menu = 0;
+						show_settings_menu = 1;
+						settings_menu_selected = 0;
+						dirty = 1;
+						break;
+					case 1: // Shutdown
+						PWR_powerOff();
+						break;
+				}
+			}
+			else if (PAD_justPressed(BTN_B) || PAD_tappedMenu(now)) {
+				show_main_menu = 0;
+				dirty = 1;
+				if (!HAS_POWER_BUTTON && !simple_mode) PWR_disableSleep();
+			}
+		}
+		else if (show_settings_menu) {
+			// Handle settings menu navigation
+			if (PAD_justRepeated(BTN_UP)) {
+				settings_menu_selected = (settings_menu_selected - 1 + settings_menu_count) % settings_menu_count;
+				dirty = 1;
+			}
+			else if (PAD_justRepeated(BTN_DOWN)) {
+				settings_menu_selected = (settings_menu_selected + 1) % settings_menu_count;
+				dirty = 1;
+			}
+			else if (PAD_justRepeated(BTN_LEFT)) {
+				// Decrease current value
+				switch (settings_menu_selected) {
+					case 0: // Language
+						current_language_index = (current_language_index - 1 + 2) % 2;
+						{
+							const char* languages[] = {"English", "中文"};
+							CONFIG_setLanguage(languages[current_language_index]);
+							I18N_updateLanguage(languages[current_language_index]);
+						}
+						break;
+					case 1: // Theme
+						current_theme_index = (current_theme_index - 1 + THEME_getCount()) % THEME_getCount();
+						{
+							const char* theme_name = THEME_getNameByIndex(current_theme_index);
+							CONFIG_setTheme(theme_name);
+							GFX_updateThemeColors(); // Update asset colors for new theme
+						}
+						break;
+				}
+				dirty = 1;
+			}
+			else if (PAD_justRepeated(BTN_RIGHT)) {
+				// Increase current value
+				switch (settings_menu_selected) {
+					case 0: // Language
+						current_language_index = (current_language_index + 1) % 2;
+						{
+							const char* languages[] = {"English", "中文"};
+							CONFIG_setLanguage(languages[current_language_index]);
+							I18N_updateLanguage(languages[current_language_index]);
+						}
+						break;
+					case 1: // Theme
+						current_theme_index = (current_theme_index + 1) % THEME_getCount();
+						{
+							const char* theme_name = THEME_getNameByIndex(current_theme_index);
+							CONFIG_setTheme(theme_name);
+							GFX_updateThemeColors(); // Update asset colors for new theme
+						}
+						break;
+				}
+				dirty = 1;
+			}
+			else if (PAD_justPressed(BTN_B) || PAD_tappedMenu(now)) {
+				show_settings_menu = 0;
+				show_main_menu = 1;
+				main_menu_selected = 0;
+				dirty = 1;
+			}
+		}
 		else {
 			if (PAD_tappedMenu(now)) {
-				show_version = 1;
+				show_main_menu = 1;
+				main_menu_selected = 0;
 				dirty = 1;
 				if (!HAS_POWER_BUTTON && !simple_mode) PWR_enableSleep();
 			}
@@ -1496,7 +1641,7 @@ int main (int argc, char *argv[]) {
 			// simple thumbnail support a thumbnail for a file or folder named NAME.EXT needs a corresponding /.res/NAME.EXT.png 
 			// that is no bigger than platform FIXED_HEIGHT x FIXED_HEIGHT
 			int had_thumb = 0;
-			if (!show_version && total>0) {
+			if (!show_version && !show_main_menu && !show_settings_menu && total>0) {
 				Entry* entry = top->entries->items[top->selected];
 				char res_path[MAX_PATH];
 				
@@ -1524,7 +1669,127 @@ int main (int argc, char *argv[]) {
 			
 			int ow = GFX_blitHardwareGroup(screen, show_setting);
 			
-			if (show_version) {
+			if (show_main_menu) {
+				
+				
+				// Render main menu using system's menu approach
+				int menu_x = (screen->w - SCALE1(200)) / 2;
+				int menu_y = (screen->h - SCALE1(main_menu_count * PILL_SIZE + PADDING * 2)) / 2;
+				int menu_w = SCALE1(200);
+				
+				// Draw menu items using system's pill approach
+				for (int i = 0; i < main_menu_count; i++) {
+					int item_y = menu_y + SCALE1(PADDING) + i * SCALE1(PILL_SIZE);
+					char* item = _(main_menu_items[i]);
+					SDL_Color text_color = COLOR_WHITE;
+					
+					// Calculate text width for proper pill sizing
+					int text_width = 0;
+					TTF_SizeUTF8(font.large, item, &text_width, NULL);
+					int pill_width = text_width + SCALE1(BUTTON_PADDING * 2);
+					
+					if (i == main_menu_selected) {
+						// Draw selected pill using theme accent color
+						GFX_blitPill(ASSET_WHITE_PILL, screen, &(SDL_Rect){
+							menu_x + (menu_w - pill_width) / 2,
+							item_y,
+							pill_width,
+							SCALE1(PILL_SIZE)
+						});
+						text_color = COLOR_BLACK; // Use background color for text on accent
+					}
+					else {
+						// Draw shadow for unselected items
+						SDL_Surface* shadow_text = TTF_RenderUTF8_Blended(font.large, item, COLOR_BLACK);
+						SDL_BlitSurface(shadow_text, NULL, screen, &(SDL_Rect){
+							menu_x + (menu_w - shadow_text->w) / 2 + SCALE1(2),
+							item_y + SCALE1(4) + SCALE1(1)
+						});
+						SDL_FreeSurface(shadow_text);
+					}
+					
+					// Draw item text
+					SDL_Color text_color_final = (i == main_menu_selected) ? COLOR_BLACK : COLOR_WHITE;
+					SDL_Surface* item_text = TTF_RenderUTF8_Blended(font.large, item, text_color_final);
+					SDL_BlitSurface(item_text, NULL, screen, &(SDL_Rect){
+						menu_x + (menu_w - item_text->w) / 2,
+						item_y + SCALE1(4)
+					});
+					SDL_FreeSurface(item_text);
+				}
+			}
+			else if (show_settings_menu) {
+				
+				
+				// Render settings menu using system's menu approach
+				int menu_x = (screen->w - SCALE1(300)) / 2;
+				int menu_y = (screen->h - SCALE1(settings_menu_count * PILL_SIZE + PADDING * 2)) / 2;
+				int menu_w = SCALE1(300);
+				
+				
+				// Draw menu items using system's pill approach
+				for (int i = 0; i < settings_menu_count; i++) {
+					int item_y = menu_y + SCALE1(PADDING) + i * SCALE1(PILL_SIZE);
+					char* item = _(settings_options[i]);
+					SDL_Color text_color = COLOR_WHITE;
+					
+					// Get current value for this option
+					char value_text[64];
+					switch (i) {
+						case 0: // Language
+							sprintf(value_text, "%s", _(language_options[current_language_index]));
+							break;
+						case 1: // Theme
+							sprintf(value_text, "%s", _(theme_options[current_theme_index]));
+							break;
+					}
+					
+					// Calculate text width for proper pill sizing
+					int text_width = 0;
+					TTF_SizeUTF8(font.small, item, &text_width, NULL);
+					int value_width = 0;
+					TTF_SizeUTF8(font.small, value_text, &value_width, NULL);
+					int pill_width = text_width + value_width + SCALE1(BUTTON_PADDING * 3);
+					
+					if (i == settings_menu_selected) {
+						// Draw selected pill using theme accent color
+						GFX_blitPill(ASSET_WHITE_PILL, screen, &(SDL_Rect){
+							menu_x + (menu_w - pill_width) / 2,
+							item_y,
+							pill_width,
+							SCALE1(PILL_SIZE)
+						});
+						text_color = COLOR_BLACK; // Use background color for text on accent
+					}
+					else {
+						// Draw shadow for unselected items
+						SDL_Surface* shadow_text = TTF_RenderUTF8_Blended(font.small, item, COLOR_BLACK);
+						SDL_BlitSurface(shadow_text, NULL, screen, &(SDL_Rect){
+							menu_x + (menu_w - shadow_text->w) / 2 + SCALE1(2),
+							item_y + SCALE1(4) + SCALE1(1)
+						});
+						SDL_FreeSurface(shadow_text);
+					}
+					
+					// Draw item text
+					SDL_Color text_color_final = (i == settings_menu_selected) ? COLOR_BLACK : COLOR_WHITE;
+					SDL_Surface* item_text = TTF_RenderUTF8_Blended(font.small, item, text_color_final);
+					SDL_BlitSurface(item_text, NULL, screen, &(SDL_Rect){
+						menu_x + (menu_w - pill_width) / 2 + SCALE1(BUTTON_PADDING),
+						item_y + SCALE1(4)
+					});
+					SDL_FreeSurface(item_text);
+					
+					// Draw value text
+					SDL_Surface* value_surface = TTF_RenderUTF8_Blended(font.small, value_text, text_color_final);
+					SDL_BlitSurface(value_surface, NULL, screen, &(SDL_Rect){
+						menu_x + (menu_w - pill_width) / 2 + SCALE1(BUTTON_PADDING) + text_width + SCALE1(BUTTON_PADDING),
+						item_y + SCALE1(4)
+					});
+					SDL_FreeSurface(value_surface);
+				}
+			}
+			else if (show_version) {
 				if (!version) {
 					char release[256];
 					getFile(ROOT_SYSTEM_PATH "/version.txt", release, 256);

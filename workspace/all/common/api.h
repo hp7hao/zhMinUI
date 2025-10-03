@@ -183,6 +183,8 @@ void GFX_freeAAScaler(void);
 // NOTE: all dimensions should be pre-scaled
 void GFX_blitAsset(int asset, SDL_Rect* src_rect, SDL_Surface* dst, SDL_Rect* dst_rect);
 void GFX_blitPill(int asset, SDL_Surface* dst, SDL_Rect* dst_rect);
+void GFX_drawFilledCircle(SDL_Surface* dst, int cx, int cy, int radius, Uint32 color);
+void GFX_updateThemeColors(void);
 void GFX_blitRect(int asset, SDL_Surface* dst, SDL_Rect* dst_rect);
 void GFX_blitBattery(SDL_Surface* dst, SDL_Rect* dst_rect);
 int GFX_getButtonWidth(char* hint, char* button);

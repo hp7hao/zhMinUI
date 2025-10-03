@@ -18,6 +18,7 @@
 #include "api.h"
 #include "utils.h"
 #include "scaler.h"
+#include "config.h"
 #include "i18n.h"
 
 ///////////////////////////////////////
@@ -4659,8 +4660,14 @@ static void* coreThread(void *arg) {
 int main(int argc , char* argv[]) {
 	LOG_info("MinArch\n");
 
-	// Initialize i18n
+	// Initialize i18n (automatically loads language from config)
 	I18N_init();
+	
+	// Example: Get accent color from config for UI theming
+	// int accent_color = CONFIG_getAccentColor();
+	// int custom_r = CONFIG_getCustomR();
+	// int custom_g = CONFIG_getCustomG();
+	// int custom_b = CONFIG_getCustomB();
 
 	setOverclock(overclock); // default to normal
 	// force a stack overflow to ensure asan is linked and actually working
@@ -4678,6 +4685,10 @@ int main(int argc , char* argv[]) {
 	LOG_info("rom_path: %s\n", rom_path);
 
 	screen = GFX_init(MODE_MENU);
+	
+	// Initialize theme colors for assets
+	GFX_updateThemeColors();
+	
 	PAD_init();
 	DEVICE_WIDTH = screen->w;
 	DEVICE_HEIGHT = screen->h;

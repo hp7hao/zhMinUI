@@ -11,5 +11,6 @@
 #define N_(STRING) STRING
 
 void I18N_init(void);
+void I18N_updateLanguage(const char* language_name);
 
 #endif
