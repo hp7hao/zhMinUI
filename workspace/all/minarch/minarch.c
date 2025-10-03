@@ -3772,7 +3772,7 @@ static int Menu_options(MenuList* list) {
 					int ox = (screen->w - item_width) / 2; // Center each item individually
 					
 					if (j==selected_row) {
-						GFX_blitPill(ASSET_BUTTON, screen, &(SDL_Rect){
+						GFX_blitPill(ASSET_WHITE_PILL, screen, &(SDL_Rect){
 							ox,
 							oy+SCALE1(j*BUTTON_SIZE),
 							item_width,
@@ -3805,7 +3805,7 @@ static int Menu_options(MenuList* list) {
 					SDL_Color text_color = COLOR_WHITE;
 
 					if (j==selected_row) {
-						// gray pill
+						// gray pill background
 						GFX_blitPill(ASSET_OPTION, screen, &(SDL_Rect){
 							ox,
 							oy+SCALE1(j*BUTTON_SIZE),
@@ -3825,11 +3825,11 @@ static int Menu_options(MenuList* list) {
 					
 					// TODO: blit a black pill on unselected rows (to cover longer item->values?) or truncate longer item->values?
 					if (j==selected_row) {
-						// white pill
+						// white pill for selected item name
 						int w = 0;
 						TTF_SizeUTF8(font.small, item->name, &w, NULL);
 						w += SCALE1(OPTION_PADDING*2);
-						GFX_blitPill(ASSET_BUTTON, screen, &(SDL_Rect){
+						GFX_blitPill(ASSET_WHITE_PILL, screen, &(SDL_Rect){
 							ox,
 							oy+SCALE1(j*BUTTON_SIZE),
 							w,
@@ -3886,7 +3886,7 @@ static int Menu_options(MenuList* list) {
 					MenuItem* item = &items[i];
 					SDL_Color text_color = COLOR_WHITE;
 					if (j==selected_row) {
-						// gray pill
+						// gray pill background
 						GFX_blitPill(ASSET_OPTION, screen, &(SDL_Rect){
 							ox,
 							oy+SCALE1(j*BUTTON_SIZE),
@@ -3894,11 +3894,11 @@ static int Menu_options(MenuList* list) {
 							SCALE1(BUTTON_SIZE)
 						});
 						
-						// white pill
+						// white pill for selected item name
 						int w = 0;
 						TTF_SizeUTF8(font.small, item->name, &w, NULL);
 						w += SCALE1(OPTION_PADDING*2);
-						GFX_blitPill(ASSET_BUTTON, screen, &(SDL_Rect){
+						GFX_blitPill(ASSET_WHITE_PILL, screen, &(SDL_Rect){
 							ox,
 							oy+SCALE1(j*BUTTON_SIZE),
 							w,
