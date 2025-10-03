@@ -12,6 +12,7 @@
 #include "i18n.h"
 #include "config.h"
 #include "theme.h"
+#include "font.h"
 
 ///////////////////////////////////////
 
@@ -1356,12 +1357,13 @@ int main (int argc, char *argv[]) {
 	// Settings menu variables
 	int show_settings_menu = 0;
 	int settings_menu_selected = 0;
-	int settings_menu_count = 2; // Language, Theme
+	int settings_menu_count = 3; // Language, Theme, Font
 	
 	// Settings options
 	const char* settings_options[] = {
 		N_("Language"),
 		N_("Theme"),
+		N_("Font"),
 		NULL
 	};
 	
@@ -1375,19 +1377,37 @@ int main (int argc, char *argv[]) {
 	// Theme options - get from theme system
 	const char** theme_options = THEME_getAllNames();
 	
+	// Font options - get from font system
+	int font_count = FONT_getCount();
+	const char** font_options = malloc((font_count + 1) * sizeof(char*));
+	for (int i = 0; i < font_count; i++) {
+		font_options[i] = FONT_getName(i);
+	}
+	font_options[font_count] = NULL;
+	
 	// MinUI settings (loaded from config module)
 	const char* current_language = CONFIG_getLanguage();
 	const char* current_theme = CONFIG_getTheme();
+	const char* current_font = CONFIG_getFont();
 	
 	// Convert to indices for UI display
 	int current_language_index = 0;
 	int current_theme_index = 0;
+	int current_font_index = 0;
 	
 	// Map language names to indices
 	if (strcmp(current_language, "中文") == 0) current_language_index = 1;
 	
 	// Map theme names to indices using theme system
 	current_theme_index = THEME_getIndexByName(current_theme);
+	
+	// Map font names to indices
+	for (int i = 0; i < font_count; i++) {
+		if (strcmp(current_font, FONT_getName(i)) == 0) {
+			current_font_index = i;
+			break;
+		}
+	}
 	
 	// Accent color will be calculated inside the loop to ensure it's always current
 	
@@ -1473,6 +1493,14 @@ int main (int argc, char *argv[]) {
 							GFX_updateThemeColors(); // Update asset colors for new theme
 						}
 						break;
+					case 2: // Font
+						current_font_index = (current_font_index - 1 + font_count) % font_count;
+						{
+							const char* font_name = FONT_getName(current_font_index);
+							CONFIG_setFont(font_name);
+							FONT_reloadFonts(); // Reload fonts with new font
+						}
+						break;
 				}
 				dirty = 1;
 			}
@@ -1493,6 +1521,14 @@ int main (int argc, char *argv[]) {
 							const char* theme_name = THEME_getNameByIndex(current_theme_index);
 							CONFIG_setTheme(theme_name);
 							GFX_updateThemeColors(); // Update asset colors for new theme
+						}
+						break;
+					case 2: // Font
+						current_font_index = (current_font_index + 1) % font_count;
+						{
+							const char* font_name = FONT_getName(current_font_index);
+							CONFIG_setFont(font_name);
+							FONT_reloadFonts(); // Reload fonts with new font
 						}
 						break;
 				}
@@ -1741,6 +1777,9 @@ int main (int argc, char *argv[]) {
 							break;
 						case 1: // Theme
 							sprintf(value_text, "%s", _(theme_options[current_theme_index]));
+							break;
+						case 2: // Font
+							sprintf(value_text, "%s", font_options[current_font_index]);
 							break;
 					}
 					

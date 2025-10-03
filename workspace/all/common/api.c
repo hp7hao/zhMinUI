@@ -7,6 +7,7 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <pthread.h>
+#include "font.h"
 
 #include <errno.h>
 #include <stdbool.h>
@@ -154,15 +155,7 @@ SDL_Surface* GFX_init(int mode) {
 	gfx.assets = IMG_Load(asset_path);
 	
 	TTF_Init();
-	font.large 	= TTF_OpenFont(FONT_PATH, SCALE1(FONT_LARGE));
-	font.medium = TTF_OpenFont(FONT_PATH, SCALE1(FONT_MEDIUM));
-	font.small 	= TTF_OpenFont(FONT_PATH, SCALE1(FONT_SMALL));
-	font.tiny 	= TTF_OpenFont(FONT_PATH, SCALE1(FONT_TINY));
-	
-	TTF_SetFontStyle(font.large, TTF_STYLE_NORMAL);
-	TTF_SetFontStyle(font.medium, TTF_STYLE_NORMAL);
-	TTF_SetFontStyle(font.small, TTF_STYLE_NORMAL);
-	TTF_SetFontStyle(font.tiny, TTF_STYLE_NORMAL);
+	FONT_reloadFonts();
 	
 	return gfx.screen;
 }

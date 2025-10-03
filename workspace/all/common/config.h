@@ -15,13 +15,15 @@ void CONFIG_save(void);
 // Getter functions
 const char* CONFIG_getLanguage(void);        // "English" or "中文"
 const char* CONFIG_getTheme(void);           // "Default", "Blue", "Green", "Purple", "Orange", "Red", "Cyan", "Pink", "Yellow", "Monochrome"
+const char* CONFIG_getFont(void);            // Font filename from res/fonts folder
 
 // Setter functions
 void CONFIG_setLanguage(const char* value);
 void CONFIG_setTheme(const char* value);
+void CONFIG_setFont(const char* value);
 
 // Update multiple settings at once (for efficiency)
-void CONFIG_update(const char* language, const char* theme);
+void CONFIG_update(const char* language, const char* theme, const char* font);
 
 // Get current theme colors
 SDL_Color CONFIG_getThemeForeground(void);
