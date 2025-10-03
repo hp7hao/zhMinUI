@@ -3532,22 +3532,22 @@ static int OptionSaveChanges_onConfirm(MenuList* list, int i) {
 	switch (i) {
 		case 0: {
 			Config_write(CONFIG_WRITE_ALL);
-			message = "Saved for console.";
+			message = _("Saved for console.");
 			break;
 		}
 		case 1: {
 			Config_write(CONFIG_WRITE_GAME);
-			message = "Saved for game.";
+			message = _("Saved for game.");
 			break;
 		}
 		default: {
 			Config_restore();
-			if (config.loaded) message = "Restored console defaults.";
-			else message = "Restored defaults.";
+			if (config.loaded) message = _("Restored console defaults.");
+			else message = _("Restored defaults.");
 			break;
 		}
 	}
-	Menu_message(message, (char*[]){ "A","OKAY", NULL });
+	Menu_message(message, (char*[]){ "A",_("OKAY"), NULL });
 	OptionSaveChanges_updateDesc();
 	return MENU_CALLBACK_EXIT;
 }
@@ -3765,9 +3765,9 @@ static int Menu_options(MenuList* list) {
 					MenuItem* item = &items[i];
 					SDL_Color text_color = COLOR_WHITE;
 
-					// Calculate individual text width for each item
-					int text_width = 0;
-					TTF_SizeUTF8(font.small, _(item->name), &text_width, NULL);
+					// Render text first to get actual width
+					text = TTF_RenderUTF8_Blended(font.small, _(item->name), text_color);
+					int text_width = text->w;
 					int item_width = text_width + SCALE1(OPTION_PADDING*2);
 					int ox = (screen->w - item_width) / 2; // Center each item individually
 					
@@ -3781,8 +3781,12 @@ static int Menu_options(MenuList* list) {
 						text_color = COLOR_BLACK;
 						
 						if (item->desc) desc = item->desc;
+						
+						// Re-render text with new color after pill is drawn
+						SDL_FreeSurface(text);
+						text = TTF_RenderUTF8_Blended(font.small, _(item->name), text_color);
 					}
-					text = TTF_RenderUTF8_Blended(font.small, _(item->name), text_color);
+					
 					SDL_BlitSurface(text, NULL, screen, &(SDL_Rect){
 						ox+SCALE1(OPTION_PADDING),
 						oy+SCALE1(j*BUTTON_SIZE) + GFX_getTextVerticalCenter(text, SCALE1(BUTTON_SIZE))
@@ -3825,10 +3829,9 @@ static int Menu_options(MenuList* list) {
 					
 					// TODO: blit a black pill on unselected rows (to cover longer item->values?) or truncate longer item->values?
 					if (j==selected_row) {
-						// white pill for selected item name
-						int w = 0;
-						TTF_SizeUTF8(font.small, item->name, &w, NULL);
-						w += SCALE1(OPTION_PADDING*2);
+						// Render text first to get actual width for pill sizing
+						text = TTF_RenderUTF8_Blended(font.small, _(item->name), text_color);
+						int w = text->w + SCALE1(OPTION_PADDING*2);
 						GFX_blitPill(ASSET_WHITE_PILL, screen, &(SDL_Rect){
 							ox,
 							oy+SCALE1(j*BUTTON_SIZE),
@@ -3838,8 +3841,15 @@ static int Menu_options(MenuList* list) {
 						text_color = COLOR_BLACK;
 						
 						if (item->desc) desc = item->desc;
+						
+						// Re-render text with new color after pill is drawn
+						SDL_FreeSurface(text);
+						text = TTF_RenderUTF8_Blended(font.small, _(item->name), text_color);
 					}
-					text = TTF_RenderUTF8_Blended(font.small, _(item->name), text_color);
+					else {
+						text = TTF_RenderUTF8_Blended(font.small, _(item->name), text_color);
+					}
+					
 					SDL_BlitSurface(text, NULL, screen, &(SDL_Rect){
 						ox+SCALE1(OPTION_PADDING),
 						oy+SCALE1(j*BUTTON_SIZE) + GFX_getTextVerticalCenter(text, SCALE1(BUTTON_SIZE))
@@ -3894,10 +3904,9 @@ static int Menu_options(MenuList* list) {
 							SCALE1(BUTTON_SIZE)
 						});
 						
-						// white pill for selected item name
-						int w = 0;
-						TTF_SizeUTF8(font.small, item->name, &w, NULL);
-						w += SCALE1(OPTION_PADDING*2);
+						// Render text first to get actual width for pill sizing
+						text = TTF_RenderUTF8_Blended(font.small, _(item->name), text_color);
+						int w = text->w + SCALE1(OPTION_PADDING*2);
 						GFX_blitPill(ASSET_WHITE_PILL, screen, &(SDL_Rect){
 							ox,
 							oy+SCALE1(j*BUTTON_SIZE),
@@ -3907,8 +3916,15 @@ static int Menu_options(MenuList* list) {
 						text_color = COLOR_BLACK;
 						
 						if (item->desc) desc = item->desc;
+						
+						// Re-render text with new color after pill is drawn
+						SDL_FreeSurface(text);
+						text = TTF_RenderUTF8_Blended(font.small, _(item->name), text_color);
 					}
-					text = TTF_RenderUTF8_Blended(font.small, _(item->name), text_color);
+					else {
+						text = TTF_RenderUTF8_Blended(font.small, _(item->name), text_color);
+					}
+					
 					SDL_BlitSurface(text, NULL, screen, &(SDL_Rect){
 						ox+SCALE1(OPTION_PADDING),
 						oy+SCALE1(j*BUTTON_SIZE) + GFX_getTextVerticalCenter(text, SCALE1(BUTTON_SIZE))

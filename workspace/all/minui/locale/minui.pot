@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-03 06:33-0400\n"
+"POT-Creation-Date: 2025-10-03 06:57-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -38,7 +38,7 @@ msgid "BRIGHTNESS"
 msgstr ""
 
 #: ../../common/api.c:844 ../../minui/minui.c:1951 ../../minui/minui.c:2022
-#: ../../minarch/minarch.c:4423 ../../minput/minput.c:215
+#: ../../minarch/minarch.c:4439 ../../minput/minput.c:215
 msgid "MENU"
 msgstr ""
 
@@ -159,17 +159,17 @@ msgid "Commit"
 msgstr ""
 
 #: ../../minui/minui.c:1951 ../../minui/minui.c:2022
-#: ../../minarch/minarch.c:4423 ../../minput/minput.c:219
+#: ../../minarch/minarch.c:4439 ../../minput/minput.c:219
 msgid "POWER"
 msgstr ""
 
 #: ../../minui/minui.c:1951 ../../minui/minui.c:2023
-#: ../../minarch/minarch.c:4423
+#: ../../minarch/minarch.c:4439
 msgid "SLEEP"
 msgstr ""
 
 #: ../../minui/minui.c:1953 ../../minui/minui.c:2028 ../../minui/minui.c:2033
-#: ../../minarch/minarch.c:4424
+#: ../../minarch/minarch.c:4440
 msgid "BACK"
 msgstr ""
 
@@ -632,6 +632,26 @@ msgstr ""
 msgid "Using game config."
 msgstr ""
 
+#: ../../minarch/minarch.c:3535
+msgid "Saved for console."
+msgstr ""
+
+#: ../../minarch/minarch.c:3540
+msgid "Saved for game."
+msgstr ""
+
+#: ../../minarch/minarch.c:3545
+msgid "Restored console defaults."
+msgstr ""
+
+#: ../../minarch/minarch.c:3546
+msgid "Restored defaults."
+msgstr ""
+
+#: ../../minarch/minarch.c:3550 ../../minarch/minarch.c:4440
+msgid "OKAY"
+msgstr ""
+
 #: ../../minarch/minarch.c:3558
 msgid "Save for console"
 msgstr ""
@@ -662,10 +682,6 @@ msgstr ""
 
 #: ../../minarch/minarch.c:3583
 msgid "Save Changes"
-msgstr ""
-
-#: ../../minarch/minarch.c:4424
-msgid "OKAY"
 msgstr ""
 
 #: ../../clock/clock.c:292

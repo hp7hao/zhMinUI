@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: MinUI\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-03 06:33-0400\n"
+"POT-Creation-Date: 2025-10-03 06:55-0400\n"
 "PO-Revision-Date: 2025-10-01 12:00+0800\n"
 "Last-Translator: \n"
 "Language-Team: Chinese (Simplified)\n"
@@ -36,7 +36,7 @@ msgid "BRIGHTNESS"
 msgstr "亮度"
 
 #: ../../common/api.c:844 ../../minui/minui.c:1951 ../../minui/minui.c:2022
-#: ../../minarch/minarch.c:4423 ../../minput/minput.c:215
+#: ../../minarch/minarch.c:4439 ../../minput/minput.c:215
 msgid "MENU"
 msgstr "菜单"
 
@@ -161,17 +161,17 @@ msgid "Commit"
 msgstr "提交"
 
 #: ../../minui/minui.c:1951 ../../minui/minui.c:2022
-#: ../../minarch/minarch.c:4423 ../../minput/minput.c:219
+#: ../../minarch/minarch.c:4439 ../../minput/minput.c:219
 msgid "POWER"
 msgstr "电源"
 
 #: ../../minui/minui.c:1951 ../../minui/minui.c:2023
-#: ../../minarch/minarch.c:4423
+#: ../../minarch/minarch.c:4439
 msgid "SLEEP"
 msgstr "休眠"
 
 #: ../../minui/minui.c:1953 ../../minui/minui.c:2028 ../../minui/minui.c:2033
-#: ../../minarch/minarch.c:4424
+#: ../../minarch/minarch.c:4440
 msgid "BACK"
 msgstr "返回"
 
@@ -661,6 +661,26 @@ msgstr "使用平台默认设置"
 msgid "Using game config."
 msgstr "使用游戏默认设置"
 
+#: ../../minarch/minarch.c:3535
+msgid "Saved for console."
+msgstr "已保存为平台设置"
+
+#: ../../minarch/minarch.c:3540
+msgid "Saved for game."
+msgstr "已保存为游戏设置"
+
+#: ../../minarch/minarch.c:3545
+msgid "Restored console defaults."
+msgstr "已恢复平台默认设置"
+
+#: ../../minarch/minarch.c:3546
+msgid "Restored defaults."
+msgstr "已恢复默认设置"
+
+#: ../../minarch/minarch.c:3550 ../../minarch/minarch.c:4440
+msgid "OKAY"
+msgstr "确定"
+
 #: ../../minarch/minarch.c:3558
 msgid "Save for console"
 msgstr "保存为平台设置"
@@ -671,7 +691,7 @@ msgstr "保存为游戏设置"
 
 #: ../../minarch/minarch.c:3560
 msgid "Restore defaults"
-msgstr "恢复默认"
+msgstr "恢复默认设置"
 
 #: ../../minarch/minarch.c:3579
 msgid "Frontend"
@@ -692,10 +712,6 @@ msgstr "快捷键"
 #: ../../minarch/minarch.c:3583
 msgid "Save Changes"
 msgstr "保存更改"
-
-#: ../../minarch/minarch.c:4424
-msgid "OKAY"
-msgstr "确定"
 
 #: ../../clock/clock.c:292
 msgid "AM"
