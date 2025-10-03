@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: MinUI\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-03 00:00-0400\n"
+"POT-Creation-Date: 2025-10-03 01:18-0400\n"
 "PO-Revision-Date: 2025-10-01 12:00+0800\n"
 "Last-Translator: \n"
 "Language-Team: Chinese (Simplified)\n"
@@ -35,7 +35,7 @@ msgstr "开始"
 msgid "BRIGHTNESS"
 msgstr "亮度"
 
-#: ../../common/api.c:839 ../../minui/minui.c:1891 ../../minui/minui.c:1962
+#: ../../common/api.c:839 ../../minui/minui.c:1960 ../../minui/minui.c:2031
 #: ../../minarch/minarch.c:4421 ../../minput/minput.c:215
 msgid "MENU"
 msgstr "菜单"
@@ -77,61 +77,81 @@ msgid "Language"
 msgstr "语言"
 
 #: ../../minui/minui.c:1365
+msgid "UI Mode"
+msgstr "界面模式"
+
+#: ../../minui/minui.c:1366 ../../minui/minui.c:1400
 msgid "Theme"
 msgstr "主题"
 
-#: ../../minui/minui.c:1366
+#: ../../minui/minui.c:1367
+msgid "Background Mode"
+msgstr "背景模式"
+
+#: ../../minui/minui.c:1368
 msgid "Font"
 msgstr "字体"
 
-#: ../../minui/minui.c:1372
+#: ../../minui/minui.c:1374
 msgid "English"
 msgstr "English"
 
-#: ../../minui/minui.c:1373
+#: ../../minui/minui.c:1375
 msgid "中文"
 msgstr "中文"
 
-#: ../../minui/minui.c:1844
+#: ../../minui/minui.c:1392
+msgid "Dark"
+msgstr "深色"
+
+#: ../../minui/minui.c:1393
+msgid "Light"
+msgstr "浅色"
+
+#: ../../minui/minui.c:1399
+msgid "黑白"
+msgstr ""
+
+#: ../../minui/minui.c:1913
 msgid "Model"
 msgstr "型号"
 
-#: ../../minui/minui.c:1847
+#: ../../minui/minui.c:1916
 msgid "Release"
 msgstr "版本"
 
-#: ../../minui/minui.c:1849
+#: ../../minui/minui.c:1918
 msgid "Commit"
 msgstr "提交"
 
-#: ../../minui/minui.c:1891 ../../minui/minui.c:1962
+#: ../../minui/minui.c:1960 ../../minui/minui.c:2031
 #: ../../minarch/minarch.c:4421 ../../minput/minput.c:219
 msgid "POWER"
 msgstr "电源"
 
-#: ../../minui/minui.c:1891 ../../minui/minui.c:1963
+#: ../../minui/minui.c:1960 ../../minui/minui.c:2032
 #: ../../minarch/minarch.c:4421
 msgid "SLEEP"
 msgstr "休眠"
 
-#: ../../minui/minui.c:1893 ../../minui/minui.c:1968 ../../minui/minui.c:1973
+#: ../../minui/minui.c:1962 ../../minui/minui.c:2037 ../../minui/minui.c:2042
 #: ../../minarch/minarch.c:4422
 msgid "BACK"
 msgstr "返回"
 
-#: ../../minui/minui.c:1955
+#: ../../minui/minui.c:2024
 msgid "Empty folder"
 msgstr "空文件夹"
 
-#: ../../minui/minui.c:1960
+#: ../../minui/minui.c:2029
 msgid "RESUME"
 msgstr "继续"
 
-#: ../../minui/minui.c:1963
+#: ../../minui/minui.c:2032
 msgid "INFO"
 msgstr "信息"
 
-#: ../../minui/minui.c:1973 ../../minui/minui.c:1976
+#: ../../minui/minui.c:2042 ../../minui/minui.c:2045
 msgid "OPEN"
 msgstr "打开"
 

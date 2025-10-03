@@ -37,4 +37,11 @@ SDL_Color THEME_getForeground(const char* theme_name);
 SDL_Color THEME_getBackground(const char* theme_name);
 SDL_Color THEME_getAccent(const char* theme_name);
 
+// This function is no longer needed
+
+// Get current theme colors based on UI mode
+SDL_Color THEME_getCurrentForeground(void);
+SDL_Color THEME_getCurrentBackground(void);
+SDL_Color THEME_getCurrentAccent(void);
+
 #endif // __THEME_H__

@@ -8,6 +8,7 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <errno.h>
+#include "../common/config.h"
 #include <pthread.h>
 
 #include <msettings.h>
@@ -548,7 +549,10 @@ void PLAT_quitVideo(void) {
 }
 
 void PLAT_clearVideo(SDL_Surface* screen) {
-	SDL_FillRect(screen, NULL, 0); // TODO: revisit
+	// Use theme background color instead of hardcoded black
+	SDL_Color bg_color = CONFIG_getThemeBackground();
+	Uint32 bg_rgb = SDL_MapRGB(screen->format, bg_color.r, bg_color.g, bg_color.b);
+	SDL_FillRect(screen, NULL, bg_rgb);
 }
 void PLAT_clearAll(void) {
 	PLAT_clearVideo(vid.screen); // TODO: revist

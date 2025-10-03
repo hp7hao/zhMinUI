@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-03 00:08-0400\n"
+"POT-Creation-Date: 2025-10-03 01:21-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,48 +17,48 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../../common/api.c:856 ../../minarch/minarch.c:722
+#: ../../common/api.c:834 ../../minarch/minarch.c:722
 #: ../../minarch/minarch.c:738 ../../minarch/minarch.c:765
 #: ../../minput/minput.c:233
 msgid "SELECT"
 msgstr ""
 
-#: ../../common/api.c:856
+#: ../../common/api.c:834
 msgid "VOLUME"
 msgstr ""
 
-#: ../../common/api.c:857 ../../minarch/minarch.c:721
+#: ../../common/api.c:835 ../../minarch/minarch.c:721
 #: ../../minarch/minarch.c:739 ../../minarch/minarch.c:764
 #: ../../minput/minput.c:235
 msgid "START"
 msgstr ""
 
-#: ../../common/api.c:857 ../../common/api.c:860 ../../common/api.c:861
+#: ../../common/api.c:835 ../../common/api.c:838 ../../common/api.c:839
 msgid "BRIGHTNESS"
 msgstr ""
 
-#: ../../common/api.c:861 ../../minui/minui.c:1891 ../../minui/minui.c:1962
+#: ../../common/api.c:839 ../../minui/minui.c:1960 ../../minui/minui.c:2031
 #: ../../minarch/minarch.c:4421 ../../minput/minput.c:215
 msgid "MENU"
 msgstr ""
 
-#: ../../common/api.c:1706
+#: ../../common/api.c:1684
 msgid ""
 "Quicksave created,\n"
 "powering off"
 msgstr ""
 
-#: ../../common/api.c:1706
+#: ../../common/api.c:1684
 msgid "Powering off"
 msgstr ""
 
-#: ../../common/api.c:1707
+#: ../../common/api.c:1685
 msgid ""
 "Quicksave created,\n"
 "power off now"
 msgstr ""
 
-#: ../../common/api.c:1707
+#: ../../common/api.c:1685
 msgid "Power off now"
 msgstr ""
 
@@ -75,61 +75,81 @@ msgid "Language"
 msgstr ""
 
 #: ../../minui/minui.c:1365
+msgid "UI Mode"
+msgstr ""
+
+#: ../../minui/minui.c:1366 ../../minui/minui.c:1400
 msgid "Theme"
 msgstr ""
 
-#: ../../minui/minui.c:1366
+#: ../../minui/minui.c:1367
+msgid "Background Mode"
+msgstr ""
+
+#: ../../minui/minui.c:1368
 msgid "Font"
 msgstr ""
 
-#: ../../minui/minui.c:1372
+#: ../../minui/minui.c:1374
 msgid "English"
 msgstr ""
 
-#: ../../minui/minui.c:1373
+#: ../../minui/minui.c:1375
 msgid "中文"
 msgstr ""
 
-#: ../../minui/minui.c:1844
+#: ../../minui/minui.c:1392
+msgid "Dark"
+msgstr ""
+
+#: ../../minui/minui.c:1393
+msgid "Light"
+msgstr ""
+
+#: ../../minui/minui.c:1399
+msgid "黑白"
+msgstr ""
+
+#: ../../minui/minui.c:1913
 msgid "Model"
 msgstr ""
 
-#: ../../minui/minui.c:1847
+#: ../../minui/minui.c:1916
 msgid "Release"
 msgstr ""
 
-#: ../../minui/minui.c:1849
+#: ../../minui/minui.c:1918
 msgid "Commit"
 msgstr ""
 
-#: ../../minui/minui.c:1891 ../../minui/minui.c:1962
+#: ../../minui/minui.c:1960 ../../minui/minui.c:2031
 #: ../../minarch/minarch.c:4421 ../../minput/minput.c:219
 msgid "POWER"
 msgstr ""
 
-#: ../../minui/minui.c:1891 ../../minui/minui.c:1963
+#: ../../minui/minui.c:1960 ../../minui/minui.c:2032
 #: ../../minarch/minarch.c:4421
 msgid "SLEEP"
 msgstr ""
 
-#: ../../minui/minui.c:1893 ../../minui/minui.c:1968 ../../minui/minui.c:1973
+#: ../../minui/minui.c:1962 ../../minui/minui.c:2037 ../../minui/minui.c:2042
 #: ../../minarch/minarch.c:4422
 msgid "BACK"
 msgstr ""
 
-#: ../../minui/minui.c:1955
+#: ../../minui/minui.c:2024
 msgid "Empty folder"
 msgstr ""
 
-#: ../../minui/minui.c:1960
+#: ../../minui/minui.c:2029
 msgid "RESUME"
 msgstr ""
 
-#: ../../minui/minui.c:1963
+#: ../../minui/minui.c:2032
 msgid "INFO"
 msgstr ""
 
-#: ../../minui/minui.c:1973 ../../minui/minui.c:1976
+#: ../../minui/minui.c:2042 ../../minui/minui.c:2045
 msgid "OPEN"
 msgstr ""
 

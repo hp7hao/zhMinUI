@@ -11,6 +11,7 @@
 #include <errno.h>
 
 #include <msettings.h>
+#include "../common/config.h"
 
 #include "defines.h"
 #include "platform.h"
@@ -336,7 +337,10 @@ void PLAT_quitVideo(void) {
 
 void PLAT_clearVideo(SDL_Surface* screen) {
 	// this buffer is offscreen when cleared
-	memset(screen->pixels, 0, PAGE_SIZE); 
+	// Use theme background color instead of hardcoded black
+	SDL_Color bg_color = CONFIG_getThemeBackground();
+	Uint32 bg_rgb = SDL_MapRGB(screen->format, bg_color.r, bg_color.g, bg_color.b);
+	SDL_FillRect(screen, NULL, bg_rgb);
 }
 void PLAT_clearAll(void) {
 	PLAT_clearVideo(vid.screen); // clear backbuffer

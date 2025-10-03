@@ -1357,12 +1357,14 @@ int main (int argc, char *argv[]) {
 	// Settings menu variables
 	int show_settings_menu = 0;
 	int settings_menu_selected = 0;
-	int settings_menu_count = 3; // Language, Theme, Font
+	int settings_menu_count = 5; // Language, UI Mode, Theme, Background Mode, Font
 	
 	// Settings options
 	const char* settings_options[] = {
 		N_("Language"),
+		N_("UI Mode"),
 		N_("Theme"),
+		N_("Background Mode"),
 		N_("Font"),
 		NULL
 	};
@@ -1385,15 +1387,33 @@ int main (int argc, char *argv[]) {
 	}
 	font_options[font_count] = NULL;
 	
+	// UI Mode options
+	const char* ui_mode_options[] = {
+		N_("Dark"),
+		N_("Light"),
+		NULL
+	};
+	
+	// Background Mode options
+	const char* background_mode_options[] = {
+		N_("黑白"),
+		N_("Theme"),
+		NULL
+	};
+	
 	// MinUI settings (loaded from config module)
 	const char* current_language = CONFIG_getLanguage();
 	const char* current_theme = CONFIG_getTheme();
 	const char* current_font = CONFIG_getFont();
+	const char* current_ui_mode = CONFIG_getUIMode();
+	const char* current_background_mode = CONFIG_getBackgroundMode();
 	
 	// Convert to indices for UI display
 	int current_language_index = 0;
 	int current_theme_index = 0;
 	int current_font_index = 0;
+	int current_ui_mode_index = 0;
+	int current_background_mode_index = 0;
 	
 	// Map language names to indices
 	if (strcmp(current_language, "中文") == 0) current_language_index = 1;
@@ -1408,6 +1428,12 @@ int main (int argc, char *argv[]) {
 			break;
 		}
 	}
+	
+	// Map UI mode names to indices
+	if (strcmp(current_ui_mode, "Light") == 0) current_ui_mode_index = 1;
+	
+	// Map background mode names to indices
+	if (strcmp(current_background_mode, "Theme") == 0) current_background_mode_index = 1;
 	
 	// Accent color will be calculated inside the loop to ensure it's always current
 	
@@ -1485,7 +1511,15 @@ int main (int argc, char *argv[]) {
 							I18N_updateLanguage(languages[current_language_index]);
 						}
 						break;
-					case 1: // Theme
+					case 1: // UI Mode
+						current_ui_mode_index = (current_ui_mode_index - 1 + 2) % 2;
+						{
+							const char* ui_modes[] = {"Dark", "Light"};
+							CONFIG_setUIMode(ui_modes[current_ui_mode_index]);
+							GFX_updateThemeColors(); // Update colors for new UI mode
+						}
+						break;
+					case 2: // Theme
 						current_theme_index = (current_theme_index - 1 + THEME_getCount()) % THEME_getCount();
 						{
 							const char* theme_name = THEME_getNameByIndex(current_theme_index);
@@ -1493,7 +1527,15 @@ int main (int argc, char *argv[]) {
 							GFX_updateThemeColors(); // Update asset colors for new theme
 						}
 						break;
-					case 2: // Font
+					case 3: // Background Mode
+						current_background_mode_index = (current_background_mode_index - 1 + 2) % 2;
+						{
+							const char* background_modes[] = {"黑白", "Theme"};
+							CONFIG_setBackgroundMode(background_modes[current_background_mode_index]);
+							GFX_updateThemeColors(); // Update colors for new background mode
+						}
+						break;
+					case 4: // Font
 						current_font_index = (current_font_index - 1 + font_count) % font_count;
 						{
 							const char* font_name = FONT_getName(current_font_index);
@@ -1515,7 +1557,15 @@ int main (int argc, char *argv[]) {
 							I18N_updateLanguage(languages[current_language_index]);
 						}
 						break;
-					case 1: // Theme
+					case 1: // UI Mode
+						current_ui_mode_index = (current_ui_mode_index + 1) % 2;
+						{
+							const char* ui_modes[] = {"Dark", "Light"};
+							CONFIG_setUIMode(ui_modes[current_ui_mode_index]);
+							GFX_updateThemeColors(); // Update colors for new UI mode
+						}
+						break;
+					case 2: // Theme
 						current_theme_index = (current_theme_index + 1) % THEME_getCount();
 						{
 							const char* theme_name = THEME_getNameByIndex(current_theme_index);
@@ -1523,7 +1573,15 @@ int main (int argc, char *argv[]) {
 							GFX_updateThemeColors(); // Update asset colors for new theme
 						}
 						break;
-					case 2: // Font
+					case 3: // Background Mode
+						current_background_mode_index = (current_background_mode_index + 1) % 2;
+						{
+							const char* background_modes[] = {"黑白", "Theme"};
+							CONFIG_setBackgroundMode(background_modes[current_background_mode_index]);
+							GFX_updateThemeColors(); // Update colors for new background mode
+						}
+						break;
+					case 4: // Font
 						current_font_index = (current_font_index + 1) % font_count;
 						{
 							const char* font_name = FONT_getName(current_font_index);
@@ -1532,6 +1590,11 @@ int main (int argc, char *argv[]) {
 						}
 						break;
 				}
+				dirty = 1;
+			}
+			else if (PAD_justPressed(BTN_A)) {
+				// Handle settings menu selection - do nothing, just prevent menu from closing
+				// Settings are changed with LEFT/RIGHT keys, not A key
 				dirty = 1;
 			}
 			else if (PAD_justPressed(BTN_B) || PAD_tappedMenu(now)) {
@@ -1775,10 +1838,16 @@ int main (int argc, char *argv[]) {
 						case 0: // Language
 							sprintf(value_text, "%s", _(language_options[current_language_index]));
 							break;
-						case 1: // Theme
+						case 1: // UI Mode
+							sprintf(value_text, "%s", _(ui_mode_options[current_ui_mode_index]));
+							break;
+						case 2: // Theme
 							sprintf(value_text, "%s", _(theme_options[current_theme_index]));
 							break;
-						case 2: // Font
+						case 3: // Background Mode
+							sprintf(value_text, "%s", _(background_mode_options[current_background_mode_index]));
+							break;
+						case 4: // Font
 							sprintf(value_text, "%s", font_options[current_font_index]);
 							break;
 					}
