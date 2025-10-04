@@ -1607,7 +1607,7 @@ int main (int argc, char *argv[]) {
 			}
 		}
 		else {
-			if (PAD_tappedMenu(now)) {
+			if (PAD_tappedMenu(now) && stack->count == 1) {
 				printf("[INFO] Menu button pressed - opening main menu\n");
 				show_main_menu = 1;
 				main_menu_selected = 0;

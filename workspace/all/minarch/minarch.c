@@ -1747,7 +1747,7 @@ static void input_poll_callback(void) {
 		}
 	}
 	
-	if (!ignore_menu && PAD_justReleased(BTN_MENU)) {
+	if (!ignore_menu && PAD_tappedMenu(SDL_GetTicks())) {
 		show_menu = 1;
 		
 		if (thread_video) {
