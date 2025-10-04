@@ -531,24 +531,94 @@ void GFX_updateThemeColors(void) {
 	asset_rgbs[ASSET_OPTION] = SDL_MapRGB(gfx.screen->format, theme_background.r, theme_background.g, theme_background.b);
 }
 
+// Helper function to blend colors based on coverage
+static Uint32 blendColor(Uint32 bg_color, Uint32 fg_color, float coverage) {
+	// Extract RGB components from 16-bit color (RGB565 format)
+	Uint32 bg_r = (bg_color >> 11) & 0x1F;
+	Uint32 bg_g = (bg_color >> 5) & 0x3F;
+	Uint32 bg_b = bg_color & 0x1F;
+	
+	Uint32 fg_r = (fg_color >> 11) & 0x1F;
+	Uint32 fg_g = (fg_color >> 5) & 0x3F;
+	Uint32 fg_b = fg_color & 0x1F;
+	
+	// Blend with coverage
+	Uint32 r = (Uint32)(bg_r + (fg_r - bg_r) * coverage);
+	Uint32 g = (Uint32)(bg_g + (fg_g - bg_g) * coverage);
+	Uint32 b = (Uint32)(bg_b + (fg_b - bg_b) * coverage);
+	
+	// Clamp to valid ranges
+	if (r > 0x1F) r = 0x1F;
+	if (g > 0x3F) g = 0x3F;
+	if (b > 0x1F) b = 0x1F;
+	
+	return (r << 11) | (g << 5) | b;
+}
+
+// Helper function to get pixel color from surface (16-bit RGB565)
+static Uint32 getPixel(SDL_Surface* surface, int x, int y) {
+	if (x < 0 || x >= surface->w || y < 0 || y >= surface->h) {
+		return 0; // Return black for out-of-bounds
+	}
+	
+	Uint16* pixel = (Uint16*)((Uint8*)surface->pixels + y * surface->pitch + x * 2);
+	return *pixel;
+}
+
+// Helper function to set pixel color on surface (16-bit RGB565)
+static void setPixel(SDL_Surface* surface, int x, int y, Uint32 color) {
+	if (x < 0 || x >= surface->w || y < 0 || y >= surface->h) {
+		return; // Ignore out-of-bounds
+	}
+	
+	Uint16* pixel = (Uint16*)((Uint8*)surface->pixels + y * surface->pitch + x * 2);
+	*pixel = (Uint16)color;
+}
+
 void GFX_drawFilledCircle(SDL_Surface* dst, int cx, int cy, int radius, Uint32 color) {
-	// Draw circle with visual diameter matching rectangle height
-	// Use very conservative anti-aliasing to match rectangle height exactly
-	for (int y = -radius; y <= radius; y++) {
-		for (int x = -radius; x <= radius; x++) {
-			// Calculate distance with sub-pixel precision
-			float dist = sqrtf((float)(x*x + y*y));
+	// Efficient anti-aliased circle drawing algorithm
+	// Uses distance-based coverage calculation for smooth edges
+	
+	// Calculate bounding box for efficiency
+	int min_x = cx - radius;
+	int max_x = cx + radius;
+	int min_y = cy - radius;
+	int max_y = cy + radius;
+	
+	// Clamp to surface bounds
+	if (min_x < 0) min_x = 0;
+	if (max_x >= dst->w) max_x = dst->w - 1;
+	if (min_y < 0) min_y = 0;
+	if (max_y >= dst->h) max_y = dst->h - 1;
+	
+	// Pre-calculate radius squared for efficiency
+	float radius_sq = (float)(radius * radius);
+	float inner_radius_sq = (float)((radius - 1) * (radius - 1));
+	
+	for (int y = min_y; y <= max_y; y++) {
+		for (int x = min_x; x <= max_x; x++) {
+			// Calculate distance squared from center
+			float dx = (float)(x - cx);
+			float dy = (float)(y - cy);
+			float dist_sq = dx * dx + dy * dy;
 			
-			if (dist <= radius - 0.25f) {
-				// Full pixel for interior
-				SDL_Rect pixel = {cx + x, cy + y, 1, 1};
-				SDL_FillRect(dst, &pixel, color);
-			} else if (dist <= radius + 0.25f) {
-				// Very conservative anti-aliasing to match rectangle height exactly
-				float coverage = 1.0f - (dist - (radius - 0.25f)) / 0.5f;
-				if (coverage > 0.5f) {  // High threshold for minimal visual extension
-					SDL_Rect pixel = {cx + x, cy + y, 1, 1};
-					SDL_FillRect(dst, &pixel, color);
+			if (dist_sq <= inner_radius_sq) {
+				// Inside the circle - full coverage
+				setPixel(dst, x, y, color);
+			} else if (dist_sq <= radius_sq) {
+				// On the edge - calculate coverage for anti-aliasing
+				float dist = sqrtf(dist_sq);
+				float coverage = 1.0f - (dist - (radius - 1.0f));
+				
+				// Clamp coverage to valid range
+				if (coverage > 1.0f) coverage = 1.0f;
+				if (coverage < 0.0f) coverage = 0.0f;
+				
+				// Only draw if coverage is significant
+				if (coverage > 0.1f) {
+					Uint32 bg_color = getPixel(dst, x, y);
+					Uint32 blended_color = blendColor(bg_color, color, coverage);
+					setPixel(dst, x, y, blended_color);
 				}
 			}
 		}
@@ -572,26 +642,30 @@ void GFX_blitPill(int asset, SDL_Surface* dst, SDL_Rect* dst_rect) {
 	if (w < h) w = h;  // minimum width = height (circular pill)
 	w -= h;  // subtract the two circular ends
 	
-	// Calculate rectangle position
+	// Calculate rectangle position with anti-aliasing compensation
+	// Anti-aliased circles have visual boundary at radius - 0.5 pixels
 	int rect_x = x + r;  // Rectangle starts at left circle center
 	int rect_w = w;      // Rectangle width (can be 0)
 	
 	// Draw pill with consistent theme color throughout
 	// Left rounded end: center at (x + r, y + r), radius = r
-	// Position: x to x+h (diameter = h)
-	// Circle bounds: y to y+h, center at y+r
 	GFX_drawFilledCircle(dst, x + r, y + r, r, asset_rgbs[asset]);
 	
-	// Middle rectangle: starts at left circle center, width = rect_w
-	// Rectangle bounds: y to y+h (same as circles)
+	// Middle rectangle: align with visual circle boundary
+	// Compensate for anti-aliasing by adjusting rectangle bounds
 	if (rect_w > 0) {
-		// Rectangle should align exactly with circle bounds
-		SDL_FillRect(dst, &(SDL_Rect){rect_x, y, rect_w, h}, asset_rgbs[asset]);
+		// Adjust rectangle to match visual circle boundary
+		// When we offset y by +1, we need to reduce height by 1 to maintain bottom alignment
+		SDL_Rect rect = {
+			rect_x,           // x position
+			y + 1,            // y position (offset by 1 for top edge alignment)
+			rect_w,           // width
+			h - 1             // height (reduce by 1 to compensate for y offset)
+		};
+		SDL_FillRect(dst, &rect, asset_rgbs[asset]);
 	}
 	
 	// Right rounded end: center at rectangle end position
-	// Position: rect_x + rect_w to rect_x + rect_w + h
-	// Circle bounds: y to y+h, center at y+r
 	GFX_drawFilledCircle(dst, rect_x + rect_w, y + r, r, asset_rgbs[asset]);
 }
 
