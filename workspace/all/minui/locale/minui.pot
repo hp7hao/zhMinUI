@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-04 05:29-0400\n"
+"POT-Creation-Date: 2025-10-04 07:54-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -38,7 +38,7 @@ msgid "BRIGHTNESS"
 msgstr ""
 
 #: ../../common/api.c:964 ../../minui/minui.c:1951 ../../minui/minui.c:2022
-#: ../../minarch/minarch.c:4439 ../../minput/minput.c:215
+#: ../../minarch/minarch.c:4420 ../../minput/minput.c:215
 msgid "MENU"
 msgstr ""
 
@@ -159,17 +159,17 @@ msgid "Commit"
 msgstr ""
 
 #: ../../minui/minui.c:1951 ../../minui/minui.c:2022
-#: ../../minarch/minarch.c:4439 ../../minput/minput.c:219
+#: ../../minarch/minarch.c:4420 ../../minput/minput.c:219
 msgid "POWER"
 msgstr ""
 
 #: ../../minui/minui.c:1951 ../../minui/minui.c:2023
-#: ../../minarch/minarch.c:4439
+#: ../../minarch/minarch.c:4420
 msgid "SLEEP"
 msgstr ""
 
 #: ../../minui/minui.c:1953 ../../minui/minui.c:2028 ../../minui/minui.c:2033
-#: ../../minarch/minarch.c:4440
+#: ../../minarch/minarch.c:4421
 msgid "BACK"
 msgstr ""
 
@@ -648,7 +648,7 @@ msgstr ""
 msgid "Restored defaults."
 msgstr ""
 
-#: ../../minarch/minarch.c:3550 ../../minarch/minarch.c:4440
+#: ../../minarch/minarch.c:3550 ../../minarch/minarch.c:4421
 msgid "OKAY"
 msgstr ""
 
@@ -684,11 +684,11 @@ msgstr ""
 msgid "Save Changes"
 msgstr ""
 
-#: ../../minarch/minarch.c:4523
+#: ../../minarch/minarch.c:4504
 msgid "No Preview"
 msgstr ""
 
-#: ../../minarch/minarch.c:4524
+#: ../../minarch/minarch.c:4505
 msgid "Empty Slot"
 msgstr ""
 

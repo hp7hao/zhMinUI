@@ -3808,16 +3808,6 @@ static int Menu_options(MenuList* list) {
 					MenuItem* item = &items[i];
 					SDL_Color text_color = COLOR_WHITE;
 
-					if (j==selected_row) {
-						// gray pill background
-						GFX_blitPill(ASSET_OPTION, screen, &(SDL_Rect){
-							ox,
-							oy+SCALE1(j*BUTTON_SIZE),
-							mw,
-							SCALE1(BUTTON_SIZE)
-						});
-					}
-					
 					if (item->value>=0) {
 						text = TTF_RenderUTF8_Blended(font.tiny, _(item->values[item->value]), COLOR_WHITE); // always white
 						SDL_BlitSurface(text, NULL, screen, &(SDL_Rect){
@@ -3827,7 +3817,6 @@ static int Menu_options(MenuList* list) {
 						SDL_FreeSurface(text);
 					}
 					
-					// TODO: blit a black pill on unselected rows (to cover longer item->values?) or truncate longer item->values?
 					if (j==selected_row) {
 						// Render text first to get actual width for pill sizing
 						text = TTF_RenderUTF8_Blended(font.small, _(item->name), text_color);
@@ -3896,14 +3885,6 @@ static int Menu_options(MenuList* list) {
 					MenuItem* item = &items[i];
 					SDL_Color text_color = COLOR_WHITE;
 					if (j==selected_row) {
-						// gray pill background
-						GFX_blitPill(ASSET_OPTION, screen, &(SDL_Rect){
-							ox,
-							oy+SCALE1(j*BUTTON_SIZE),
-							mw,
-							SCALE1(BUTTON_SIZE)
-						});
-						
 						// Render text first to get actual width for pill sizing
 						text = TTF_RenderUTF8_Blended(font.small, _(item->name), text_color);
 						int w = text->w + SCALE1(OPTION_PADDING*2);
