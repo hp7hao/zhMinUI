@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: MinUI\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-04 03:14-0400\n"
+"POT-Creation-Date: 2025-10-04 05:29-0400\n"
 "PO-Revision-Date: 2025-10-01 12:00+0800\n"
 "Last-Translator: \n"
 "Language-Team: Chinese (Simplified)\n"
@@ -15,32 +15,32 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../../common/api.c:913 ../../minarch/minarch.c:724
+#: ../../common/api.c:959 ../../minarch/minarch.c:724
 #: ../../minarch/minarch.c:740 ../../minarch/minarch.c:767
 #: ../../minput/minput.c:233
 msgid "SELECT"
 msgstr "选择"
 
-#: ../../common/api.c:913
+#: ../../common/api.c:959
 msgid "VOLUME"
 msgstr ""
 
-#: ../../common/api.c:914 ../../minarch/minarch.c:723
+#: ../../common/api.c:960 ../../minarch/minarch.c:723
 #: ../../minarch/minarch.c:741 ../../minarch/minarch.c:766
 #: ../../minput/minput.c:235
 msgid "START"
 msgstr "开始"
 
-#: ../../common/api.c:914 ../../common/api.c:917 ../../common/api.c:918
+#: ../../common/api.c:960 ../../common/api.c:963 ../../common/api.c:964
 msgid "BRIGHTNESS"
 msgstr "亮度"
 
-#: ../../common/api.c:918 ../../minui/minui.c:1951 ../../minui/minui.c:2022
+#: ../../common/api.c:964 ../../minui/minui.c:1951 ../../minui/minui.c:2022
 #: ../../minarch/minarch.c:4439 ../../minput/minput.c:215
 msgid "MENU"
 msgstr "菜单"
 
-#: ../../common/api.c:1769
+#: ../../common/api.c:1815
 msgid ""
 "Quicksave created,\n"
 "powering off"
@@ -48,11 +48,11 @@ msgstr ""
 "快速保存已创建，\n"
 "正在关机"
 
-#: ../../common/api.c:1769
+#: ../../common/api.c:1815
 msgid "Powering off"
 msgstr "正在关机"
 
-#: ../../common/api.c:1770
+#: ../../common/api.c:1816
 msgid ""
 "Quicksave created,\n"
 "power off now"
@@ -60,7 +60,7 @@ msgstr ""
 "快速保存已创建，\n"
 "请现在关机"
 
-#: ../../common/api.c:1770
+#: ../../common/api.c:1816
 msgid "Power off now"
 msgstr "请现在关机"
 
@@ -712,6 +712,14 @@ msgstr "快捷键"
 #: ../../minarch/minarch.c:3583
 msgid "Save Changes"
 msgstr "保存更改"
+
+#: ../../minarch/minarch.c:4523
+msgid "No Preview"
+msgstr "没有预览"
+
+#: ../../minarch/minarch.c:4524
+msgid "Empty Slot"
+msgstr "空槽位"
 
 #: ../../clock/clock.c:292
 msgid "AM"

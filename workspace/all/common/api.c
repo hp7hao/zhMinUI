@@ -526,9 +526,9 @@ void GFX_updateThemeColors(void) {
 	asset_rgbs[ASSET_DARK_GRAY_PILL] = SDL_MapRGB(gfx.screen->format, theme_accent.r, theme_accent.g, theme_accent.b);
 	asset_rgbs[ASSET_WHITE_PILL] = SDL_MapRGB(gfx.screen->format, theme_accent.r, theme_accent.g, theme_accent.b);
 	
-	// Use background color for buttons to create contrast against accent-colored pills
-	asset_rgbs[ASSET_BUTTON] = SDL_MapRGB(gfx.screen->format, theme_background.r, theme_background.g, theme_background.b);
-	asset_rgbs[ASSET_OPTION] = SDL_MapRGB(gfx.screen->format, theme_background.r, theme_background.g, theme_background.b);
+	// Use fixed white color for buttons to ensure consistent appearance across all themes
+	asset_rgbs[ASSET_BUTTON] = SDL_MapRGB(gfx.screen->format, 0xff, 0xff, 0xff);
+	asset_rgbs[ASSET_OPTION] = SDL_MapRGB(gfx.screen->format, 0xff, 0xff, 0xff);
 }
 
 // Helper function to blend colors based on coverage
@@ -542,10 +542,18 @@ static Uint32 blendColor(Uint32 bg_color, Uint32 fg_color, float coverage) {
 	Uint32 fg_g = (fg_color >> 5) & 0x3F;
 	Uint32 fg_b = fg_color & 0x1F;
 	
-	// Blend with coverage
-	Uint32 r = (Uint32)(bg_r + (fg_r - bg_r) * coverage);
-	Uint32 g = (Uint32)(bg_g + (fg_g - bg_g) * coverage);
-	Uint32 b = (Uint32)(bg_b + (fg_b - bg_b) * coverage);
+	// True alpha blending: result = bg * (1 - alpha) + fg * alpha
+	float alpha = coverage;
+	float one_minus_alpha = 1.0f - alpha;
+	
+	float blended_r = (float)bg_r * one_minus_alpha + (float)fg_r * alpha;
+	float blended_g = (float)bg_g * one_minus_alpha + (float)fg_g * alpha;
+	float blended_b = (float)bg_b * one_minus_alpha + (float)fg_b * alpha;
+	
+	// Round to nearest integer and clamp to valid ranges
+	Uint32 r = (Uint32)(blended_r + 0.5f);
+	Uint32 g = (Uint32)(blended_g + 0.5f);
+	Uint32 b = (Uint32)(blended_b + 0.5f);
 	
 	// Clamp to valid ranges
 	if (r > 0x1F) r = 0x1F;
@@ -575,13 +583,13 @@ static void setPixel(SDL_Surface* surface, int x, int y, Uint32 color) {
 	*pixel = (Uint16)color;
 }
 
-void GFX_drawFilledCircle(SDL_Surface* dst, int cx, int cy, int radius, Uint32 color) {
-	// Efficient anti-aliased circle drawing algorithm
-	// Uses distance-based coverage calculation for smooth edges
+void GFX_drawFilledSemicircle(SDL_Surface* dst, int cx, int cy, int radius, Uint32 color, int left_half, int is_inner_pill, Uint32 outer_pill_color) {
+	// Draw half circle for pill optimization
+	// left_half: 1 for left half (right side clipped), 0 for right half (left side clipped)
 	
 	// Calculate bounding box for efficiency
-	int min_x = cx - radius;
-	int max_x = cx + radius;
+	int min_x = left_half ? cx - radius : cx;
+	int max_x = left_half ? cx : cx + radius;
 	int min_y = cy - radius;
 	int max_y = cy + radius;
 	
@@ -602,10 +610,15 @@ void GFX_drawFilledCircle(SDL_Surface* dst, int cx, int cy, int radius, Uint32 c
 			float dy = (float)(y - cy);
 			float dist_sq = dx * dx + dy * dy;
 			
+			// Skip pixels outside the half circle
+			if (dist_sq > radius_sq) continue;
+			if (left_half && x > cx) continue;  // Skip right half for left semicircle
+			if (!left_half && x < cx) continue; // Skip left half for right semicircle
+			
 			if (dist_sq <= inner_radius_sq) {
 				// Inside the circle - full coverage
 				setPixel(dst, x, y, color);
-			} else if (dist_sq <= radius_sq) {
+			} else {
 				// On the edge - calculate coverage for anti-aliasing
 				float dist = sqrtf(dist_sq);
 				float coverage = 1.0f - (dist - (radius - 1.0f));
@@ -616,8 +629,20 @@ void GFX_drawFilledCircle(SDL_Surface* dst, int cx, int cy, int radius, Uint32 c
 				
 				// Only draw if coverage is significant
 				if (coverage > 0.1f) {
-					Uint32 bg_color = getPixel(dst, x, y);
-					Uint32 blended_color = blendColor(bg_color, color, coverage);
+					// Theme-aware anti-aliasing: blend with appropriate target color
+					Uint32 blend_target;
+					
+					if (is_inner_pill && outer_pill_color != 0) {
+						// Inner pill case: blend with outer pill color
+						blend_target = outer_pill_color;
+					} else {
+						// Outer pill case: blend with actual screen pixel (for minarch compatibility)
+						// In minui: screen has theme background, so this works correctly
+						// In minarch: screen has game background, so this blends with game pixels
+						blend_target = getPixel(dst, x, y);
+					}
+					
+					Uint32 blended_color = blendColor(blend_target, color, coverage);
 					setPixel(dst, x, y, blended_color);
 				}
 			}
@@ -625,9 +650,15 @@ void GFX_drawFilledCircle(SDL_Surface* dst, int cx, int cy, int radius, Uint32 c
 	}
 }
 
+
 // Calculate vertical offset to center text in a container of given height
 int GFX_getTextVerticalCenter(SDL_Surface* text_surface, int container_height) {
 	return (container_height - text_surface->h) / 2;
+}
+
+// Helper function to determine if an asset is an inner pill (button)
+static int isInnerPill(int asset) {
+	return (asset == ASSET_BUTTON || asset == ASSET_HOLE);
 }
 
 void GFX_blitPill(int asset, SDL_Surface* dst, SDL_Rect* dst_rect) {
@@ -647,9 +678,24 @@ void GFX_blitPill(int asset, SDL_Surface* dst, SDL_Rect* dst_rect) {
 	int rect_x = x + r;  // Rectangle starts at left circle center
 	int rect_w = w;      // Rectangle width (can be 0)
 	
-	// Draw pill with consistent theme color throughout
-	// Left rounded end: center at (x + r, y + r), radius = r
-	GFX_drawFilledCircle(dst, x + r, y + r, r, asset_rgbs[asset]);
+	// Determine pill type for anti-aliasing
+	int is_inner = isInnerPill(asset);
+	Uint32 outer_pill_color = 0;
+	
+	// For inner pills, we need to find the outer pill color
+	// This is a simplified approach - in practice, the outer pill should be drawn first
+	if (is_inner) {
+		// Try to detect outer pill color from nearby pixels
+		// This is a fallback - ideally the outer pill color should be passed explicitly
+		Uint32 nearby_color = getPixel(dst, x + r, y + r);
+		if (nearby_color != 0 && nearby_color != asset_rgbs[asset]) {
+			outer_pill_color = nearby_color;
+		}
+	}
+	
+	// Draw pill with optimized half-circles
+	// Left rounded end: left half of circle at (x + r, y + r)
+	GFX_drawFilledSemicircle(dst, x + r, y + r, r, asset_rgbs[asset], 1, is_inner, outer_pill_color);
 	
 	// Middle rectangle: align with visual circle boundary
 	// Compensate for anti-aliasing by adjusting rectangle bounds
@@ -665,8 +711,8 @@ void GFX_blitPill(int asset, SDL_Surface* dst, SDL_Rect* dst_rect) {
 		SDL_FillRect(dst, &rect, asset_rgbs[asset]);
 	}
 	
-	// Right rounded end: center at rectangle end position
-	GFX_drawFilledCircle(dst, rect_x + rect_w, y + r, r, asset_rgbs[asset]);
+	// Right rounded end: right half of circle at rectangle end position
+	GFX_drawFilledSemicircle(dst, rect_x + rect_w, y + r, r, asset_rgbs[asset], 0, is_inner, outer_pill_color);
 }
 
 

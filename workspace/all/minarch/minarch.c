@@ -4520,8 +4520,8 @@ static void Menu_loop(void) {
 				else {
 					SDL_Rect preview_rect = {ox,oy,hw,hh};
 					SDL_FillRect(screen, &preview_rect, 0);
-					if (menu.save_exists) GFX_blitMessage(font.large, "No Preview", screen, &preview_rect);
-					else GFX_blitMessage(font.large, "Empty Slot", screen, &preview_rect);
+					if (menu.save_exists) GFX_blitMessage(font.large, _("No Preview"), screen, &preview_rect);
+					else GFX_blitMessage(font.large, _("Empty Slot"), screen, &preview_rect);
 				}
 				
 				// pagination
