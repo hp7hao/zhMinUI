@@ -1300,6 +1300,124 @@ static void Menu_quit(void) {
 
 ///////////////////////////////////////
 
+// Helper function to load and scale background artwork
+static SDL_Surface* loadArtwork(const char* platform_name, int screen_width, int screen_height) {
+	// Use platform pak name directly (e.g., MD, SFC, GBA, GBC)
+	// No sanitization needed - PNG names match pak tags exactly
+	
+	// Try to load platform-specific artwork
+	char artwork_path[MAX_PATH];
+	sprintf(artwork_path, "%s/artworks/%s.png", RES_PATH, platform_name);
+	
+	SDL_Surface* artwork = NULL;
+	if (exists(artwork_path)) {
+		artwork = IMG_Load(artwork_path);
+		LOG_info("Loaded artwork: %s\n", artwork_path);
+	}
+	
+	// Fall back to default if not found
+	if (!artwork) {
+		sprintf(artwork_path, "%s/artworks/_default.png", RES_PATH);
+		if (exists(artwork_path)) {
+			artwork = IMG_Load(artwork_path);
+			LOG_info("Loaded default artwork: %s\n", artwork_path);
+		}
+	}
+	
+	if (!artwork) return NULL;
+	
+	// Scale to screen height while maintaining aspect ratio
+	float scale = (float)screen_height / (float)artwork->h;
+	int new_width = (int)(artwork->w * scale);
+	int new_height = screen_height;
+	
+	// Create scaled surface with alpha channel
+	SDL_Surface* scaled = SDL_CreateRGBSurface(0, new_width, new_height, 32,
+		0x00FF0000, 0x0000FF00, 0x000000FF, 0xFF000000);
+	
+	if (scaled) {
+#if defined(USE_SDL2)
+		// SDL2: Use native scaling with blend mode and linear filtering hint
+		SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "1"); // Linear filtering
+		SDL_SetSurfaceBlendMode(scaled, SDL_BLENDMODE_BLEND);
+		SDL_SetSurfaceBlendMode(artwork, SDL_BLENDMODE_BLEND);
+		SDL_Rect dst_rect = {0, 0, new_width, new_height};
+		SDL_BlitScaled(artwork, NULL, scaled, &dst_rect);
+#else
+		// SDL1: Manual bilinear scaling with alpha support for smooth edges
+		SDLX_SetAlpha(scaled, SDL_SRCALPHA, 255);
+		
+		SDL_LockSurface(artwork);
+		SDL_LockSurface(scaled);
+		
+		for (int y = 0; y < new_height; y++) {
+			for (int x = 0; x < new_width; x++) {
+				// Calculate source position with sub-pixel precision
+				float src_x_f = (x + 0.5f) / scale - 0.5f;
+				float src_y_f = (y + 0.5f) / scale - 0.5f;
+				
+				int src_x = (int)src_x_f;
+				int src_y = (int)src_y_f;
+				
+				// Get fractional parts for interpolation
+				float fx = src_x_f - src_x;
+				float fy = src_y_f - src_y;
+				
+				// Clamp to valid source coordinates
+				int x0 = src_x >= 0 ? src_x : 0;
+				int x1 = (src_x + 1 < artwork->w) ? src_x + 1 : artwork->w - 1;
+				int y0 = src_y >= 0 ? src_y : 0;
+				int y1 = (src_y + 1 < artwork->h) ? src_y + 1 : artwork->h - 1;
+				
+				// Get 4 surrounding pixels for bilinear interpolation
+				Uint8 r[4], g[4], b[4], a[4];
+				int corners[4][2] = {{x0, y0}, {x1, y0}, {x0, y1}, {x1, y1}};
+				
+				int src_bpp = artwork->format->BytesPerPixel;
+				for (int i = 0; i < 4; i++) {
+					Uint8* src_ptr = (Uint8*)artwork->pixels + 
+					                 corners[i][1] * artwork->pitch + 
+					                 corners[i][0] * src_bpp;
+					
+					Uint32 pixel;
+					switch (src_bpp) {
+						case 1: pixel = *src_ptr; break;
+						case 2: pixel = *(Uint16*)src_ptr; break;
+						case 3: pixel = src_ptr[0] | (src_ptr[1] << 8) | (src_ptr[2] << 16); break;
+						case 4: pixel = *(Uint32*)src_ptr; break;
+						default: pixel = 0;
+					}
+					SDL_GetRGBA(pixel, artwork->format, &r[i], &g[i], &b[i], &a[i]);
+				}
+				
+				// Bilinear interpolation
+				float w00 = (1.0f - fx) * (1.0f - fy);
+				float w10 = fx * (1.0f - fy);
+				float w01 = (1.0f - fx) * fy;
+				float w11 = fx * fy;
+				
+				Uint8 final_r = (Uint8)(r[0] * w00 + r[1] * w10 + r[2] * w01 + r[3] * w11);
+				Uint8 final_g = (Uint8)(g[0] * w00 + g[1] * w10 + g[2] * w01 + g[3] * w11);
+				Uint8 final_b = (Uint8)(b[0] * w00 + b[1] * w10 + b[2] * w01 + b[3] * w11);
+				Uint8 final_a = (Uint8)(a[0] * w00 + a[1] * w10 + a[2] * w01 + a[3] * w11);
+				
+				// Write to destination (32-bit RGBA)
+				Uint32* dst_ptr = (Uint32*)((Uint8*)scaled->pixels + y * scaled->pitch + x * 4);
+				*dst_ptr = (final_r << 16) | (final_g << 8) | final_b | (final_a << 24);
+			}
+		}
+		
+		SDL_UnlockSurface(scaled);
+		SDL_UnlockSurface(artwork);
+#endif
+	}
+	
+	SDL_FreeSurface(artwork);
+	return scaled;
+}
+
+///////////////////////////////////////
+
 int main (int argc, char *argv[]) {
 	// LOG_info("time from launch to:\n");
 	// unsigned long main_begin = SDL_GetTicks();
@@ -1330,6 +1448,8 @@ int main (int argc, char *argv[]) {
 	// LOG_info("- power init: %lu\n", SDL_GetTicks() - main_begin);
 	
 	SDL_Surface* version = NULL;
+	SDL_Surface* background = NULL;
+	char current_bg_platform[256] = "";
 	
 	Menu_init();
 	// LOG_info("- menu init: %lu\n", SDL_GetTicks() - main_begin);
@@ -1737,6 +1857,63 @@ int main (int argc, char *argv[]) {
 		if (dirty) {
 			GFX_clear(screen);
 			
+			// Load and draw background artwork at platform selection level
+			int show_background = 0;
+			if (!show_version && !show_main_menu && !show_settings_menu && stack->count == 1 && total > 0) {
+				// We're at root level, show background for currently selected platform
+				Entry* selected_entry = top->entries->items[top->selected];
+				
+				// Show background for all directory entries at root level
+				if (selected_entry->type == ENTRY_DIR) {
+					show_background = 1;
+					
+					char platform_name[256];
+					// Use "_default" for special folders
+					if (exactMatch(FAUX_RECENT_PATH, selected_entry->path)) {
+						strcpy(platform_name, "_default");
+					}
+					else if (exactMatch(COLLECTIONS_PATH, selected_entry->path)) {
+						strcpy(platform_name, "_default");
+					}
+					else if (suffixMatch("/Tools/" PLATFORM, selected_entry->path)) {
+						strcpy(platform_name, "_default");
+					}
+					else {
+						// Extract platform name from ROM folder
+						getEmuName(selected_entry->path, platform_name);
+					}
+					
+					// Check if we need to load a different background
+					if (!exactMatch(platform_name, current_bg_platform)) {
+						// Free old background
+						if (background) {
+							SDL_FreeSurface(background);
+							background = NULL;
+						}
+						
+						// Load new background
+						background = loadArtwork(platform_name, screen->w, screen->h);
+						strcpy(current_bg_platform, platform_name);
+					}
+					
+					// Draw background positioned to the right with 25% overflow
+					// Formula: show 75% of width, so position at screen_width - (width * 0.75)
+					if (background) {
+						int visible_width = (int)(background->w * 0.75);
+						int bg_x = screen->w - visible_width;
+						int bg_y = 0;
+						SDL_BlitSurface(background, NULL, screen, &(SDL_Rect){bg_x, bg_y});
+					}
+				}
+			}
+			
+			// Clear background if not showing
+			if (!show_background && background) {
+				SDL_FreeSurface(background);
+				background = NULL;
+				current_bg_platform[0] = '\0';
+			}
+			
 			int ox;
 			int oy;
 			
@@ -2064,6 +2241,7 @@ int main (int argc, char *argv[]) {
 	}
 	
 	if (version) SDL_FreeSurface(version);
+	if (background) SDL_FreeSurface(background);
 
 	Menu_quit();
 	PWR_quit();
