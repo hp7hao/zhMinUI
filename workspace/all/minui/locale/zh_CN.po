@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: MinUI\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-10 10:30-0400\n"
+"POT-Creation-Date: 2025-10-11 10:04-0400\n"
 "PO-Revision-Date: 2025-10-01 12:00+0800\n"
 "Last-Translator: \n"
 "Language-Team: Chinese (Simplified)\n"
@@ -35,7 +35,7 @@ msgstr "开始"
 msgid "BRIGHTNESS"
 msgstr "亮度"
 
-#: ../../common/api.c:964 ../../minui/minui.c:2128 ../../minui/minui.c:2199
+#: ../../common/api.c:964 ../../minui/minui.c:2162 ../../minui/minui.c:2233
 #: ../../minarch/minarch.c:4420 ../../minput/minput.c:215
 msgid "MENU"
 msgstr "菜单"
@@ -148,46 +148,46 @@ msgstr "浅色"
 msgid "Monochrome"
 msgstr "黑白"
 
-#: ../../minui/minui.c:2081
+#: ../../minui/minui.c:2115
 msgid "Model"
 msgstr "型号"
 
-#: ../../minui/minui.c:2084
+#: ../../minui/minui.c:2118
 msgid "Release"
 msgstr "版本"
 
-#: ../../minui/minui.c:2086
+#: ../../minui/minui.c:2120
 msgid "Commit"
 msgstr "提交"
 
-#: ../../minui/minui.c:2128 ../../minui/minui.c:2199
+#: ../../minui/minui.c:2162 ../../minui/minui.c:2233
 #: ../../minarch/minarch.c:4420 ../../minput/minput.c:219
 msgid "POWER"
 msgstr "电源"
 
-#: ../../minui/minui.c:2128 ../../minui/minui.c:2200
+#: ../../minui/minui.c:2162 ../../minui/minui.c:2234
 #: ../../minarch/minarch.c:4420
 msgid "SLEEP"
 msgstr "休眠"
 
-#: ../../minui/minui.c:2130 ../../minui/minui.c:2205 ../../minui/minui.c:2210
+#: ../../minui/minui.c:2164 ../../minui/minui.c:2239 ../../minui/minui.c:2244
 #: ../../minarch/minarch.c:4421
 msgid "BACK"
 msgstr "返回"
 
-#: ../../minui/minui.c:2192
+#: ../../minui/minui.c:2226
 msgid "Empty folder"
 msgstr "空文件夹"
 
-#: ../../minui/minui.c:2197
+#: ../../minui/minui.c:2231
 msgid "RESUME"
 msgstr "继续"
 
-#: ../../minui/minui.c:2200
+#: ../../minui/minui.c:2234
 msgid "INFO"
 msgstr "信息"
 
-#: ../../minui/minui.c:2210 ../../minui/minui.c:2213
+#: ../../minui/minui.c:2244 ../../minui/minui.c:2247
 msgid "OPEN"
 msgstr "打开"
 

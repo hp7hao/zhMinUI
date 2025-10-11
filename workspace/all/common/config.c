@@ -16,9 +16,10 @@ typedef struct MinUIConfig {
     char font[64];          // Font filename from res/fonts folder
     char ui_mode[16];       // "Dark" or "Light"
     char background_mode[16]; // "Monochrome" or "Theme"
+    int show_perf;          // 0 or 1 (show performance counter)
 } MinUIConfig;
 
-static MinUIConfig config = {"en_US", "Default", "BoutiqueBitmap7x7_1.7.ttf", "Dark", "Monochrome"}; // Default values
+static MinUIConfig config = {"en_US", "Default", "BoutiqueBitmap7x7_1.7.ttf", "Dark", "Monochrome", 0}; // Default values
 static int config_loaded = 0;
 
 void CONFIG_load(void) {
@@ -97,6 +98,8 @@ void CONFIG_load(void) {
                 } else if (strcmp(key, "background_mode") == 0) {
                     strncpy(config.background_mode, value, 15);
                     config.background_mode[15] = '\0';
+                } else if (strcmp(key, "show_perf") == 0) {
+                    config.show_perf = (strcmp(value, "1") == 0 || strcmp(value, "true") == 0);
                 }
             }
             
@@ -129,8 +132,8 @@ void CONFIG_save(void) {
     
     // Write all settings
     char config_content[512];
-    sprintf(config_content, "language=%s\ntheme=%s\nfont=%s\nui_mode=%s\nbackground_mode=%s\n", 
-        config.language, config.theme, config.font, config.ui_mode, config.background_mode);
+    sprintf(config_content, "language=%s\ntheme=%s\nfont=%s\nui_mode=%s\nbackground_mode=%s\nshow_perf=%d\n", 
+        config.language, config.theme, config.font, config.ui_mode, config.background_mode, config.show_perf);
     
     // Debug: Print config content to console
     printf("CONFIG_save: Writing to %s\n", CONFIG_PATH);
@@ -163,6 +166,11 @@ const char* CONFIG_getUIMode(void) {
 const char* CONFIG_getBackgroundMode(void) {
     CONFIG_load();
     return config.background_mode;
+}
+
+int CONFIG_getShowPerf(void) {
+    CONFIG_load();
+    return config.show_perf;
 }
 
 // Setter functions
