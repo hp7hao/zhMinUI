@@ -1758,29 +1758,12 @@ void PWR_update(int* _dirty, int* _show_setting, PWR_callback_t before_sleep, PW
 			// 1. Draw lockscreen (leave it on screen)
 			// 2. Sleep immediately (screen off)
 			// 3. When waking, lockscreen is already visible
-			if (LOCKSCREEN_isEnabled()) {
-				// Just draw the lockscreen, don't wait for unlock
-				GFX_clear(gfx.screen);
-				SDL_Color text_color = {255, 255, 255, 255};
-				SDL_Surface* lock_surface = TTF_RenderUTF8_Blended(font.large, "Screen Locked", text_color);
-				if (lock_surface) {
-					int x = (gfx.screen->w - lock_surface->w) / 2;
-					int y = (gfx.screen->h - lock_surface->h) / 2 - SCALE1(40);
-					SDL_BlitSurface(lock_surface, NULL, gfx.screen, &(SDL_Rect){x, y});
-					SDL_FreeSurface(lock_surface);
-				}
-				SDL_Surface* unlock_surface = TTF_RenderUTF8_Blended(font.medium, "Press A + B to unlock", text_color);
-				if (unlock_surface) {
-					int x = (gfx.screen->w - unlock_surface->w) / 2;
-					int y = (gfx.screen->h + unlock_surface->h) / 2 + SCALE1(20);
-					SDL_BlitSurface(unlock_surface, NULL, gfx.screen, &(SDL_Rect){x, y});
-					SDL_FreeSurface(unlock_surface);
-				}
-				GFX_flip(gfx.screen);
-			}
+			LOCKSCREEN_drawStatic(gfx.screen);
+			
 			// Sleep immediately
 			if (before_sleep) before_sleep();
 			PWR_fauxSleep();
+			
 			// After waking, show interactive lockscreen
 			if (LOCKSCREEN_isEnabled()) {
 				while (!LOCKSCREEN_show(gfx.screen)) {

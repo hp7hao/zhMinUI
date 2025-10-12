@@ -17,6 +17,10 @@ void LOCKSCREEN_init(void);
 // Returns 1 if user unlocked, 0 if timed out (should sleep)
 int LOCKSCREEN_show(SDL_Surface* screen);
 
+// Draw static lockscreen (for manual sleep button)
+// Just draws the lockscreen UI without waiting for input
+void LOCKSCREEN_drawStatic(SDL_Surface* screen);
+
 // Check if lockscreen is enabled in config
 int LOCKSCREEN_isEnabled(void);
 
