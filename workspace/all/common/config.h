@@ -18,6 +18,7 @@ const char* CONFIG_getTheme(void);           // "Default", "Blue", "Green", "Pur
 const char* CONFIG_getFont(void);            // Font filename from res/fonts folder
 const char* CONFIG_getUIMode(void);          // "Dark" or "Light"
 const char* CONFIG_getBackgroundMode(void);  // "Monochrome" or "Theme"
+const char* CONFIG_getUISize(void);          // "Big", "Normal", "Compact"
 int CONFIG_getShowPerf(void);                // 0 or 1 (show performance counter)
 
 // Setter functions
@@ -26,6 +27,7 @@ void CONFIG_setTheme(const char* value);
 void CONFIG_setFont(const char* value);
 void CONFIG_setUIMode(const char* value);
 void CONFIG_setBackgroundMode(const char* value);
+void CONFIG_setUISize(const char* value);
 
 // Update multiple settings at once (for efficiency)
 void CONFIG_update(const char* language, const char* theme, const char* font, const char* ui_mode, const char* background_mode);

@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "defines.h"
 #include "theme.h"
 #include "config.h"
 #include "i18n.h"
@@ -210,4 +211,84 @@ SDL_Color THEME_getCurrentAccent(void) {
     } else {
         return theme_variants[0].dark_accent;
     }
+}
+
+///////////////////////////////////////
+// UI Size System (shared across all apps)
+
+// Pill/row height
+int THEME_getUIPillSize(void) {
+    const char* ui_size = CONFIG_getUISize();
+    if (strcmp(ui_size, "Compact") == 0) return SCALE1(24);
+    if (strcmp(ui_size, "Normal") == 0) return SCALE1(27);
+    return SCALE1(30); // Big (default)
+}
+
+// Spacing between elements
+int THEME_getUIPadding(void) {
+    const char* ui_size = CONFIG_getUISize();
+    if (strcmp(ui_size, "Compact") == 0) return SCALE1(6);
+    if (strcmp(ui_size, "Normal") == 0) return SCALE1(8);
+    return SCALE1(10); // Big (default)
+}
+
+// Padding inside buttons/pills
+int THEME_getUIButtonPadding(void) {
+    const char* ui_size = CONFIG_getUISize();
+    if (strcmp(ui_size, "Compact") == 0) return SCALE1(8);
+    if (strcmp(ui_size, "Normal") == 0) return SCALE1(10);
+    return SCALE1(12); // Big (default)
+}
+
+// Number of rows visible on screen
+// Formula: (FIXED_HEIGHT / pill_size) - 2 (for top padding + bottom button hints)
+int THEME_getUIRowCount(void) {
+    const char* ui_size = CONFIG_getUISize();
+    if (strcmp(ui_size, "Compact") == 0) {
+        // 480 / 48 - 2 = 10 - 2 = 8 rows
+        return (FIXED_HEIGHT / SCALE1(24)) - 2;
+    }
+    if (strcmp(ui_size, "Normal") == 0) {
+        // 480 / 54 - 2 = 8.88 - 2 = ~7 rows
+        return (FIXED_HEIGHT / SCALE1(27)) - 2;
+    }
+    // Big: 480 / 60 - 2 = 8 - 2 = 6 rows
+    return (FIXED_HEIGHT / SCALE1(30)) - 2;
+}
+
+// Button/menu item height (used in minarch)
+int THEME_getUIButtonSize(void) {
+    const char* ui_size = CONFIG_getUISize();
+    if (strcmp(ui_size, "Compact") == 0) return SCALE1(16);
+    if (strcmp(ui_size, "Normal") == 0) return SCALE1(18);
+    return SCALE1(20); // Big (default)
+}
+
+// Font sizes (scaled based on UI size)
+int THEME_getFontLargeSize(void) {
+    const char* ui_size = CONFIG_getUISize();
+    if (strcmp(ui_size, "Compact") == 0) return SCALE1(14);  // Smaller
+    if (strcmp(ui_size, "Normal") == 0) return SCALE1(15);   // Medium
+    return SCALE1(16); // Big (default)
+}
+
+int THEME_getFontMediumSize(void) {
+    const char* ui_size = CONFIG_getUISize();
+    if (strcmp(ui_size, "Compact") == 0) return SCALE1(12);
+    if (strcmp(ui_size, "Normal") == 0) return SCALE1(13);
+    return SCALE1(14); // Big (default)
+}
+
+int THEME_getFontSmallSize(void) {
+    const char* ui_size = CONFIG_getUISize();
+    if (strcmp(ui_size, "Compact") == 0) return SCALE1(10);
+    if (strcmp(ui_size, "Normal") == 0) return SCALE1(11);
+    return SCALE1(12); // Big (default)
+}
+
+int THEME_getFontTinySize(void) {
+    const char* ui_size = CONFIG_getUISize();
+    if (strcmp(ui_size, "Compact") == 0) return SCALE1(8);
+    if (strcmp(ui_size, "Normal") == 0) return SCALE1(9);
+    return SCALE1(10); // Big (default)
 }

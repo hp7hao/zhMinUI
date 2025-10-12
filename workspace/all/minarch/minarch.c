@@ -3185,7 +3185,9 @@ static int Menu_message(char* message, char** pairs) {
 		
 		if (dirty) {
 			GFX_clear(screen);
-			GFX_blitMessage(font.medium, message, screen, &(SDL_Rect){0,SCALE1(PADDING),screen->w,screen->h-SCALE1(PILL_SIZE+PADDING)});
+			int ui_padding = THEME_getUIPadding();
+		int ui_pill_size = THEME_getUIPillSize();
+		GFX_blitMessage(font.medium, message, screen, &(SDL_Rect){0,ui_padding,screen->w,screen->h-(ui_pill_size+ui_padding)});
 			GFX_blitButtonGroup(pairs, 0, screen, 1);
 			GFX_flip(screen);
 			dirty = 0;
@@ -3597,13 +3599,19 @@ static int Menu_options(MenuList* list) {
 	MenuItem* items = list->items;
 	int type = list->type;
 
+	// Cache UI size parameters from theme
+	int UI_PILL_SIZE = THEME_getUIPillSize();
+	int UI_PADDING = THEME_getUIPadding();
+	int UI_BUTTON_PADDING = THEME_getUIButtonPadding();
+	int UI_BUTTON_SIZE = THEME_getUIButtonSize();
+
 	int dirty = 1;
 	int show_options = 1;
 	int show_settings = 0;
 	int await_input = 0;
 	
 	// dependent on option list offset top and bottom, eg. the gray triangles
-	int max_visible_options = (screen->h - ((SCALE1(PADDING + PILL_SIZE) * 2) + SCALE1(BUTTON_SIZE))) / SCALE1(BUTTON_SIZE); // 7 for 480, 10 for 720
+	int max_visible_options = (screen->h - ((SCALE1(PADDING + PILL_SIZE) * 2) + UI_BUTTON_SIZE)) / UI_BUTTON_SIZE; // 7 for 480, 10 for 720
 	
 	int count;
 	for (count=0; items[count].name; count++);
@@ -3776,7 +3784,7 @@ static int Menu_options(MenuList* list) {
 							ox,
 							oy+SCALE1(j*BUTTON_SIZE),
 							item_width,
-							SCALE1(BUTTON_SIZE)
+							UI_BUTTON_SIZE
 						});
 						text_color = COLOR_BLACK;
 						
@@ -3789,7 +3797,7 @@ static int Menu_options(MenuList* list) {
 					
 					SDL_BlitSurface(text, NULL, screen, &(SDL_Rect){
 						ox+SCALE1(OPTION_PADDING),
-						oy+SCALE1(j*BUTTON_SIZE) + GFX_getTextVerticalCenter(text, SCALE1(BUTTON_SIZE))
+						oy+SCALE1(j*BUTTON_SIZE) + GFX_getTextVerticalCenter(text, UI_BUTTON_SIZE)
 					});
 					SDL_FreeSurface(text);
 				}
@@ -3800,8 +3808,8 @@ static int Menu_options(MenuList* list) {
 				// int lw,rw;
 				// lw = rw = mw / 2;
 				int ox,oy;
-				ox = oy = SCALE1(PADDING);
-				oy += SCALE1(PILL_SIZE);
+			ox = oy = UI_PADDING;
+			oy += UI_PILL_SIZE;
 				
 				int selected_row = selected - start;
 				for (int i=start,j=0; i<end; i++,j++) {
@@ -3809,25 +3817,25 @@ static int Menu_options(MenuList* list) {
 					SDL_Color text_color = COLOR_WHITE;
 
 					if (item->value>=0) {
-						text = TTF_RenderUTF8_Blended(font.tiny, _(item->values[item->value]), COLOR_WHITE); // always white
-						SDL_BlitSurface(text, NULL, screen, &(SDL_Rect){
-							ox + mw - text->w - SCALE1(OPTION_PADDING),
-							oy+SCALE1(j*BUTTON_SIZE) + GFX_getTextVerticalCenter(text, SCALE1(BUTTON_SIZE))
-						});
-						SDL_FreeSurface(text);
-					}
-					
-					if (j==selected_row) {
-						// Render text first to get actual width for pill sizing
-						text = TTF_RenderUTF8_Blended(font.small, _(item->name), text_color);
-						int w = text->w + SCALE1(OPTION_PADDING*2);
-						GFX_blitPill(ASSET_WHITE_PILL, screen, &(SDL_Rect){
-							ox,
-							oy+SCALE1(j*BUTTON_SIZE),
-							w,
-							SCALE1(BUTTON_SIZE)
-						});
-						text_color = COLOR_BLACK;
+					text = TTF_RenderUTF8_Blended(font.tiny, _(item->values[item->value]), COLOR_WHITE); // always white
+					SDL_BlitSurface(text, NULL, screen, &(SDL_Rect){
+						ox + mw - text->w - SCALE1(OPTION_PADDING),
+						oy+(j*UI_BUTTON_SIZE) + GFX_getTextVerticalCenter(text, UI_BUTTON_SIZE)
+					});
+					SDL_FreeSurface(text);
+				}
+				
+				if (j==selected_row) {
+					// Render text first to get actual width for pill sizing
+					text = TTF_RenderUTF8_Blended(font.small, _(item->name), text_color);
+					int w = text->w + SCALE1(OPTION_PADDING*2);
+					GFX_blitPill(ASSET_WHITE_PILL, screen, &(SDL_Rect){
+						ox,
+						oy+(j*UI_BUTTON_SIZE),
+						w,
+						UI_BUTTON_SIZE
+					});
+					text_color = COLOR_BLACK;
 						
 						if (item->desc) desc = item->desc;
 						
@@ -3841,7 +3849,7 @@ static int Menu_options(MenuList* list) {
 					
 					SDL_BlitSurface(text, NULL, screen, &(SDL_Rect){
 						ox+SCALE1(OPTION_PADDING),
-						oy+SCALE1(j*BUTTON_SIZE) + GFX_getTextVerticalCenter(text, SCALE1(BUTTON_SIZE))
+						oy+SCALE1(j*BUTTON_SIZE) + GFX_getTextVerticalCenter(text, UI_BUTTON_SIZE)
 					});
 					SDL_FreeSurface(text);
 				}
@@ -3892,7 +3900,7 @@ static int Menu_options(MenuList* list) {
 							ox,
 							oy+SCALE1(j*BUTTON_SIZE),
 							w,
-							SCALE1(BUTTON_SIZE)
+							UI_BUTTON_SIZE
 						});
 						text_color = COLOR_BLACK;
 						
@@ -3908,7 +3916,7 @@ static int Menu_options(MenuList* list) {
 					
 					SDL_BlitSurface(text, NULL, screen, &(SDL_Rect){
 						ox+SCALE1(OPTION_PADDING),
-						oy+SCALE1(j*BUTTON_SIZE) + GFX_getTextVerticalCenter(text, SCALE1(BUTTON_SIZE))
+						oy+SCALE1(j*BUTTON_SIZE) + GFX_getTextVerticalCenter(text, UI_BUTTON_SIZE)
 					});
 					SDL_FreeSurface(text);
 					
@@ -3919,7 +3927,7 @@ static int Menu_options(MenuList* list) {
 						text = TTF_RenderUTF8_Blended(font.tiny, _(item->values[item->value]), COLOR_WHITE); // always white
 						SDL_BlitSurface(text, NULL, screen, &(SDL_Rect){
 							ox + mw - text->w - SCALE1(OPTION_PADDING),
-							oy+SCALE1(j*BUTTON_SIZE) + GFX_getTextVerticalCenter(text, SCALE1(BUTTON_SIZE))
+							oy+SCALE1(j*BUTTON_SIZE) + GFX_getTextVerticalCenter(text, UI_BUTTON_SIZE)
 						});
 						SDL_FreeSurface(text);
 					}
@@ -3931,7 +3939,7 @@ static int Menu_options(MenuList* list) {
 				#define SCROLL_HEIGHT 4
 				int ox = (screen->w - SCALE1(SCROLL_WIDTH))/2;
 				int oy = SCALE1((PILL_SIZE - SCROLL_HEIGHT) / 2);
-				if (start>0) GFX_blitAsset(ASSET_SCROLL_UP,   NULL, screen, &(SDL_Rect){ox, SCALE1(PADDING) + oy});
+				if (start>0) GFX_blitAsset(ASSET_SCROLL_UP,   NULL, screen, &(SDL_Rect){ox, UI_PADDING + oy});
 				if (end<count) GFX_blitAsset(ASSET_SCROLL_DOWN, NULL, screen, &(SDL_Rect){ox, screen->h - SCALE1(PADDING + PILL_SIZE + BUTTON_SIZE) + oy});
 			}
 			
@@ -3942,7 +3950,7 @@ static int Menu_options(MenuList* list) {
 				GFX_sizeText(font.tiny, _(desc), SCALE1(12), &w,&h);
 				GFX_blitText(font.tiny, _(desc), SCALE1(12), COLOR_WHITE, screen, &(SDL_Rect){
 					(screen->w - w) / 2,
-					screen->h - SCALE1(PADDING) - h,
+					screen->h - UI_PADDING - h,
 					w,h
 				});
 			}
@@ -4213,6 +4221,12 @@ static char* getAlias(char* path, char* alias) {
 }
 
 static void Menu_loop(void) {
+	// Cache UI size parameters from theme
+	int UI_PILL_SIZE = THEME_getUIPillSize();
+	int UI_PADDING = THEME_getUIPadding();
+	int UI_BUTTON_PADDING = THEME_getUIButtonPadding();
+	int UI_BUTTON_SIZE = THEME_getUIButtonSize();
+
 	menu.bitmap = SDL_CreateRGBSurfaceFrom(renderer.src, renderer.true_w, renderer.true_h, FIXED_DEPTH, renderer.src_p, RGBA_MASK_565);
 	// LOG_info("Menu_loop:menu.bitmap %ix%i\n", menu.bitmap->w,menu.bitmap->h);
 	
@@ -4394,25 +4408,25 @@ static void Menu_loop(void) {
 			int max_width = screen->w - SCALE1(PADDING * 2) - ow;
 			
 			char display_name[256];
-			int text_width = GFX_truncateText(font.large, rom_name, display_name, max_width, SCALE1(BUTTON_PADDING*2));
+			int text_width = GFX_truncateText(font.large, rom_name, display_name, max_width, (UI_BUTTON_PADDING*2));
 			max_width = MIN(max_width, text_width);
 
 			SDL_Surface* text;
 			text = TTF_RenderUTF8_Blended(font.large, display_name, COLOR_WHITE);
 			GFX_blitPill(ASSET_BLACK_PILL, screen, &(SDL_Rect){
-				SCALE1(PADDING),
-				SCALE1(PADDING),
+				UI_PADDING,
+				UI_PADDING,
 				max_width,
-				SCALE1(PILL_SIZE)
+				UI_PILL_SIZE
 			});
 			SDL_BlitSurface(text, &(SDL_Rect){
 				0,
 				0,
-				max_width-SCALE1(BUTTON_PADDING*2),
+				max_width-(UI_BUTTON_PADDING*2),
 				text->h
 			}, screen, &(SDL_Rect){
 				SCALE1(PADDING+BUTTON_PADDING),
-				SCALE1(PADDING) + GFX_getTextVerticalCenter(text, SCALE1(PILL_SIZE))
+				UI_PADDING + GFX_getTextVerticalCenter(text, UI_PILL_SIZE)
 			});
 			SDL_FreeSurface(text);
 			
@@ -4430,10 +4444,10 @@ static void Menu_loop(void) {
 					// disc change
 					if (menu.total_discs>1 && i==ITEM_CONT) {				
 						GFX_blitPill(ASSET_DARK_GRAY_PILL, screen, &(SDL_Rect){
-							SCALE1(PADDING),
+							UI_PADDING,
 							SCALE1(oy + PADDING),
 							screen->w - SCALE1(PADDING * 2),
-							SCALE1(PILL_SIZE)
+							UI_PILL_SIZE
 						});
 						text = TTF_RenderUTF8_Blended(font.large, disc_name, COLOR_WHITE);
 						SDL_BlitSurface(text, NULL, screen, &(SDL_Rect){
@@ -4444,14 +4458,14 @@ static void Menu_loop(void) {
 					}
 					
 					TTF_SizeUTF8(font.large, item, &ow, NULL);
-					ow += SCALE1(BUTTON_PADDING*2);
+					ow += (UI_BUTTON_PADDING*2);
 					
 					// pill
 					GFX_blitPill(ASSET_WHITE_PILL, screen, &(SDL_Rect){
-						SCALE1(PADDING),
+						UI_PADDING,
 						SCALE1(oy + PADDING + (i * PILL_SIZE)),
 						ow,
-						SCALE1(PILL_SIZE)
+						UI_PILL_SIZE
 					});
 					text_color = COLOR_BLACK;
 				}
@@ -4477,7 +4491,7 @@ static void Menu_loop(void) {
 				int hh = DEVICE_HEIGHT / 2;
 				int pw = hw + SCALE1(WINDOW_RADIUS*2);
 				int ph = hh + SCALE1(WINDOW_RADIUS*2 + PAGINATION_HEIGHT + WINDOW_RADIUS);
-				ox = DEVICE_WIDTH - pw - SCALE1(PADDING);
+				ox = DEVICE_WIDTH - pw - UI_PADDING;
 				oy = (DEVICE_HEIGHT - ph) / 2;
 				
 				// window
@@ -4684,6 +4698,13 @@ int main(int argc , char* argv[]) {
 	
 	// Initialize theme colors for assets
 	GFX_updateThemeColors();
+	
+	// Cache UI size parameters from theme system (shared across all apps)
+	int UI_PILL_SIZE = THEME_getUIPillSize();
+	int UI_PADDING = THEME_getUIPadding();
+	int UI_BUTTON_PADDING = THEME_getUIButtonPadding();
+	int UI_BUTTON_SIZE = THEME_getUIButtonSize();
+	int UI_ROW_COUNT = THEME_getUIRowCount();
 	
 	PAD_init();
 	DEVICE_WIDTH = screen->w;

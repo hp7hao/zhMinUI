@@ -736,6 +736,8 @@ void GFX_blitRect(int asset, SDL_Surface* dst, SDL_Rect* dst_rect) {
 	GFX_blitAsset(asset, &(SDL_Rect){r,r,r,r}, dst, &(SDL_Rect){x+w-r,y+h-r});
 }
 void GFX_blitBattery(SDL_Surface* dst, SDL_Rect* dst_rect) {
+	int UI_PILL_SIZE = THEME_getUIPillSize();
+	
 	// LOG_info("dst: %p\n", dst);
 	int x = 0;
 	int y = 0;
@@ -744,8 +746,8 @@ void GFX_blitBattery(SDL_Surface* dst, SDL_Rect* dst_rect) {
 		y = dst_rect->y;
 	}
 	SDL_Rect rect = asset_rects[ASSET_BATTERY];
-	x += (SCALE1(PILL_SIZE) - (rect.w + FIXED_SCALE)) / 2;
-	y += (SCALE1(PILL_SIZE) - rect.h) / 2;
+	x += (UI_PILL_SIZE - (rect.w + FIXED_SCALE)) / 2;
+	y += (UI_PILL_SIZE - rect.h) / 2;
 	
 	if (pwr.is_charging) {
 		GFX_blitAsset(ASSET_BATTERY, NULL, dst, &(SDL_Rect){x,y});
@@ -767,16 +769,18 @@ void GFX_blitBattery(SDL_Surface* dst, SDL_Rect* dst_rect) {
 	}
 }
 int GFX_getButtonWidth(char* hint, char* button) {
+	int UI_BUTTON_SIZE = THEME_getUIButtonSize();
+	
 	int button_width = 0;
 	int width;
 	
 	int special_case = !strcmp(button,BRIGHTNESS_BUTTON_LABEL); // TODO: oof
 	
 	if (strlen(button)==1) {
-		button_width += SCALE1(BUTTON_SIZE);
+		button_width += UI_BUTTON_SIZE;
 	}
 	else {
-		button_width += SCALE1(BUTTON_SIZE) / 2;
+		button_width += UI_BUTTON_SIZE / 2;
 		TTF_SizeUTF8(special_case ? font.large : font.tiny, button, &width, NULL);
 		button_width += width;
 	}
@@ -787,6 +791,8 @@ int GFX_getButtonWidth(char* hint, char* button) {
 	return button_width;
 }
 void GFX_blitButton(char* hint, char*button, SDL_Surface* dst, SDL_Rect* dst_rect) {
+	int UI_BUTTON_SIZE = THEME_getUIButtonSize();
+	
 	SDL_Surface* text;
 	int ox = 0;
 	
@@ -798,19 +804,19 @@ void GFX_blitButton(char* hint, char*button, SDL_Surface* dst, SDL_Rect* dst_rec
 
 		// label
 		text = TTF_RenderUTF8_Blended(font.medium, button, COLOR_BUTTON_TEXT);
-		SDL_BlitSurface(text, NULL, dst, &(SDL_Rect){dst_rect->x+(SCALE1(BUTTON_SIZE)-text->w)/2,dst_rect->y+GFX_getTextVerticalCenter(text, SCALE1(BUTTON_SIZE))});
-		ox += SCALE1(BUTTON_SIZE);
+		SDL_BlitSurface(text, NULL, dst, &(SDL_Rect){dst_rect->x+(UI_BUTTON_SIZE-text->w)/2,dst_rect->y+GFX_getTextVerticalCenter(text, UI_BUTTON_SIZE)});
+		ox += UI_BUTTON_SIZE;
 		SDL_FreeSurface(text);
 	}
 	else {
 		text = TTF_RenderUTF8_Blended(special_case ? font.large : font.tiny, button, COLOR_BUTTON_TEXT);
-		GFX_blitPill(ASSET_BUTTON, dst, &(SDL_Rect){dst_rect->x,dst_rect->y,SCALE1(BUTTON_SIZE)/2+text->w,SCALE1(BUTTON_SIZE)});
-		ox += SCALE1(BUTTON_SIZE)/4;
+		GFX_blitPill(ASSET_BUTTON, dst, &(SDL_Rect){dst_rect->x,dst_rect->y,UI_BUTTON_SIZE/2+text->w,UI_BUTTON_SIZE});
+		ox += UI_BUTTON_SIZE/4;
 		
 		int oy = special_case ? SCALE1(-2) : 0;
-		SDL_BlitSurface(text, NULL, dst, &(SDL_Rect){ox+dst_rect->x,oy+dst_rect->y+GFX_getTextVerticalCenter(text, SCALE1(BUTTON_SIZE)),text->w,text->h});
+		SDL_BlitSurface(text, NULL, dst, &(SDL_Rect){ox+dst_rect->x,oy+dst_rect->y+GFX_getTextVerticalCenter(text, UI_BUTTON_SIZE),text->w,text->h});
 		ox += text->w;
-		ox += SCALE1(BUTTON_SIZE)/4;
+		ox += UI_BUTTON_SIZE/4;
 		SDL_FreeSurface(text);
 	}
 	
@@ -818,7 +824,7 @@ void GFX_blitButton(char* hint, char*button, SDL_Surface* dst, SDL_Rect* dst_rec
 
 	// hint text
 	text = TTF_RenderUTF8_Blended(font.small, hint, COLOR_WHITE);
-	SDL_BlitSurface(text, NULL, dst, &(SDL_Rect){ox+dst_rect->x,dst_rect->y+GFX_getTextVerticalCenter(text, SCALE1(BUTTON_SIZE)),text->w,text->h});
+	SDL_BlitSurface(text, NULL, dst, &(SDL_Rect){ox+dst_rect->x,dst_rect->y+GFX_getTextVerticalCenter(text, UI_BUTTON_SIZE),text->w,text->h});
 	SDL_FreeSurface(text);
 }
 void GFX_blitMessage(TTF_Font* font, char* msg, SDL_Surface* dst, SDL_Rect* dst_rect) {
@@ -869,6 +875,9 @@ void GFX_blitMessage(TTF_Font* font, char* msg, SDL_Surface* dst, SDL_Rect* dst_
 }
 
 int GFX_blitHardwareGroup(SDL_Surface* dst, int show_setting) {
+	int UI_PILL_SIZE = THEME_getUIPillSize();
+	int UI_PADDING = THEME_getUIPadding();
+	
 	int ox;
 	int oy;
 	int ow = 0;
@@ -878,14 +887,14 @@ int GFX_blitHardwareGroup(SDL_Surface* dst, int show_setting) {
 	int setting_max;
 	
 	if (show_setting && !GetHDMI()) {
-		ow = SCALE1(PILL_SIZE + SETTINGS_WIDTH + 10 + 4);
-		ox = dst->w - SCALE1(PADDING) - ow;
-		oy = SCALE1(PADDING);
+		ow = UI_PILL_SIZE + SCALE1(SETTINGS_WIDTH + 10 + 4);
+		ox = dst->w - UI_PADDING - ow;
+		oy = UI_PADDING;
 		GFX_blitPill(gfx.mode==MODE_MAIN ? ASSET_DARK_GRAY_PILL : ASSET_BLACK_PILL, dst, &(SDL_Rect){
 			ox,
 			oy,
 			ow,
-			SCALE1(PILL_SIZE)
+			UI_PILL_SIZE
 		});
 		
 		if (show_setting==1) {
@@ -904,8 +913,8 @@ int GFX_blitHardwareGroup(SDL_Surface* dst, int show_setting) {
 		int ay = oy + (show_setting==1 ? SCALE1(5) : SCALE1(7));
 		GFX_blitAsset(asset, NULL, dst, &(SDL_Rect){ax,ay});
 		
-		ox += SCALE1(PILL_SIZE);
-		oy += SCALE1((PILL_SIZE - SETTINGS_SIZE) / 2);
+		ox += UI_PILL_SIZE;
+		oy += (UI_PILL_SIZE - SCALE1(SETTINGS_SIZE)) / 2;
 		GFX_blitPill(gfx.mode==MODE_MAIN ? ASSET_BAR_BG : ASSET_BAR_BG_MENU, dst, &(SDL_Rect){
 			ox,
 			oy,
@@ -927,24 +936,24 @@ int GFX_blitHardwareGroup(SDL_Surface* dst, int show_setting) {
 		// TODO: handle wifi
 		int show_wifi = PLAT_isOnline(); // NOOOOO! not every frame!
 
-		int ww = SCALE1(PILL_SIZE-3);
-		ow = SCALE1(PILL_SIZE);
+		int ww = UI_PILL_SIZE - SCALE1(3);
+		ow = UI_PILL_SIZE;
 		if (show_wifi) ow += ww;
 
-		ox = dst->w - SCALE1(PADDING) - ow;
-		oy = SCALE1(PADDING);
+		ox = dst->w - UI_PADDING - ow;
+		oy = UI_PADDING;
 		GFX_blitPill(gfx.mode==MODE_MAIN ? ASSET_DARK_GRAY_PILL : ASSET_BLACK_PILL, dst, &(SDL_Rect){
 			ox,
 			oy,
 			ow,
-			SCALE1(PILL_SIZE)
+			UI_PILL_SIZE
 		});
 		if (show_wifi) {
 			SDL_Rect rect = asset_rects[ASSET_WIFI];
 			int x = ox;
 			int y = oy;
-			x += (SCALE1(PILL_SIZE) - rect.w) / 2;
-			y += (SCALE1(PILL_SIZE) - rect.h) / 2;
+			x += (UI_PILL_SIZE - rect.w) / 2;
+			y += (UI_PILL_SIZE - rect.h) / 2;
 			
 			GFX_blitAsset(ASSET_WIFI, NULL, dst, &(SDL_Rect){x,y});
 			ox += ww;
@@ -967,6 +976,9 @@ void GFX_blitHardwareHints(SDL_Surface* dst, int show_setting) {
 }
 
 int GFX_blitButtonGroup(char** pairs, int primary, SDL_Surface* dst, int align_right) {
+	int UI_PILL_SIZE = THEME_getUIPillSize();
+	int UI_PADDING = THEME_getUIPadding();
+	
 	int ox;
 	int oy;
 	int ow;
@@ -981,8 +993,8 @@ int GFX_blitButtonGroup(char** pairs, int primary, SDL_Surface* dst, int align_r
 	int w = 0; // individual button dimension
 	int h = 0; // hints index
 	ow = 0; // full pill width
-	ox = align_right ? dst->w - SCALE1(PADDING) : SCALE1(PADDING);
-	oy = dst->h - SCALE1(PADDING + PILL_SIZE);
+	ox = align_right ? dst->w - UI_PADDING : UI_PADDING;
+	oy = dst->h - (UI_PADDING + UI_PILL_SIZE);
 	
 	for (int i=0; i<2; i++) {
 		if (!pairs[i*2]) break;
@@ -1004,7 +1016,7 @@ int GFX_blitButtonGroup(char** pairs, int primary, SDL_Surface* dst, int align_r
 		ox,
 		oy,
 		ow,
-		SCALE1(PILL_SIZE)
+		UI_PILL_SIZE
 	});
 	
 	ox += SCALE1(BUTTON_MARGIN);

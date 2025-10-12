@@ -16,10 +16,11 @@ typedef struct MinUIConfig {
     char font[64];          // Font filename from res/fonts folder
     char ui_mode[16];       // "Dark" or "Light"
     char background_mode[16]; // "Monochrome" or "Theme"
+    char ui_size[16];       // "Big", "Normal", "Compact"
     int show_perf;          // 0 or 1 (show performance counter)
 } MinUIConfig;
 
-static MinUIConfig config = {"en_US", "Default", "BoutiqueBitmap7x7_1.7.ttf", "Dark", "Monochrome", 0}; // Default values
+static MinUIConfig config = {"en_US", "Default", "BoutiqueBitmap7x7_1.7.ttf", "Dark", "Monochrome", "Big", 0}; // Default values
 static int config_loaded = 0;
 
 void CONFIG_load(void) {
@@ -98,6 +99,9 @@ void CONFIG_load(void) {
                 } else if (strcmp(key, "background_mode") == 0) {
                     strncpy(config.background_mode, value, 15);
                     config.background_mode[15] = '\0';
+                } else if (strcmp(key, "ui_size") == 0) {
+                    strncpy(config.ui_size, value, 15);
+                    config.ui_size[15] = '\0';
                 } else if (strcmp(key, "show_perf") == 0) {
                     config.show_perf = (strcmp(value, "1") == 0 || strcmp(value, "true") == 0);
                 }
@@ -132,8 +136,8 @@ void CONFIG_save(void) {
     
     // Write all settings
     char config_content[512];
-    sprintf(config_content, "language=%s\ntheme=%s\nfont=%s\nui_mode=%s\nbackground_mode=%s\nshow_perf=%d\n", 
-        config.language, config.theme, config.font, config.ui_mode, config.background_mode, config.show_perf);
+    sprintf(config_content, "language=%s\ntheme=%s\nfont=%s\nui_mode=%s\nbackground_mode=%s\nui_size=%s\nshow_perf=%d\n", 
+        config.language, config.theme, config.font, config.ui_mode, config.background_mode, config.ui_size, config.show_perf);
     
     // Debug: Print config content to console
     printf("CONFIG_save: Writing to %s\n", CONFIG_PATH);
@@ -173,6 +177,11 @@ int CONFIG_getShowPerf(void) {
     return config.show_perf;
 }
 
+const char* CONFIG_getUISize(void) {
+    CONFIG_load();
+    return config.ui_size;
+}
+
 // Setter functions
 void CONFIG_setLanguage(const char* value) {
     CONFIG_load();
@@ -206,6 +215,13 @@ void CONFIG_setBackgroundMode(const char* value) {
     CONFIG_load();
     strncpy(config.background_mode, value, 15);
     config.background_mode[15] = '\0';
+    CONFIG_save();
+}
+
+void CONFIG_setUISize(const char* value) {
+    CONFIG_load();
+    strncpy(config.ui_size, value, 15);
+    config.ui_size[15] = '\0';
     CONFIG_save();
 }
 

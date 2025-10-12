@@ -1171,7 +1171,8 @@ static void openDirectory(char* path, int auto_launch) {
 	
 	top = Directory_new(path, selected);
 	top->start = start;
-	top->end = end ? end : ((top->entries->count<MAIN_ROW_COUNT) ? top->entries->count : MAIN_ROW_COUNT);
+	int row_count = THEME_getUIRowCount();
+	top->end = end ? end : ((top->entries->count<row_count) ? top->entries->count : row_count);
 
 	Array_push(stack, top);
 }
@@ -1262,11 +1263,12 @@ static void loadLast(void) { // call after loading root directory
 				if (exactMatch(entry->path, path) || (strlen(collated_path) && prefixMatch(collated_path, entry->path)) || (prefixMatch(COLLECTIONS_PATH, full_path) && suffixMatch(filename, entry->path))) {
 					top->selected = i;
 					if (i>=top->end) {
+						int row_count = THEME_getUIRowCount();
 						top->start = i;
-						top->end = top->start + MAIN_ROW_COUNT;
+						top->end = top->start + row_count;
 						if (top->end>top->entries->count) {
 							top->end = top->entries->count;
-							top->start = top->end - MAIN_ROW_COUNT;
+							top->start = top->end - row_count;
 						}
 					}
 					if (last->count==0 && !exactMatch(entry->path, FAUX_RECENT_PATH) && !(!exactMatch(entry->path, COLLECTIONS_PATH) && prefixMatch(COLLECTIONS_PATH, entry->path))) break; // don't show contents of auto-launch dirs
@@ -1394,7 +1396,7 @@ int main (int argc, char *argv[]) {
 	// Settings menu variables
 	int show_settings_menu = 0;
 	int settings_menu_selected = 0;
-	int settings_menu_count = 5; // Language, UI Mode, Theme, Background Mode, Font
+	int settings_menu_count = 6; // Language, UI Mode, Theme, Background Mode, Font, UI Size
 	
 	// Settings options
 	const char* settings_options[] = {
@@ -1403,6 +1405,7 @@ int main (int argc, char *argv[]) {
 		N_("Theme"),
 		N_("Background Mode"),
 		N_("Font"),
+		N_("UI Size"),
 		NULL
 	};
 	
@@ -1436,12 +1439,21 @@ int main (int argc, char *argv[]) {
 		NULL
 	};
 	
+	// UI Size options
+	const char* ui_size_options[] = {
+		N_("Big"),
+		N_("Normal"),
+		N_("Compact"),
+		NULL
+	};
+	
 	// MinUI settings (loaded from config module)
 	const char* current_language = CONFIG_getLanguage();
 	const char* current_theme = CONFIG_getTheme();
 	const char* current_font = CONFIG_getFont();
 	const char* current_ui_mode = CONFIG_getUIMode();
 	const char* current_background_mode = CONFIG_getBackgroundMode();
+	const char* current_ui_size = CONFIG_getUISize();
 	
 	// Convert to indices for UI display
 	int current_language_index = 0;
@@ -1449,6 +1461,7 @@ int main (int argc, char *argv[]) {
 	int current_font_index = 0;
 	int current_ui_mode_index = 0;
 	int current_background_mode_index = 0;
+	int current_ui_size_index = 0;
 	
 	// Map language names to indices
 	printf("[INFO] Initial language from config: '%s'\n", current_language);
@@ -1471,6 +1484,16 @@ int main (int argc, char *argv[]) {
 	
 	// Map background mode names to indices
 	if (strcmp(current_background_mode, "Theme") == 0) current_background_mode_index = 1;
+	
+	// Map UI size names to indices
+	if (strcmp(current_ui_size, "Normal") == 0) current_ui_size_index = 1;
+	else if (strcmp(current_ui_size, "Compact") == 0) current_ui_size_index = 2;
+	
+	// Cache UI size parameters for performance
+	int UI_PILL_SIZE = THEME_getUIPillSize();
+	int UI_PADDING = THEME_getUIPadding();
+	int UI_BUTTON_PADDING = THEME_getUIButtonPadding();
+	int UI_ROW_COUNT = THEME_getUIRowCount();
 	
 	// Accent color will be calculated inside the loop to ensure it's always current
 	
@@ -1615,6 +1638,20 @@ int main (int argc, char *argv[]) {
 							FONT_reloadFonts(); // Reload fonts with new font
 						}
 						break;
+					case 5: // UI Size
+						current_ui_size_index = (current_ui_size_index - 1 + 3) % 3;
+						{
+							const char* ui_sizes[] = {"Big", "Normal", "Compact"};
+							CONFIG_setUISize(ui_sizes[current_ui_size_index]);
+							// Update cached UI parameters
+							UI_PILL_SIZE = THEME_getUIPillSize();
+							UI_PADDING = THEME_getUIPadding();
+							UI_BUTTON_PADDING = THEME_getUIButtonPadding();
+							UI_ROW_COUNT = THEME_getUIRowCount();
+							// Reload fonts with new sizes
+							FONT_reloadFonts();
+						}
+						break;
 				}
 				dirty = 1;
 			}
@@ -1662,6 +1699,20 @@ int main (int argc, char *argv[]) {
 							FONT_reloadFonts(); // Reload fonts with new font
 						}
 						break;
+					case 5: // UI Size
+						current_ui_size_index = (current_ui_size_index + 1) % 3;
+						{
+							const char* ui_sizes[] = {"Big", "Normal", "Compact"};
+							CONFIG_setUISize(ui_sizes[current_ui_size_index]);
+							// Update cached UI parameters
+							UI_PILL_SIZE = THEME_getUIPillSize();
+							UI_PADDING = THEME_getUIPadding();
+							UI_BUTTON_PADDING = THEME_getUIButtonPadding();
+							UI_ROW_COUNT = THEME_getUIRowCount();
+							// Reload fonts with new sizes
+							FONT_reloadFonts();
+						}
+						break;
 				}
 				dirty = 1;
 			}
@@ -1694,7 +1745,7 @@ int main (int argc, char *argv[]) {
 						selected -= 1;
 						if (selected<0) {
 							selected = total-1;
-							int start = total - MAIN_ROW_COUNT;
+							int start = total - UI_ROW_COUNT;
 							top->start = (start<0) ? 0 : start;
 							top->end = total; 
 						}
@@ -1713,7 +1764,7 @@ int main (int argc, char *argv[]) {
 						if (selected>=total) {
 							selected = 0;
 							top->start = 0;
-							top->end = (total<MAIN_ROW_COUNT) ? total : MAIN_ROW_COUNT;
+							top->end = (total<UI_ROW_COUNT) ? total : UI_ROW_COUNT;
 						}
 						else if (selected>=top->end) {
 							top->start += 1;
@@ -1722,30 +1773,30 @@ int main (int argc, char *argv[]) {
 					}
 				}
 				if (PAD_justRepeated(BTN_LEFT)) {
-					selected -= MAIN_ROW_COUNT;
+					selected -= UI_ROW_COUNT;
 					if (selected<0) {
 						selected = 0;
 						top->start = 0;
-						top->end = (total<MAIN_ROW_COUNT) ? total : MAIN_ROW_COUNT;
+						top->end = (total<UI_ROW_COUNT) ? total : UI_ROW_COUNT;
 					}
 					else if (selected<top->start) {
-						top->start -= MAIN_ROW_COUNT;
+						top->start -= UI_ROW_COUNT;
 						if (top->start<0) top->start = 0;
-						top->end = top->start + MAIN_ROW_COUNT;
+						top->end = top->start + UI_ROW_COUNT;
 					}
 				}
 				else if (PAD_justRepeated(BTN_RIGHT)) {
-					selected += MAIN_ROW_COUNT;
+					selected += UI_ROW_COUNT;
 					if (selected>=total) {
 						selected = total-1;
-						int start = total - MAIN_ROW_COUNT;
+						int start = total - UI_ROW_COUNT;
 						top->start = (start<0) ? 0 : start;
 						top->end = total;
 					}
 					else if (selected>=top->end) {
-						top->end += MAIN_ROW_COUNT;
+						top->end += UI_ROW_COUNT;
 						if (top->end>total) top->end = total;
-						top->start = top->end - MAIN_ROW_COUNT;
+						top->start = top->end - UI_ROW_COUNT;
 					}
 				}
 			}
@@ -1755,11 +1806,11 @@ int main (int argc, char *argv[]) {
 				int i = entry->alpha-1;
 				if (i>=0) {
 					selected = top->alphas->items[i];
-					if (total>MAIN_ROW_COUNT) {
+					if (total>UI_ROW_COUNT) {
 						top->start = selected;
-						top->end = top->start + MAIN_ROW_COUNT;
+						top->end = top->start + UI_ROW_COUNT;
 						if (top->end>total) top->end = total;
-						top->start = top->end - MAIN_ROW_COUNT;
+						top->start = top->end - UI_ROW_COUNT;
 					}
 				}
 			}
@@ -1768,11 +1819,11 @@ int main (int argc, char *argv[]) {
 				int i = entry->alpha+1;
 				if (i<top->alphas->count) {
 					selected = top->alphas->items[i];
-					if (total>MAIN_ROW_COUNT) {
+					if (total>UI_ROW_COUNT) {
 						top->start = selected;
-						top->end = top->start + MAIN_ROW_COUNT;
+						top->end = top->start + UI_ROW_COUNT;
 						if (top->end>total) top->end = total;
-						top->start = top->end - MAIN_ROW_COUNT;
+						top->start = top->end - UI_ROW_COUNT;
 					}
 				}
 			}
@@ -1904,19 +1955,19 @@ int main (int argc, char *argv[]) {
 				
 				// Render main menu using system's menu approach
 				int menu_x = (screen->w - SCALE1(200)) / 2;
-				int menu_y = (screen->h - SCALE1(main_menu_count * PILL_SIZE + PADDING * 2)) / 2;
+				int menu_y = (screen->h - (main_menu_count * UI_PILL_SIZE + UI_PADDING * 2)) / 2;
 				int menu_w = SCALE1(200);
 				
 				// Draw menu items using system's pill approach
 				for (int i = 0; i < main_menu_count; i++) {
-					int item_y = menu_y + SCALE1(PADDING) + i * SCALE1(PILL_SIZE);
+					int item_y = menu_y + UI_PADDING + i * UI_PILL_SIZE;
 					char* item = _(main_menu_items[i]);
 					SDL_Color text_color = COLOR_WHITE;
 					
 					// Calculate text width for proper pill sizing
 					int text_width = 0;
 					TTF_SizeUTF8(font.large, item, &text_width, NULL);
-					int pill_width = text_width + SCALE1(BUTTON_PADDING * 2);
+					int pill_width = text_width + UI_BUTTON_PADDING * 2;
 					
 					if (i == main_menu_selected) {
 						// Draw selected pill using theme accent color
@@ -1924,7 +1975,7 @@ int main (int argc, char *argv[]) {
 							menu_x + (menu_w - pill_width) / 2,
 							item_y,
 							pill_width,
-							SCALE1(PILL_SIZE)
+							UI_PILL_SIZE
 						});
 						text_color = COLOR_BLACK; // Use background color for text on accent
 					}
@@ -1947,13 +1998,13 @@ int main (int argc, char *argv[]) {
 				
 				// Render settings menu using system's menu approach
 				int menu_x = (screen->w - SCALE1(300)) / 2;
-				int menu_y = (screen->h - SCALE1(settings_menu_count * PILL_SIZE + PADDING * 2)) / 2;
+				int menu_y = (screen->h - (settings_menu_count * UI_PILL_SIZE + UI_PADDING * 2)) / 2;
 				int menu_w = SCALE1(300);
 				
 				
 				// Draw menu items using system's pill approach
 				for (int i = 0; i < settings_menu_count; i++) {
-					int item_y = menu_y + SCALE1(PADDING) + i * SCALE1(PILL_SIZE);
+					int item_y = menu_y + UI_PADDING + i * UI_PILL_SIZE;
 					char* item = _(settings_options[i]);
 					SDL_Color text_color = COLOR_WHITE;
 					
@@ -1975,6 +2026,9 @@ int main (int argc, char *argv[]) {
 						case 4: // Font
 							sprintf(value_text, "%s", font_options[current_font_index]);
 							break;
+						case 5: // UI Size
+							sprintf(value_text, "%s", _(ui_size_options[current_ui_size_index]));
+							break;
 					}
 					
 					// Calculate text width for proper pill sizing
@@ -1982,7 +2036,7 @@ int main (int argc, char *argv[]) {
 					TTF_SizeUTF8(font.small, item, &text_width, NULL);
 					int value_width = 0;
 					TTF_SizeUTF8(font.small, value_text, &value_width, NULL);
-					int pill_width = text_width + value_width + SCALE1(BUTTON_PADDING * 3);
+					int pill_width = text_width + value_width + UI_BUTTON_PADDING * 3;
 					
 					if (i == settings_menu_selected) {
 						// Draw selected pill using theme accent color
@@ -1990,7 +2044,7 @@ int main (int argc, char *argv[]) {
 							menu_x + (menu_w - pill_width) / 2,
 							item_y,
 							pill_width,
-							SCALE1(PILL_SIZE)
+							UI_PILL_SIZE
 						});
 						text_color = COLOR_BLACK; // Use background color for text on accent
 					}
@@ -2002,7 +2056,7 @@ int main (int argc, char *argv[]) {
 					SDL_Color text_color_final = (i == settings_menu_selected) ? COLOR_BLACK : COLOR_WHITE;
 					SDL_Surface* item_text = TTF_RenderUTF8_Blended(font.small, item, text_color_final);
 					SDL_BlitSurface(item_text, NULL, screen, &(SDL_Rect){
-						menu_x + (menu_w - pill_width) / 2 + SCALE1(BUTTON_PADDING),
+						menu_x + (menu_w - pill_width) / 2 + UI_BUTTON_PADDING,
 						item_y + SCALE1(4)
 					});
 					SDL_FreeSurface(item_text);
@@ -2010,7 +2064,7 @@ int main (int argc, char *argv[]) {
 					// Draw value text
 					SDL_Surface* value_surface = TTF_RenderUTF8_Blended(font.small, value_text, text_color_final);
 					SDL_BlitSurface(value_surface, NULL, screen, &(SDL_Rect){
-						menu_x + (menu_w - pill_width) / 2 + SCALE1(BUTTON_PADDING) + text_width + SCALE1(BUTTON_PADDING),
+						menu_x + (menu_w - pill_width) / 2 + UI_BUTTON_PADDING + text_width + UI_BUTTON_PADDING,
 						item_y + SCALE1(4)
 					});
 					SDL_FreeSurface(value_surface);
@@ -2088,7 +2142,7 @@ int main (int argc, char *argv[]) {
 						Entry* entry = top->entries->items[i];
 						char* entry_name = entry->name;
 						char* entry_unique = entry->unique;
-						int available_width = (had_thumb && j!=selected_row ? ox : screen->w) - SCALE1(PADDING * 2);
+						int available_width = (had_thumb && j!=selected_row ? ox : screen->w) - (UI_PADDING * 2);
 						if (i==top->start && !(had_thumb && j!=selected_row)) available_width -= ow; // 
 					
 						SDL_Color text_color = COLOR_WHITE;
@@ -2096,44 +2150,44 @@ int main (int argc, char *argv[]) {
 						trimSortingMeta(&entry_name);
 					
 						char display_name[256];
-						int text_width = GFX_truncateText(font.large, entry_unique ? entry_unique : entry_name, display_name, available_width, SCALE1(BUTTON_PADDING*2));
+						int text_width = GFX_truncateText(font.large, entry_unique ? entry_unique : entry_name, display_name, available_width, UI_BUTTON_PADDING*2);
 						int max_width = MIN(available_width, text_width);
 						if (j==selected_row) {
 							GFX_blitPill(ASSET_WHITE_PILL, screen, &(SDL_Rect){
-								SCALE1(PADDING),
-								SCALE1(PADDING+(j*PILL_SIZE)),
+								UI_PADDING,
+								UI_PADDING+(j*UI_PILL_SIZE),
 								max_width,
-								SCALE1(PILL_SIZE)
+								UI_PILL_SIZE
 							});
 							text_color = COLOR_BLACK;
 						}
 						else if (entry->unique) {
 							trimSortingMeta(&entry_unique);
 							char unique_name[256];
-							GFX_truncateText(font.large, entry_unique, unique_name, available_width, SCALE1(BUTTON_PADDING*2));
+							GFX_truncateText(font.large, entry_unique, unique_name, available_width, UI_BUTTON_PADDING*2);
 						
 							SDL_Surface* text = TTF_RenderUTF8_Blended(font.large, unique_name, COLOR_DARK_TEXT);
 							SDL_BlitSurface(text, &(SDL_Rect){
 								0,
 								0,
-								max_width-SCALE1(BUTTON_PADDING*2),
+								max_width-UI_BUTTON_PADDING*2,
 								text->h
 							}, screen, &(SDL_Rect){
-								SCALE1(PADDING+BUTTON_PADDING),
-								SCALE1(PADDING+(j*PILL_SIZE)) + GFX_getTextVerticalCenter(text, SCALE1(PILL_SIZE))
+								UI_PADDING+UI_BUTTON_PADDING,
+								UI_PADDING+(j*UI_PILL_SIZE) + GFX_getTextVerticalCenter(text, UI_PILL_SIZE)
 							});
 						
-							GFX_truncateText(font.large, entry_name, display_name, available_width, SCALE1(BUTTON_PADDING*2));
+							GFX_truncateText(font.large, entry_name, display_name, available_width, UI_BUTTON_PADDING*2);
 						}
 						SDL_Surface* text = TTF_RenderUTF8_Blended(font.large, display_name, text_color);
 						SDL_BlitSurface(text, &(SDL_Rect){
 							0,
 							0,
-							max_width-SCALE1(BUTTON_PADDING*2),
+							max_width-UI_BUTTON_PADDING*2,
 							text->h
 						}, screen, &(SDL_Rect){
-							SCALE1(PADDING+BUTTON_PADDING),
-							SCALE1(PADDING+(j*PILL_SIZE)) + GFX_getTextVerticalCenter(text, SCALE1(PILL_SIZE))
+							UI_PADDING+UI_BUTTON_PADDING,
+							UI_PADDING+(j*UI_PILL_SIZE) + GFX_getTextVerticalCenter(text, UI_PILL_SIZE)
 						});
 						SDL_FreeSurface(text);
 					}

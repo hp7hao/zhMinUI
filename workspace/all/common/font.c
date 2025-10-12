@@ -4,6 +4,7 @@
 #include <dirent.h>
 #include "defines.h"
 #include "config.h"
+#include "theme.h"
 #include "api.h"
 
 ///////////////////////////////////////
@@ -76,12 +77,12 @@ void FONT_reloadFonts(void) {
     TTF_CloseFont(font.small);
     TTF_CloseFont(font.tiny);
     
-    // Load fonts with current font
+    // Load fonts with sizes from theme system (respects UI size setting)
     const char* font_path = FONT_getCurrentFontPath();
-    font.large  = TTF_OpenFont(font_path, SCALE1(FONT_LARGE));
-    font.medium = TTF_OpenFont(font_path, SCALE1(FONT_MEDIUM));
-    font.small  = TTF_OpenFont(font_path, SCALE1(FONT_SMALL));
-    font.tiny   = TTF_OpenFont(font_path, SCALE1(FONT_TINY));
+    font.large  = TTF_OpenFont(font_path, THEME_getFontLargeSize());
+    font.medium = TTF_OpenFont(font_path, THEME_getFontMediumSize());
+    font.small  = TTF_OpenFont(font_path, THEME_getFontSmallSize());
+    font.tiny   = TTF_OpenFont(font_path, THEME_getFontTinySize());
     
     // Set font styles
     if (font.large) TTF_SetFontStyle(font.large, TTF_STYLE_NORMAL);
