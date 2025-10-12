@@ -14,6 +14,7 @@
 #include "theme.h"
 #include "font.h"
 #include "perf.h"
+#include "lockscreen.h"
 
 ///////////////////////////////////////
 
@@ -1500,6 +1501,9 @@ int main (int argc, char *argv[]) {
 	
 	// Initialize performance counter
 	PERF_init();
+	
+	// Initialize lockscreen
+	LOCKSCREEN_init();
 	
 	// LOG_info("- loop start: %lu\n", SDL_GetTicks() - main_begin);
 	while (!quit) {

@@ -20,6 +20,7 @@
 #include "utils.h"
 #include "config.h"
 #include "i18n.h"
+#include "lockscreen.h"
 
 ///////////////////////////////
 
@@ -1716,7 +1717,7 @@ void PWR_update(int* _dirty, int* _show_setting, PWR_callback_t before_sleep, PW
 	if (was_charging==-1) was_charging = pwr.is_charging;
 
 	uint32_t now = SDL_GetTicks();
-	if (was_charging || PAD_anyPressed() || last_input_at==0) last_input_at = now;
+	if (PAD_anyPressed() || last_input_at==0) last_input_at = now;
 	
 	#define CHARGE_DELAY 1000
 	if (dirty || now-checked_charge_at>=CHARGE_DELAY) {
@@ -1737,18 +1738,83 @@ void PWR_update(int* _dirty, int* _show_setting, PWR_callback_t before_sleep, PW
 		power_pressed_at = now;
 	}
 	
-	#define SLEEP_DELAY 120000 // 120 seconds
+	#define SLEEP_DELAY 60000 // 60 seconds (1 minute)
 	if (now-last_input_at>=SLEEP_DELAY && PWR_preventAutosleep()) last_input_at = now;
+	
+	int manual_sleep = pwr.can_sleep && PAD_justReleased(BTN_SLEEP);
+	int auto_sleep = now-last_input_at>=SLEEP_DELAY;
 	
 	if (
 		pwr.requested_sleep || // hardware requested sleep
-		now-last_input_at>=SLEEP_DELAY || // autosleep
-		(pwr.can_sleep && PAD_justReleased(BTN_SLEEP)) // manual sleep
+		auto_sleep ||          // autosleep
+		manual_sleep           // manual sleep button press
 	) {
 		pwr.requested_sleep = 0;
-		if (before_sleep) before_sleep();
-		PWR_fauxSleep();
-		if (after_sleep) after_sleep();
+		
+		int should_sleep = 1;
+		
+		if (manual_sleep) {
+			// Manual power button press:
+			// 1. Draw lockscreen (leave it on screen)
+			// 2. Sleep immediately (screen off)
+			// 3. When waking, lockscreen is already visible
+			if (LOCKSCREEN_isEnabled()) {
+				// Just draw the lockscreen, don't wait for unlock
+				GFX_clear(gfx.screen);
+				SDL_Color text_color = {255, 255, 255, 255};
+				SDL_Surface* lock_surface = TTF_RenderUTF8_Blended(font.large, "Screen Locked", text_color);
+				if (lock_surface) {
+					int x = (gfx.screen->w - lock_surface->w) / 2;
+					int y = (gfx.screen->h - lock_surface->h) / 2 - SCALE1(40);
+					SDL_BlitSurface(lock_surface, NULL, gfx.screen, &(SDL_Rect){x, y});
+					SDL_FreeSurface(lock_surface);
+				}
+				SDL_Surface* unlock_surface = TTF_RenderUTF8_Blended(font.medium, "Press A + B to unlock", text_color);
+				if (unlock_surface) {
+					int x = (gfx.screen->w - unlock_surface->w) / 2;
+					int y = (gfx.screen->h + unlock_surface->h) / 2 + SCALE1(20);
+					SDL_BlitSurface(unlock_surface, NULL, gfx.screen, &(SDL_Rect){x, y});
+					SDL_FreeSurface(unlock_surface);
+				}
+				GFX_flip(gfx.screen);
+			}
+			// Sleep immediately
+			if (before_sleep) before_sleep();
+			PWR_fauxSleep();
+			// After waking, show interactive lockscreen
+			if (LOCKSCREEN_isEnabled()) {
+				while (!LOCKSCREEN_show(gfx.screen)) {
+					// Keep showing lockscreen until unlocked
+					PWR_fauxSleep();
+				}
+			}
+			if (after_sleep) after_sleep();
+		} else {
+			// Auto-timeout: Show lockscreen and allow unlock to avoid sleep
+			if (LOCKSCREEN_isEnabled()) {
+				int unlocked = LOCKSCREEN_show(gfx.screen);
+				if (unlocked) {
+					// User unlocked during auto-timeout, don't sleep
+					should_sleep = 0;
+				}
+			}
+			
+			// Only sleep if user didn't unlock
+			if (should_sleep) {
+				if (before_sleep) before_sleep();
+				PWR_fauxSleep();
+				
+				// After waking, show lockscreen again
+				if (LOCKSCREEN_isEnabled()) {
+					while (!LOCKSCREEN_show(gfx.screen)) {
+						// Keep showing lockscreen until unlocked
+						PWR_fauxSleep();
+					}
+				}
+				
+				if (after_sleep) after_sleep();
+			}
+		}
 		
 		last_input_at = now = SDL_GetTicks();
 		power_pressed_at = 0;

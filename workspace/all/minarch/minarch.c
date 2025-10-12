@@ -23,6 +23,7 @@
 #include "theme.h"
 #include "font.h"
 #include "perf.h"
+#include "lockscreen.h"
 
 ///////////////////////////////////////
 
@@ -4745,6 +4746,9 @@ int main(int argc , char* argv[]) {
 	
 	// Initialize performance counter (caches config once at startup)
 	PERF_init();
+	
+	// Initialize lockscreen
+	LOCKSCREEN_init();
 	
 	PAD_init();
 	DEVICE_WIDTH = screen->w;

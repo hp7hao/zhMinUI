@@ -367,7 +367,9 @@ int PLAT_shouldWake(void) {
 	for (int i=0; i<INPUT_COUNT; i++) {
 		input = inputs[i];
 		while (read(input, &event, sizeof(event))==sizeof(event)) {
-			if (event.type==EV_KEY && event.code==RAW_POWER && event.value==0) {
+			// Wake on ANY button release (EV_KEY), not just power button
+			// Ignore axis motion (EV_ABS) to prevent accidental wakes
+			if (event.type==EV_KEY && event.value==0) {
 				// ignore input while lid is closed
 				if (lid.has_lid && !lid.is_open) return 0;  // do it here so we eat the input
 				return 1;
