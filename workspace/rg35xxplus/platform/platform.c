@@ -390,6 +390,7 @@ static struct VID_Context {
 	SDL_Renderer* renderer;
 	SDL_Texture* texture;
 	SDL_Texture* target;
+	SDL_Texture* game_bg_texture;
 	SDL_Texture* effect;
 
 	SDL_Surface* buffer;
@@ -499,6 +500,7 @@ SDL_Surface* PLAT_initVideo(void) {
 	SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY,"1"); // linear
 	vid.texture = SDL_CreateTexture(vid.renderer,SDL_PIXELFORMAT_RGB565, SDL_TEXTUREACCESS_STREAMING, w,h);
 	vid.target	= NULL; // only needed for non-native sizes
+	vid.game_bg_texture = NULL; // Will be loaded if exists
 	
 	// TODO: doesn't work here
 	// SDL_SetTextureScaleMode(vid.texture, SDL_ScaleModeLinear); // we always start at device size so use linear for better upscaling over hdmi
@@ -524,6 +526,17 @@ SDL_Surface* PLAT_initVideo(void) {
 	
 	vid.sharpness = SHARPNESS_SOFT;
 	
+	// Load game background texture if it exists
+	char bg_path[256];
+	sprintf(bg_path, "%s/.system/res/gamebg.png", getenv("SDCARD_PATH") ? getenv("SDCARD_PATH") : "/mnt/sdcard");
+	if (access(bg_path, F_OK) == 0) {
+		SDL_Surface* bg_surface = IMG_Load(bg_path);
+		if (bg_surface) {
+			vid.game_bg_texture = SDL_CreateTextureFromSurface(vid.renderer, bg_surface);
+			SDL_FreeSurface(bg_surface);
+		}
+	}
+	
 	return vid.screen;
 }
 
@@ -542,6 +555,7 @@ void PLAT_quitVideo(void) {
 	SDL_FreeSurface(vid.buffer);
 	if (vid.target) SDL_DestroyTexture(vid.target);
 	if (vid.effect) SDL_DestroyTexture(vid.effect);
+	if (vid.game_bg_texture) SDL_DestroyTexture(vid.game_bg_texture);
 	SDL_DestroyTexture(vid.texture);
 	SDL_DestroyRenderer(vid.renderer);
 	SDL_DestroyWindow(vid.window);
@@ -832,6 +846,34 @@ void PLAT_flip(SDL_Surface* IGNORED, int ignored) {
 		dst_rect->y = y;
 		dst_rect->w = w;
 		dst_rect->h = h;
+	}
+	
+	// Draw background texture in letterbox/pillarbox areas
+	if (vid.game_bg_texture) {
+		// Draw background bars (only visible areas not covered by game)
+		// Top bar
+		if (dst_rect->y > 0) {
+			SDL_Rect bg_rect = {0, 0, device_width, dst_rect->y};
+			SDL_RenderCopy(vid.renderer, vid.game_bg_texture, &bg_rect, &bg_rect);
+		}
+		// Bottom bar
+		if (dst_rect->y + dst_rect->h < device_height) {
+			SDL_Rect bg_src = {0, dst_rect->y + dst_rect->h, device_width, device_height - (dst_rect->y + dst_rect->h)};
+			SDL_Rect bg_dst = {0, dst_rect->y + dst_rect->h, device_width, device_height - (dst_rect->y + dst_rect->h)};
+			SDL_RenderCopy(vid.renderer, vid.game_bg_texture, &bg_src, &bg_dst);
+		}
+		// Left bar
+		if (dst_rect->x > 0) {
+			SDL_Rect bg_src = {0, dst_rect->y, dst_rect->x, dst_rect->h};
+			SDL_Rect bg_dst = {0, dst_rect->y, dst_rect->x, dst_rect->h};
+			SDL_RenderCopy(vid.renderer, vid.game_bg_texture, &bg_src, &bg_dst);
+		}
+		// Right bar
+		if (dst_rect->x + dst_rect->w < device_width) {
+			SDL_Rect bg_src = {dst_rect->x + dst_rect->w, dst_rect->y, device_width - (dst_rect->x + dst_rect->w), dst_rect->h};
+			SDL_Rect bg_dst = {dst_rect->x + dst_rect->w, dst_rect->y, device_width - (dst_rect->x + dst_rect->w), dst_rect->h};
+			SDL_RenderCopy(vid.renderer, vid.game_bg_texture, &bg_src, &bg_dst);
+		}
 	}
 	
 	int ox,oy;
