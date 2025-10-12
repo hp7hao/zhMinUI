@@ -20,7 +20,6 @@
 #include "utils.h"
 #include "config.h"
 #include "i18n.h"
-#include "lockscreen.h"
 
 ///////////////////////////////
 
@@ -1741,63 +1740,21 @@ void PWR_update(int* _dirty, int* _show_setting, PWR_callback_t before_sleep, PW
 	#define SLEEP_DELAY 60000 // 60 seconds (1 minute)
 	if (now-last_input_at>=SLEEP_DELAY && PWR_preventAutosleep()) last_input_at = now;
 	
-	int manual_sleep = pwr.can_sleep && PAD_justReleased(BTN_SLEEP);
-	int auto_sleep = now-last_input_at>=SLEEP_DELAY;
-	
 	if (
 		pwr.requested_sleep || // hardware requested sleep
-		auto_sleep ||          // autosleep
-		manual_sleep           // manual sleep button press
+		now-last_input_at>=SLEEP_DELAY || // autosleep
+		(pwr.can_sleep && PAD_justReleased(BTN_SLEEP)) // manual sleep
 	) {
 		pwr.requested_sleep = 0;
 		
-		int should_sleep = 1;
+		// Call before_sleep callback (for app state: save game, etc.)
+		if (before_sleep) before_sleep();
 		
-		if (manual_sleep) {
-			// Manual power button press:
-			// 1. Draw lockscreen (leave it on screen)
-			// 2. Sleep immediately (screen off)
-			// 3. When waking, lockscreen is already visible
-			LOCKSCREEN_drawStatic(gfx.screen);
-			
-			// Sleep immediately
-			if (before_sleep) before_sleep();
-			PWR_fauxSleep();
-			
-			// After waking, show interactive lockscreen
-			if (LOCKSCREEN_isEnabled()) {
-				while (!LOCKSCREEN_show(gfx.screen)) {
-					// Keep showing lockscreen until unlocked
-					PWR_fauxSleep();
-				}
-			}
-			if (after_sleep) after_sleep();
-		} else {
-			// Auto-timeout: Show lockscreen and allow unlock to avoid sleep
-			if (LOCKSCREEN_isEnabled()) {
-				int unlocked = LOCKSCREEN_show(gfx.screen);
-				if (unlocked) {
-					// User unlocked during auto-timeout, don't sleep
-					should_sleep = 0;
-				}
-			}
-			
-			// Only sleep if user didn't unlock
-			if (should_sleep) {
-				if (before_sleep) before_sleep();
-				PWR_fauxSleep();
-				
-				// After waking, show lockscreen again
-				if (LOCKSCREEN_isEnabled()) {
-					while (!LOCKSCREEN_show(gfx.screen)) {
-						// Keep showing lockscreen until unlocked
-						PWR_fauxSleep();
-					}
-				}
-				
-				if (after_sleep) after_sleep();
-			}
-		}
+		// Sleep
+		PWR_fauxSleep();
+		
+		// Call after_sleep callback (for app state: restore, etc.)
+		if (after_sleep) after_sleep();
 		
 		last_input_at = now = SDL_GetTicks();
 		power_pressed_at = 0;

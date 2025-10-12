@@ -1512,6 +1512,29 @@ int main (int argc, char *argv[]) {
 		
 		PAD_poll();
 		
+		// Update lockscreen (non-blocking) - check BEFORE anything else to prevent UI flash
+		if (LOCKSCREEN_isActive()) {
+			int should_sleep = LOCKSCREEN_update();
+			LOCKSCREEN_draw(screen);
+			GFX_flip(screen);
+			
+			if (should_sleep) {
+				// Lockscreen timed out, trigger sleep through PWR_update
+				// Set last_input to old time to trigger timeout
+				// (PWR_update will handle sleep + re-activate lockscreen)
+			}
+			
+			// Still call PWR_update to handle power button while locked
+			int dummy_dirty = 0;
+			PWR_update(&dummy_dirty, NULL, LOCKSCREEN_activate, LOCKSCREEN_activate);
+			
+			// Skip normal UI while locked
+			continue;
+		}
+		
+		// Block input for 500ms after unlocking to prevent accidental actions
+		int input_blocked = LOCKSCREEN_isInputBlocked();
+		
 		// Update FPS counter
 		PERF_update();
 		if (PERF_isEnabled()) dirty = 1; // Force redraw to update FPS display
@@ -1519,11 +1542,21 @@ int main (int argc, char *argv[]) {
 		int selected = top->selected;
 		int total = top->entries->count;
 		
-		PWR_update(&dirty, &show_setting, NULL, NULL);
+		// Pass lockscreen callbacks to PWR_update
+		PWR_update(&dirty, &show_setting, LOCKSCREEN_activate, LOCKSCREEN_activate);
 		
 		int is_online = PLAT_isOnline();
 		if (was_online!=is_online) dirty = 1;
 		was_online = is_online;
+		
+		// Skip input processing if blocked
+		if (input_blocked) {
+			if (dirty) {
+				// Just redraw without processing input
+				goto skip_input_draw_only;
+			}
+			continue;
+		}
 		
 		if (show_version) {
 			if (PAD_justPressed(BTN_B) || PAD_tappedMenu(now)) {
@@ -1834,6 +1867,7 @@ int main (int argc, char *argv[]) {
 			}
 		}
 		
+	skip_input_draw_only:
 		if (dirty) {
 			GFX_clear(screen);
 			

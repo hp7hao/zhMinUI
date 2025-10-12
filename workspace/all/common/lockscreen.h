@@ -13,12 +13,23 @@
 // Initialize lockscreen (call at app startup)
 void LOCKSCREEN_init(void);
 
-// Show lockscreen and wait for unlock
-// Returns 1 if user unlocked, 0 if timed out (should sleep)
-int LOCKSCREEN_show(SDL_Surface* screen);
+// Activate lockscreen (call when timeout or manual sleep)
+void LOCKSCREEN_activate(void);
 
-// Draw static lockscreen (for manual sleep button)
-// Just draws the lockscreen UI without waiting for input
+// Update lockscreen state (call in main loop every frame)
+// Returns 1 if should sleep (timed out), 0 otherwise
+int LOCKSCREEN_update(void);
+
+// Draw lockscreen (call in main loop if active)
+void LOCKSCREEN_draw(SDL_Surface* screen);
+
+// Check if lockscreen is currently active
+int LOCKSCREEN_isActive(void);
+
+// Check if input should be blocked (500ms grace period after unlock)
+int LOCKSCREEN_isInputBlocked(void);
+
+// Draw static lockscreen to buffer (for pre-sleep draw)
 void LOCKSCREEN_drawStatic(SDL_Surface* screen);
 
 // Check if lockscreen is enabled in config
