@@ -22,6 +22,7 @@
 #include "i18n.h"
 #include "theme.h"
 #include "font.h"
+#include "perf.h"
 
 ///////////////////////////////////////
 
@@ -2856,6 +2857,20 @@ static void video_refresh_callback_main(const void *data, unsigned width, unsign
 	
 	GFX_blitRenderer(&renderer);
 	
+	// Draw performance counter using minarch's FPS tracking
+	if (PERF_isEnabled()) {
+		char fps_text[32];
+		sprintf(fps_text, "FPS: %.1f", fps_double);
+		SDL_Color perf_color = {255, 255, 0, 255}; // Yellow
+		SDL_Surface* perf_surface = TTF_RenderUTF8_Blended(font.tiny, fps_text, perf_color);
+		if (perf_surface) {
+			int x = (screen->w - perf_surface->w) / 2;
+			int y = screen->h - perf_surface->h - SCALE1(4);
+			SDL_BlitSurface(perf_surface, NULL, screen, &(SDL_Rect){x, y});
+			SDL_FreeSurface(perf_surface);
+		}
+	}
+	
 	if (!thread_video) GFX_flip(screen);
 	last_flip_time = SDL_GetTicks();
 }
@@ -3189,10 +3204,16 @@ static int Menu_message(char* message, char** pairs) {
 		int ui_pill_size = THEME_getUIPillSize();
 		GFX_blitMessage(font.medium, message, screen, &(SDL_Rect){0,ui_padding,screen->w,screen->h-(ui_pill_size+ui_padding)});
 			GFX_blitButtonGroup(pairs, 0, screen, 1);
+			// Update and draw performance counter
+			PERF_update();
+			PERF_draw(screen, font.tiny);
 			GFX_flip(screen);
 			dirty = 0;
 		}
 		else GFX_sync();
+		
+		// Force redraw if perf counter is enabled for real-time updates
+		if (PERF_isEnabled()) dirty = 1;
 		
 		hdmimon();
 	}
@@ -3948,18 +3969,26 @@ static int Menu_options(MenuList* list) {
 			if (desc) {
 				int w,h;
 				GFX_sizeText(font.tiny, _(desc), SCALE1(12), &w,&h);
-				GFX_blitText(font.tiny, _(desc), SCALE1(12), COLOR_WHITE, screen, &(SDL_Rect){
-					(screen->w - w) / 2,
-					screen->h - UI_PADDING - h,
-					w,h
-				});
-			}
-			
-			GFX_flip(screen);
-			dirty = 0;
+			GFX_blitText(font.tiny, _(desc), SCALE1(12), COLOR_WHITE, screen, &(SDL_Rect){
+				(screen->w - w) / 2,
+				screen->h - UI_PADDING - h,
+				w,h
+			});
 		}
-		else GFX_sync();
-		hdmimon();
+		
+		// Update and draw performance counter
+		PERF_update();
+		PERF_draw(screen, font.tiny);
+		
+		GFX_flip(screen);
+		dirty = 0;
+	}
+	else GFX_sync();
+	
+	// Force redraw if perf counter is enabled for real-time updates
+	if (PERF_isEnabled()) dirty = 1;
+	
+	hdmimon();
 	}
 	
 	// GFX_clearAll();
@@ -4522,17 +4551,25 @@ static void Menu_loop(void) {
 				// pagination
 				ox += (pw-SCALE1(15*MENU_SLOT_COUNT))/2;
 				oy += hh+SCALE1(WINDOW_RADIUS);
-				for (int i=0; i<MENU_SLOT_COUNT; i++) {
-					if (i==menu.slot)GFX_blitAsset(ASSET_PAGE, NULL, screen, &(SDL_Rect){ox+SCALE1(i*15),oy});
-					else GFX_blitAsset(ASSET_DOT, NULL, screen, &(SDL_Rect){ox+SCALE1(i*15)+4,oy+SCALE1(2)});
-				}
+			for (int i=0; i<MENU_SLOT_COUNT; i++) {
+				if (i==menu.slot)GFX_blitAsset(ASSET_PAGE, NULL, screen, &(SDL_Rect){ox+SCALE1(i*15),oy});
+				else GFX_blitAsset(ASSET_DOT, NULL, screen, &(SDL_Rect){ox+SCALE1(i*15)+4,oy+SCALE1(2)});
 			}
-	
-			GFX_flip(screen);
-			dirty = 0;
 		}
-		else GFX_sync();
-		hdmimon();
+		
+		// Update and draw performance counter
+		PERF_update();
+		PERF_draw(screen, font.tiny);
+
+		GFX_flip(screen);
+		dirty = 0;
+	}
+	else GFX_sync();
+	
+	// Force redraw if perf counter is enabled for real-time updates
+	if (PERF_isEnabled()) dirty = 1;
+	
+	hdmimon();
 	}
 	
 	SDL_FreeSurface(preview);
@@ -4706,6 +4743,9 @@ int main(int argc , char* argv[]) {
 	int UI_BUTTON_SIZE = THEME_getUIButtonSize();
 	int UI_ROW_COUNT = THEME_getUIRowCount();
 	
+	// Initialize performance counter (caches config once at startup)
+	PERF_init();
+	
 	PAD_init();
 	DEVICE_WIDTH = screen->w;
 	DEVICE_HEIGHT = screen->h;
@@ -4784,6 +4824,7 @@ int main(int argc , char* argv[]) {
 			
 			if (backbuffer) {
 				video_refresh_callback_main(backbuffer->pixels,backbuffer->w,backbuffer->h,backbuffer->pitch);
+				// PERF_draw already called in video_refresh_callback_main
 				GFX_flip(screen);
 			}
 			core_rq = (pthread_cond_t)PTHREAD_COND_INITIALIZER;

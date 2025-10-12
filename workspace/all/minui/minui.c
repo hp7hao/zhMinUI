@@ -13,6 +13,7 @@
 #include "config.h"
 #include "theme.h"
 #include "font.h"
+#include "perf.h"
 
 ///////////////////////////////////////
 
@@ -1497,12 +1498,8 @@ int main (int argc, char *argv[]) {
 	
 	// Accent color will be calculated inside the loop to ensure it's always current
 	
-	// Performance counter variables
-	int show_perf = CONFIG_getShowPerf();
-	unsigned long frame_times[60] = {0}; // Store last 60 frame times
-	int frame_index = 0;
-	unsigned long last_frame_time = SDL_GetTicks();
-	float current_fps = 60.0f;
+	// Initialize performance counter
+	PERF_init();
 	
 	// LOG_info("- loop start: %lu\n", SDL_GetTicks() - main_begin);
 	while (!quit) {
@@ -1511,32 +1508,9 @@ int main (int argc, char *argv[]) {
 		
 		PAD_poll();
 		
-		// Calculate FPS every frame
-		if (show_perf) {
-			unsigned long current_time = SDL_GetTicks();
-			unsigned long frame_time = current_time - last_frame_time;
-			last_frame_time = current_time;
-			
-			// Store frame time
-			frame_times[frame_index] = frame_time;
-			frame_index = (frame_index + 1) % 60;
-			
-			// Calculate average FPS from last 60 frames
-			unsigned long total_time = 0;
-			int valid_frames = 0;
-			for (int i = 0; i < 60; i++) {
-				if (frame_times[i] > 0) {
-					total_time += frame_times[i];
-					valid_frames++;
-				}
-			}
-			if (total_time > 0 && valid_frames > 0) {
-				current_fps = (valid_frames * 1000.0f) / total_time;
-			}
-			
-			// Force redraw to update FPS display
-			dirty = 1;
-		}
+		// Update FPS counter
+		PERF_update();
+		if (PERF_isEnabled()) dirty = 1; // Force redraw to update FPS display
 			
 		int selected = top->selected;
 		int total = top->entries->count;
@@ -2221,19 +2195,7 @@ int main (int argc, char *argv[]) {
 			}
 			
 			// Draw performance counter if enabled
-			if (show_perf) {
-				char fps_text[32];
-				sprintf(fps_text, "FPS: %.1f", current_fps);
-				SDL_Color perf_color = {255, 255, 0, 255}; // Yellow
-				SDL_Surface* perf_surface = TTF_RenderUTF8_Blended(font.tiny, fps_text, perf_color);
-				if (perf_surface) {
-					// Center at bottom of screen
-					int x = (screen->w - perf_surface->w) / 2;
-					int y = screen->h - perf_surface->h - SCALE1(4);
-					SDL_BlitSurface(perf_surface, NULL, screen, &(SDL_Rect){x, y});
-					SDL_FreeSurface(perf_surface);
-				}
-			}
+			PERF_draw(screen, font.tiny);
 
 			GFX_flip(screen);
 			dirty = 0;

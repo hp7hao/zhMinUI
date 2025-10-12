@@ -20,7 +20,7 @@ typedef struct MinUIConfig {
     int show_perf;          // 0 or 1 (show performance counter)
 } MinUIConfig;
 
-static MinUIConfig config = {"en_US", "Default", "BoutiqueBitmap7x7_1.7.ttf", "Dark", "Monochrome", "Big", 0}; // Default values
+static MinUIConfig config = {"en_US", "Default", "BoutiqueBitmap7x7_1.7.ttf", "Dark", "Monochrome", "Big", 1}; // Default values (show_perf=1 for testing)
 static int config_loaded = 0;
 
 void CONFIG_load(void) {
