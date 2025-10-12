@@ -29,9 +29,9 @@ RELEASE_NAME=$(RELEASE_BASE)-$(RELEASE_DOT)
 
 export MAKEFLAGS=--no-print-directory
 
-all: setup $(PLATFORMS) special package done
+all: setup convert-artworks $(PLATFORMS) special package done
 
-tmp: setup $(PLATFORMS)
+tmp: setup convert-artworks $(PLATFORMS)
 
 shell:
 	make -f makefile.toolchain PLATFORM=$(PLATFORM)
@@ -95,6 +95,33 @@ common: build system cores
 clean:
 	rm -rf ./build
 
+convert-artworks:
+	# ----------------------------------------------------
+	# Convert original artwork assets from skeleton to build (640x480 only)
+	@echo "Converting artworks: skeleton → build/640x480..."
+	@if [ ! -d ./build ]; then \
+		echo "ERROR: build folder not found. Run 'make setup' first!"; \
+		exit 1; \
+	fi
+	@if command -v convert >/dev/null 2>&1 || command -v magick >/dev/null 2>&1; then \
+		CONVERT_CMD="convert"; \
+		command -v magick >/dev/null 2>&1 && CONVERT_CMD="magick"; \
+		mkdir -p ./build/SYSTEM/res/artworks/640x480; \
+		for img in ./skeleton/SYSTEM/res/artworks/*.png; do \
+			if [ -f "$$img" ]; then \
+				filename=$$(basename "$$img"); \
+				echo "  Converting $$filename → 640x480/$$filename"; \
+				$$CONVERT_CMD "$$img" -resize 640x480 -quality 100 -filter Lanczos \
+					"./build/SYSTEM/res/artworks/640x480/$$filename"; \
+			fi; \
+		done; \
+		echo "Done! Artworks converted to build/SYSTEM/res/artworks/640x480/"; \
+	else \
+		echo "ERROR: ImageMagick not found!"; \
+		echo "Install with: brew install imagemagick (macOS) or apt-get install imagemagick (Linux)"; \
+		exit 1; \
+	fi
+
 setup: name
 	# ----------------------------------------------------
 	# make sure we're running in an input device
@@ -104,6 +131,9 @@ setup: name
 	rm -rf ./build
 	mkdir -p ./releases
 	cp -R ./skeleton ./build
+	
+	# remove original artworks (will be replaced by cooked versions in convert-artworks)
+	rm -rf ./build/SYSTEM/res/artworks/*.png
 	
 	# remove authoring detritus
 	cd ./build && find . -type f -name '.keep' -delete
