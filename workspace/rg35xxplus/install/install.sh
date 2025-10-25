@@ -9,6 +9,12 @@ echo "update dmenu.bin"
 cp $SYSTEM_PATH/dat/dmenu.bin $TF1_PATH
 sync
 
+# install Reboot2Minui script to Roms/APPS
+echo "install Reboot2Minui script"
+mkdir -p $TF2_PATH/Roms/APPS
+cp $SYSTEM_PATH/bin/Reboot2Minui.sh $TF2_PATH/Roms/APPS/
+chmod +x $TF2_PATH/Roms/APPS/Reboot2Minui.sh
+
 # --------------------------------------
 # remove old cube system folder
 CUBE_PATH=${TF2_PATH}/.system/rg40xxcube

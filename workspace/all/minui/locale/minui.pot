@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-11 10:04-0400\n"
+"POT-Creation-Date: 2025-10-25 08:33-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,84 +17,84 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../../common/api.c:959 ../../minarch/minarch.c:724
-#: ../../minarch/minarch.c:740 ../../minarch/minarch.c:767
+#: ../../common/api.c:968 ../../minarch/minarch.c:726
+#: ../../minarch/minarch.c:742 ../../minarch/minarch.c:769
 #: ../../minput/minput.c:233
 msgid "SELECT"
 msgstr ""
 
-#: ../../common/api.c:959
+#: ../../common/api.c:968
 msgid "VOLUME"
 msgstr ""
 
-#: ../../common/api.c:960 ../../minarch/minarch.c:723
-#: ../../minarch/minarch.c:741 ../../minarch/minarch.c:766
+#: ../../common/api.c:969 ../../minarch/minarch.c:725
+#: ../../minarch/minarch.c:743 ../../minarch/minarch.c:768
 #: ../../minput/minput.c:235
 msgid "START"
 msgstr ""
 
-#: ../../common/api.c:960 ../../common/api.c:963 ../../common/api.c:964
+#: ../../common/api.c:969 ../../common/api.c:972 ../../common/api.c:973
 msgid "BRIGHTNESS"
 msgstr ""
 
-#: ../../common/api.c:964 ../../minui/minui.c:2162 ../../minui/minui.c:2233
-#: ../../minarch/minarch.c:4420 ../../minput/minput.c:215
+#: ../../common/api.c:973 ../../minui/minui.c:2144 ../../minui/minui.c:2224
+#: ../../minarch/minarch.c:4485 ../../minput/minput.c:215
 msgid "MENU"
 msgstr ""
 
-#: ../../common/api.c:1815
+#: ../../common/api.c:1867
 msgid ""
 "Quicksave created,\n"
 "powering off"
 msgstr ""
 
-#: ../../common/api.c:1815
+#: ../../common/api.c:1867
 msgid "Powering off"
 msgstr ""
 
-#: ../../common/api.c:1816
+#: ../../common/api.c:1868
 msgid ""
 "Quicksave created,\n"
 "power off now"
 msgstr ""
 
-#: ../../common/api.c:1816
+#: ../../common/api.c:1868
 msgid "Power off now"
 msgstr ""
 
-#: ../../common/theme.c:75
+#: ../../common/theme.c:76
 msgid "Default"
 msgstr ""
 
-#: ../../common/theme.c:76
+#: ../../common/theme.c:77
 msgid "Blue"
 msgstr ""
 
-#: ../../common/theme.c:77
+#: ../../common/theme.c:78
 msgid "Green"
 msgstr ""
 
-#: ../../common/theme.c:78
+#: ../../common/theme.c:79
 msgid "Purple"
 msgstr ""
 
-#: ../../common/theme.c:79
+#: ../../common/theme.c:80
 msgid "Orange"
 msgstr ""
 
-#: ../../common/theme.c:80
+#: ../../common/theme.c:81
 msgid "Red"
 msgstr ""
 
-#: ../../common/theme.c:81
+#: ../../common/theme.c:82
 msgid "Cyan"
 msgstr ""
 
-#: ../../common/theme.c:82
+#: ../../common/theme.c:83
 msgid "Pink"
 msgstr ""
 
-#: ../../common/theme.c:83
+#: ../../common/theme.c:84
 msgid "Yellow"
 msgstr ""
 
@@ -106,589 +106,605 @@ msgstr ""
 msgid "中文"
 msgstr ""
 
-#: ../../minui/minui.c:1471
+#: ../../minui/minui.c:1392
 msgid "Settings"
 msgstr ""
 
-#: ../../minui/minui.c:1472
+#: ../../minui/minui.c:1393
+msgid "Reboot to Stock"
+msgstr ""
+
+#: ../../minui/minui.c:1394
 msgid "Shutdown"
 msgstr ""
 
-#: ../../minui/minui.c:1484
+#: ../../minui/minui.c:1406
 msgid "Language"
 msgstr ""
 
-#: ../../minui/minui.c:1485
+#: ../../minui/minui.c:1407
 msgid "UI Mode"
 msgstr ""
 
-#: ../../minui/minui.c:1486 ../../minui/minui.c:1518
+#: ../../minui/minui.c:1408 ../../minui/minui.c:1441
 msgid "Theme"
 msgstr ""
 
-#: ../../minui/minui.c:1487
+#: ../../minui/minui.c:1409
 msgid "Background Mode"
 msgstr ""
 
-#: ../../minui/minui.c:1488
+#: ../../minui/minui.c:1410
 msgid "Font"
 msgstr ""
 
-#: ../../minui/minui.c:1510
+#: ../../minui/minui.c:1411
+msgid "UI Size"
+msgstr ""
+
+#: ../../minui/minui.c:1433
 msgid "Dark"
 msgstr ""
 
-#: ../../minui/minui.c:1511
+#: ../../minui/minui.c:1434
 msgid "Light"
 msgstr ""
 
-#: ../../minui/minui.c:1517
+#: ../../minui/minui.c:1440
 msgid "Monochrome"
 msgstr ""
 
-#: ../../minui/minui.c:2115
+#: ../../minui/minui.c:1447
+msgid "Big"
+msgstr ""
+
+#: ../../minui/minui.c:1448 ../../minarch/minarch.c:796
+msgid "Normal"
+msgstr ""
+
+#: ../../minui/minui.c:1449
+msgid "Compact"
+msgstr ""
+
+#: ../../minui/minui.c:2097
 msgid "Model"
 msgstr ""
 
-#: ../../minui/minui.c:2118
+#: ../../minui/minui.c:2100
 msgid "Release"
 msgstr ""
 
-#: ../../minui/minui.c:2120
+#: ../../minui/minui.c:2102
 msgid "Commit"
 msgstr ""
 
-#: ../../minui/minui.c:2162 ../../minui/minui.c:2233
-#: ../../minarch/minarch.c:4420 ../../minput/minput.c:219
+#: ../../minui/minui.c:2144 ../../minui/minui.c:2224
+#: ../../minarch/minarch.c:4485 ../../minput/minput.c:219
 msgid "POWER"
 msgstr ""
 
-#: ../../minui/minui.c:2162 ../../minui/minui.c:2234
-#: ../../minarch/minarch.c:4420
+#: ../../minui/minui.c:2144 ../../minui/minui.c:2225
+#: ../../minarch/minarch.c:4485
 msgid "SLEEP"
 msgstr ""
 
-#: ../../minui/minui.c:2164 ../../minui/minui.c:2239 ../../minui/minui.c:2244
-#: ../../minarch/minarch.c:4421
+#: ../../minui/minui.c:2146 ../../minui/minui.c:2230 ../../minui/minui.c:2235
+#: ../../minarch/minarch.c:4486
 msgid "BACK"
 msgstr ""
 
-#: ../../minui/minui.c:2226
+#: ../../minui/minui.c:2217
 msgid "Empty folder"
 msgstr ""
 
-#: ../../minui/minui.c:2231
+#: ../../minui/minui.c:2222
 msgid "RESUME"
 msgstr ""
 
-#: ../../minui/minui.c:2234
+#: ../../minui/minui.c:2225
 msgid "INFO"
 msgstr ""
 
-#: ../../minui/minui.c:2244 ../../minui/minui.c:2247
+#: ../../minui/minui.c:2235 ../../minui/minui.c:2238
 msgid "OPEN"
 msgstr ""
 
-#: ../../minarch/minarch.c:615 ../../minarch/minarch.c:639
+#: ../../minarch/minarch.c:617 ../../minarch/minarch.c:641
 msgid "Off"
 msgstr ""
 
-#: ../../minarch/minarch.c:616
+#: ../../minarch/minarch.c:618
 msgid "On"
 msgstr ""
 
-#: ../../minarch/minarch.c:620
+#: ../../minarch/minarch.c:622
 msgid "Native"
 msgstr ""
 
-#: ../../minarch/minarch.c:621
+#: ../../minarch/minarch.c:623
 msgid "Aspect"
 msgstr ""
 
-#: ../../minarch/minarch.c:622
+#: ../../minarch/minarch.c:624
 msgid "Fullscreen"
 msgstr ""
 
-#: ../../minarch/minarch.c:623
+#: ../../minarch/minarch.c:625
 msgid "Cropped"
 msgstr ""
 
-#: ../../minarch/minarch.c:627 ../../minarch/minarch.c:645
+#: ../../minarch/minarch.c:629 ../../minarch/minarch.c:647
 msgid "None"
 msgstr ""
 
-#: ../../minarch/minarch.c:628
+#: ../../minarch/minarch.c:630
 msgid "Line"
 msgstr ""
 
-#: ../../minarch/minarch.c:629
+#: ../../minarch/minarch.c:631
 msgid "Grid"
 msgstr ""
 
-#: ../../minarch/minarch.c:633
+#: ../../minarch/minarch.c:635
 msgid "Sharp"
 msgstr ""
 
-#: ../../minarch/minarch.c:634
+#: ../../minarch/minarch.c:636
 msgid "Crisp"
 msgstr ""
 
-#: ../../minarch/minarch.c:635
+#: ../../minarch/minarch.c:637
 msgid "Soft"
 msgstr ""
 
-#: ../../minarch/minarch.c:640
+#: ../../minarch/minarch.c:642
 msgid "Lenient"
 msgstr ""
 
-#: ../../minarch/minarch.c:641
+#: ../../minarch/minarch.c:643
 msgid "Strict"
 msgstr ""
 
-#: ../../minarch/minarch.c:646
+#: ../../minarch/minarch.c:648
 msgid "2x"
 msgstr ""
 
-#: ../../minarch/minarch.c:647
+#: ../../minarch/minarch.c:649
 msgid "3x"
 msgstr ""
 
-#: ../../minarch/minarch.c:648
+#: ../../minarch/minarch.c:650
 msgid "4x"
 msgstr ""
 
-#: ../../minarch/minarch.c:649
+#: ../../minarch/minarch.c:651
 msgid "5x"
 msgstr ""
 
-#: ../../minarch/minarch.c:650
+#: ../../minarch/minarch.c:652
 msgid "6x"
 msgstr ""
 
-#: ../../minarch/minarch.c:651
+#: ../../minarch/minarch.c:653
 msgid "7x"
 msgstr ""
 
-#: ../../minarch/minarch.c:652
+#: ../../minarch/minarch.c:654
 msgid "8x"
 msgstr ""
 
-#: ../../minarch/minarch.c:695
+#: ../../minarch/minarch.c:697
 msgid "Up"
 msgstr ""
 
-#: ../../minarch/minarch.c:696
+#: ../../minarch/minarch.c:698
 msgid "Down"
 msgstr ""
 
-#: ../../minarch/minarch.c:697
+#: ../../minarch/minarch.c:699
 msgid "Left"
 msgstr ""
 
-#: ../../minarch/minarch.c:698
+#: ../../minarch/minarch.c:700
 msgid "Right"
 msgstr ""
 
-#: ../../minarch/minarch.c:699
+#: ../../minarch/minarch.c:701
 msgid "A Button"
 msgstr ""
 
-#: ../../minarch/minarch.c:700
+#: ../../minarch/minarch.c:702
 msgid "B Button"
 msgstr ""
 
-#: ../../minarch/minarch.c:701
+#: ../../minarch/minarch.c:703
 msgid "X Button"
 msgstr ""
 
-#: ../../minarch/minarch.c:702
+#: ../../minarch/minarch.c:704
 msgid "Y Button"
 msgstr ""
 
-#: ../../minarch/minarch.c:703
+#: ../../minarch/minarch.c:705
 msgid "Start"
 msgstr ""
 
-#: ../../minarch/minarch.c:704
+#: ../../minarch/minarch.c:706
 msgid "Select"
 msgstr ""
 
-#: ../../minarch/minarch.c:705
+#: ../../minarch/minarch.c:707
 msgid "L1 Button"
 msgstr ""
 
-#: ../../minarch/minarch.c:706
+#: ../../minarch/minarch.c:708
 msgid "R1 Button"
 msgstr ""
 
-#: ../../minarch/minarch.c:707
+#: ../../minarch/minarch.c:709
 msgid "L2 Button"
 msgstr ""
 
-#: ../../minarch/minarch.c:708
+#: ../../minarch/minarch.c:710
 msgid "R2 Button"
 msgstr ""
 
-#: ../../minarch/minarch.c:709
+#: ../../minarch/minarch.c:711
 msgid "L3 Button"
 msgstr ""
 
-#: ../../minarch/minarch.c:710
+#: ../../minarch/minarch.c:712
 msgid "R3 Button"
 msgstr ""
 
-#: ../../minarch/minarch.c:714 ../../minarch/minarch.c:757
+#: ../../minarch/minarch.c:716 ../../minarch/minarch.c:759
 msgid "NONE"
-msgstr ""
-
-#: ../../minarch/minarch.c:715 ../../minarch/minarch.c:736
-#: ../../minarch/minarch.c:758
-msgid "UP"
-msgstr ""
-
-#: ../../minarch/minarch.c:716 ../../minarch/minarch.c:737
-#: ../../minarch/minarch.c:759
-msgid "DOWN"
 msgstr ""
 
 #: ../../minarch/minarch.c:717 ../../minarch/minarch.c:738
 #: ../../minarch/minarch.c:760
-msgid "LEFT"
+msgid "UP"
 msgstr ""
 
 #: ../../minarch/minarch.c:718 ../../minarch/minarch.c:739
 #: ../../minarch/minarch.c:761
+msgid "DOWN"
+msgstr ""
+
+#: ../../minarch/minarch.c:719 ../../minarch/minarch.c:740
+#: ../../minarch/minarch.c:762
+msgid "LEFT"
+msgstr ""
+
+#: ../../minarch/minarch.c:720 ../../minarch/minarch.c:741
+#: ../../minarch/minarch.c:763
 msgid "RIGHT"
 msgstr ""
 
-#: ../../minarch/minarch.c:774
+#: ../../minarch/minarch.c:776
 msgid "MENU+UP"
 msgstr ""
 
-#: ../../minarch/minarch.c:775
+#: ../../minarch/minarch.c:777
 msgid "MENU+DOWN"
 msgstr ""
 
-#: ../../minarch/minarch.c:776
+#: ../../minarch/minarch.c:778
 msgid "MENU+LEFT"
 msgstr ""
 
-#: ../../minarch/minarch.c:777
+#: ../../minarch/minarch.c:779
 msgid "MENU+RIGHT"
 msgstr ""
 
-#: ../../minarch/minarch.c:778
+#: ../../minarch/minarch.c:780
 msgid "MENU+A"
 msgstr ""
 
-#: ../../minarch/minarch.c:779
+#: ../../minarch/minarch.c:781
 msgid "MENU+B"
 msgstr ""
 
-#: ../../minarch/minarch.c:780
+#: ../../minarch/minarch.c:782
 msgid "MENU+X"
 msgstr ""
 
-#: ../../minarch/minarch.c:781
+#: ../../minarch/minarch.c:783
 msgid "MENU+Y"
 msgstr ""
 
-#: ../../minarch/minarch.c:782
+#: ../../minarch/minarch.c:784
 msgid "MENU+START"
 msgstr ""
 
-#: ../../minarch/minarch.c:783
+#: ../../minarch/minarch.c:785
 msgid "MENU+SELECT"
 msgstr ""
 
-#: ../../minarch/minarch.c:784
+#: ../../minarch/minarch.c:786
 msgid "MENU+L1"
 msgstr ""
 
-#: ../../minarch/minarch.c:785
+#: ../../minarch/minarch.c:787
 msgid "MENU+R1"
 msgstr ""
 
-#: ../../minarch/minarch.c:786
+#: ../../minarch/minarch.c:788
 msgid "MENU+L2"
 msgstr ""
 
-#: ../../minarch/minarch.c:787
+#: ../../minarch/minarch.c:789
 msgid "MENU+R2"
 msgstr ""
 
-#: ../../minarch/minarch.c:788
+#: ../../minarch/minarch.c:790
 msgid "MENU+L3"
 msgstr ""
 
-#: ../../minarch/minarch.c:789
+#: ../../minarch/minarch.c:791
 msgid "MENU+R3"
 msgstr ""
 
-#: ../../minarch/minarch.c:793
+#: ../../minarch/minarch.c:795
 msgid "Powersave"
 msgstr ""
 
-#: ../../minarch/minarch.c:794
-msgid "Normal"
-msgstr ""
-
-#: ../../minarch/minarch.c:795
+#: ../../minarch/minarch.c:797
 msgid "Performance"
 msgstr ""
 
-#: ../../minarch/minarch.c:804
+#: ../../minarch/minarch.c:806
 msgid "L Button"
 msgstr ""
 
-#: ../../minarch/minarch.c:805
+#: ../../minarch/minarch.c:807
 msgid "R Button"
 msgstr ""
 
-#: ../../minarch/minarch.c:811
+#: ../../minarch/minarch.c:813
 msgid "Standard"
 msgstr ""
 
-#: ../../minarch/minarch.c:812
+#: ../../minarch/minarch.c:814
 msgid "DualShock"
 msgstr ""
 
-#: ../../minarch/minarch.c:829
+#: ../../minarch/minarch.c:831
 msgid ""
 "Native uses integer scaling. Aspect uses core\n"
 "reported aspect ratio. Fullscreen has non-square\n"
 "pixels. Cropped is integer scaled then cropped."
 msgstr ""
 
-#: ../../minarch/minarch.c:832
+#: ../../minarch/minarch.c:834
 msgid ""
 "Native uses integer scaling.\n"
 "Aspect uses core reported aspect ratio.\n"
 "Fullscreen has non-square pixels."
 msgstr ""
 
-#: ../../minarch/minarch.c:857
+#: ../../minarch/minarch.c:859
 msgid "Screen Scaling"
 msgstr ""
 
-#: ../../minarch/minarch.c:867
+#: ../../minarch/minarch.c:869
 msgid "Screen Effect"
 msgstr ""
 
-#: ../../minarch/minarch.c:868
+#: ../../minarch/minarch.c:870
 msgid ""
 "Grid simulates an LCD grid.\n"
 "Line simulates CRT scanlines.\n"
 "Effects usually look best at native scaling."
 msgstr ""
 
-#: ../../minarch/minarch.c:877
+#: ../../minarch/minarch.c:879
 msgid "Screen Sharpness"
 msgstr ""
 
-#: ../../minarch/minarch.c:878
+#: ../../minarch/minarch.c:880
 msgid ""
 "Sharp uses nearest neighbor sampling.\n"
 "Crisp integer upscales before linear sampling.\n"
 "Soft uses linear sampling."
 msgstr ""
 
-#: ../../minarch/minarch.c:887
+#: ../../minarch/minarch.c:889
 msgid "Prevent Tearing"
 msgstr ""
 
-#: ../../minarch/minarch.c:888
+#: ../../minarch/minarch.c:890
 msgid ""
 "Wait for vsync before drawing the next frame.\n"
 "Lenient only waits when within frame budget.\n"
 "Strict always waits."
 msgstr ""
 
-#: ../../minarch/minarch.c:897
+#: ../../minarch/minarch.c:899
 msgid "CPU Speed"
 msgstr ""
 
-#: ../../minarch/minarch.c:898
+#: ../../minarch/minarch.c:900
 msgid ""
 "Over- or underclock the CPU to prioritize\n"
 "pure performance or power savings."
 msgstr ""
 
-#: ../../minarch/minarch.c:907
+#: ../../minarch/minarch.c:909
 msgid "Prioritize Audio"
 msgstr ""
 
-#: ../../minarch/minarch.c:908
+#: ../../minarch/minarch.c:910
 msgid ""
 "Can eliminate crackle but\n"
 "may cause dropped frames.\n"
 "Only turn on if necessary."
 msgstr ""
 
-#: ../../minarch/minarch.c:917
+#: ../../minarch/minarch.c:919
 msgid "Debug HUD"
 msgstr ""
 
-#: ../../minarch/minarch.c:918
+#: ../../minarch/minarch.c:920
 msgid ""
 "Show frames per second, cpu load,\n"
 "resolution, and scaler information."
 msgstr ""
 
-#: ../../minarch/minarch.c:927
+#: ../../minarch/minarch.c:929
 msgid "Max FF Speed"
 msgstr ""
 
-#: ../../minarch/minarch.c:928
+#: ../../minarch/minarch.c:930
 msgid ""
 "Fast forward will not exceed the\n"
 "selected speed (but may be less\n"
 "depending on game and emulator)."
 msgstr ""
 
-#: ../../minarch/minarch.c:946
+#: ../../minarch/minarch.c:948
 msgid "Save State"
 msgstr ""
 
-#: ../../minarch/minarch.c:947
+#: ../../minarch/minarch.c:949
 msgid "Load State"
 msgstr ""
 
-#: ../../minarch/minarch.c:948
+#: ../../minarch/minarch.c:950
 msgid "Reset Game"
 msgstr ""
 
-#: ../../minarch/minarch.c:949
+#: ../../minarch/minarch.c:951
 msgid "Save & Quit"
 msgstr ""
 
-#: ../../minarch/minarch.c:950
+#: ../../minarch/minarch.c:952
 msgid "Cycle Scaling"
 msgstr ""
 
-#: ../../minarch/minarch.c:951
+#: ../../minarch/minarch.c:953
 msgid "Cycle Effect"
 msgstr ""
 
-#: ../../minarch/minarch.c:952
+#: ../../minarch/minarch.c:954
 msgid "Toggle FF"
 msgstr ""
 
-#: ../../minarch/minarch.c:953
+#: ../../minarch/minarch.c:955
 msgid "Hold FF"
 msgstr ""
 
-#: ../../minarch/minarch.c:1424
+#: ../../minarch/minarch.c:1426
 msgid "DualShock Toggle Combo"
 msgstr ""
 
-#: ../../minarch/minarch.c:3067
+#: ../../minarch/minarch.c:3095
 msgid "Continue"
 msgstr ""
 
-#: ../../minarch/minarch.c:3068
+#: ../../minarch/minarch.c:3096
 msgid "Save"
 msgstr ""
 
-#: ../../minarch/minarch.c:3069
+#: ../../minarch/minarch.c:3097
 msgid "Load"
 msgstr ""
 
-#: ../../minarch/minarch.c:3070
+#: ../../minarch/minarch.c:3098
 msgid "Options"
 msgstr ""
 
-#: ../../minarch/minarch.c:3071
+#: ../../minarch/minarch.c:3099
 msgid "Quit"
 msgstr ""
 
-#: ../../minarch/minarch.c:3087
+#: ../../minarch/minarch.c:3115
 msgid "Reset"
 msgstr ""
 
-#: ../../minarch/minarch.c:3390 ../../minarch/minarch.c:3488
+#: ../../minarch/minarch.c:3426 ../../minarch/minarch.c:3524
 msgid ""
 "Press A to set and X to clear.\n"
 "Supports single button and MENU+button."
 msgstr ""
 
-#: ../../minarch/minarch.c:3406
+#: ../../minarch/minarch.c:3442
 msgid "Controller"
 msgstr ""
 
-#: ../../minarch/minarch.c:3407
+#: ../../minarch/minarch.c:3443
 msgid "Select the type of controller."
 msgstr ""
 
-#: ../../minarch/minarch.c:3495
+#: ../../minarch/minarch.c:3531
 msgid "Using defaults."
 msgstr ""
 
-#: ../../minarch/minarch.c:3496
+#: ../../minarch/minarch.c:3532
 msgid "Using console config."
 msgstr ""
 
-#: ../../minarch/minarch.c:3497
+#: ../../minarch/minarch.c:3533
 msgid "Using game config."
 msgstr ""
 
-#: ../../minarch/minarch.c:3535
+#: ../../minarch/minarch.c:3571
 msgid "Saved for console."
 msgstr ""
 
-#: ../../minarch/minarch.c:3540
+#: ../../minarch/minarch.c:3576
 msgid "Saved for game."
 msgstr ""
 
-#: ../../minarch/minarch.c:3545
+#: ../../minarch/minarch.c:3581
 msgid "Restored console defaults."
 msgstr ""
 
-#: ../../minarch/minarch.c:3546
+#: ../../minarch/minarch.c:3582
 msgid "Restored defaults."
 msgstr ""
 
-#: ../../minarch/minarch.c:3550 ../../minarch/minarch.c:4421
+#: ../../minarch/minarch.c:3586 ../../minarch/minarch.c:4486
 msgid "OKAY"
 msgstr ""
 
-#: ../../minarch/minarch.c:3558
+#: ../../minarch/minarch.c:3594
 msgid "Save for console"
 msgstr ""
 
-#: ../../minarch/minarch.c:3559
+#: ../../minarch/minarch.c:3595
 msgid "Save for game"
 msgstr ""
 
-#: ../../minarch/minarch.c:3560
+#: ../../minarch/minarch.c:3596
 msgid "Restore defaults"
 msgstr ""
 
-#: ../../minarch/minarch.c:3579
+#: ../../minarch/minarch.c:3615
 msgid "Frontend"
 msgstr ""
 
-#: ../../minarch/minarch.c:3580
+#: ../../minarch/minarch.c:3616
 msgid "Emulator"
 msgstr ""
 
-#: ../../minarch/minarch.c:3581
+#: ../../minarch/minarch.c:3617
 msgid "Controls"
 msgstr ""
 
-#: ../../minarch/minarch.c:3582
+#: ../../minarch/minarch.c:3618
 msgid "Shortcuts"
 msgstr ""
 
-#: ../../minarch/minarch.c:3583
+#: ../../minarch/minarch.c:3619
 msgid "Save Changes"
 msgstr ""
 
-#: ../../minarch/minarch.c:4504
+#: ../../minarch/minarch.c:4567
 msgid "No Preview"
 msgstr ""
 
-#: ../../minarch/minarch.c:4505
+#: ../../minarch/minarch.c:4568
 msgid "Empty Slot"
 msgstr ""
 

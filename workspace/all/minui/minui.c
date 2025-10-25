@@ -1391,9 +1391,10 @@ int main (int argc, char *argv[]) {
 	const char* main_menu_items[] = {
 		N_("Settings"),
 		N_("Shutdown"),
+		N_("Reboot to Stock"),
 		NULL
 	};
-	const int main_menu_count = 2;
+	const int main_menu_count = 3;
 	
 	// Settings menu variables
 	int show_settings_menu = 0;
@@ -1586,6 +1587,16 @@ int main (int argc, char *argv[]) {
 						break;
 					case 1: // Shutdown
 						PWR_powerOff();
+						break;
+					case 2: // Reboot to Stock
+						// Rename dmenu.bin to disable MinUI permanently
+						show_main_menu = 0;
+						dirty = 1;
+						// Rename dmenu.bin to _dmenu.bin to disable MinUI
+						system("mv /mnt/mmc/dmenu.bin /mnt/mmc/_dmenu.bin 2>/dev/null");
+						sync();
+						// Use Magic SysRq for instant reboot - bypass the 2-second delay in PLAT_powerOff
+						system("echo 1 > /proc/sys/kernel/sysrq && echo b > /proc/sysrq-trigger");
 						break;
 				}
 			}
