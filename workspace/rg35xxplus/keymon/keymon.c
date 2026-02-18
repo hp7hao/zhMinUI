@@ -13,8 +13,11 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/ioctl.h>
+#include <errno.h>
 
-// #include "defines.h"
+
+// Timeout constants
+#define INACTIVITY_TIMEOUT 10000  // 30 seconds of inactivity
 
 #define VOLUME_MIN 		0
 #define VOLUME_MAX 		20
@@ -67,10 +70,19 @@ static void* watchHDMI(void *arg) {
 }
 
 int main (int argc, char *argv[]) {
+	puts("Keymon: Starting...");
 	InitSettings();
+	puts("Keymon: Settings initialized");
+	
 	pthread_create(&hdmi_pt, NULL, &watchHDMI, NULL);
+	puts("Keymon: HDMI thread started");
 	
 	input_fd = open("/dev/input/event1", O_RDONLY | O_NONBLOCK | O_CLOEXEC);
+	if (input_fd < 0) {
+		printf("Keymon: Failed to open input device: %s\n", strerror(errno));
+		return 1;
+	}
+	printf("Keymon: Input device opened (fd=%d)\n", input_fd);
 	
 	uint32_t input;
 	uint32_t val;
@@ -93,15 +105,29 @@ int main (int argc, char *argv[]) {
 	then = tod.tv_sec * 1000 + tod.tv_usec / 1000; // essential SDL_GetTicks()
 	ignore = 0;
 	
+	// Timeout tracking
+	uint32_t last_input_time = then;
+	uint32_t current_time;
+	
+	printf("Keymon: Starting main loop (timeout=%d ms)\n", INACTIVITY_TIMEOUT);
+	
 	while (1) {
 		gettimeofday(&tod, NULL);
 		now = tod.tv_sec * 1000 + tod.tv_usec / 1000;
 		// TODO: check if if necessary
 		if (now-then>1000) ignore = 1; // ignore input that arrived during sleep
 		
-		while(read(input_fd, &ev, sizeof(ev))==sizeof(ev)) {
-			if (ignore) continue;
+		int bytes_read = read(input_fd, &ev, sizeof(ev));
+		if (bytes_read == sizeof(ev)) {
+			if (ignore) {
+				printf("Keymon: Ignoring input event (type=%d, code=%d, value=%d)\n", ev.type, ev.code, ev.value);
+				continue;
+			}
 			val = ev.value;
+			
+			// Update last input time only on valid input (not ignored)
+			last_input_time = now;
+			printf("Keymon: Input detected (type=%d, code=%d, value=%d) - resetting timeout\n", ev.type, ev.code, ev.value);
 
 			if (( ev.type != EV_KEY ) || ( val > REPEAT )) continue;
 			// printf("code: %i (%i)\n", ev.code, val); fflush(stdout);
@@ -161,6 +187,31 @@ int main (int argc, char *argv[]) {
 			
 			if (down_just_pressed) down_just_pressed = 0;
 			else down_repeat_at += 100;
+		}
+		
+		// Check for inactivity timeout
+		current_time = now;
+		uint32_t time_since_input = current_time - last_input_time;
+		
+		// Debug output every 5 seconds
+		static uint32_t last_debug = 0;
+		if (current_time - last_debug > 5000) {
+			printf("Keymon: Time since input: %d ms, timeout: %d ms, device_inactive: %d\n", 
+				time_since_input, INACTIVITY_TIMEOUT, GetDeviceInactive());
+			last_debug = current_time;
+		}
+		
+		if (time_since_input > INACTIVITY_TIMEOUT) {
+			if (!GetDeviceInactive()) {
+				puts("Keymon: Device inactive due to timeout");
+				SetDeviceInactive(1);
+			}
+		} else {
+			// Reset inactive flag if there was recent input
+			if (GetDeviceInactive()) {
+				puts("Keymon: Device active again");
+				SetDeviceInactive(0);
+			}
 		}
 		
 		then = now;

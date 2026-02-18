@@ -22,4 +22,8 @@ void SetHDMI(int value); // 0-1
 int GetMute(void);
 void SetMute(int value); // 0-1
 
+// Lockscreen coordination
+int GetDeviceInactive(void);
+void SetDeviceInactive(int value); // 0-1
+
 #endif  // __msettings_h__

@@ -13,3 +13,31 @@ $(PLATFORM):
 	# move libs (copied from toolchain)
 	mv ./workspace/libSDL2_image-2.0.so.0 ./build/SYSTEM/$@/lib/
 	mv ./workspace/libSDL2_ttf-2.0.so.0 ./build/SYSTEM/$@/lib/
+	# move directfb2 libs
+	# core libs (if present in workspace root)
+	-mkdir -p ./build/SYSTEM/$@/lib
+	mv ./workspace/libdirectfb-2.0.so.0 ./build/SYSTEM/$@/lib/
+	mv ./workspace/libdirect-2.0.so.0 ./build/SYSTEM/$@/lib/
+	mv ./workspace/libfusion-2.0.so.0 ./build/SYSTEM/$@/lib/
+	# ensure DirectFB2 module directory structure
+	-mkdir -p ./build/SYSTEM/$@/lib/directfb-2.0-0/systems
+	-mkdir -p ./build/SYSTEM/$@/lib/directfb-2.0-0/wm
+	-mkdir -p ./build/SYSTEM/$@/lib/directfb-2.0-0/inputdrivers
+	-mkdir -p ./build/SYSTEM/$@/lib/directfb-2.0-0/interfaces/ICoreResourceManager
+	-mkdir -p ./build/SYSTEM/$@/lib/directfb-2.0-0/interfaces/IDirectFBFont
+	-mkdir -p ./build/SYSTEM/$@/lib/directfb-2.0-0/interfaces/IDirectFBImageProvider
+	-mkdir -p ./build/SYSTEM/$@/lib/directfb-2.0-0/interfaces/IDirectFBVideoProvider
+	-mkdir -p ./build/SYSTEM/$@/lib/directfb-2.0-0/interfaces/IDirectFBWindows
+	# systems
+	-mv ./workspace/libdirectfb_fbdev.so ./build/SYSTEM/$@/lib/directfb-2.0-0/systems/
+	-mv ./workspace/libdirectfb_dummy.so ./build/SYSTEM/$@/lib/directfb-2.0-0/systems/
+	# wm
+	-mv ./workspace/libdirectfbwm_default.so ./build/SYSTEM/$@/lib/directfb-2.0-0/wm/
+	# inputdrivers
+	-mv ./workspace/libdirectfb_linux_input.so ./build/SYSTEM/$@/lib/directfb-2.0-0/inputdrivers/
+	# interfaces
+	-mv ./workspace/libicoreresourcemanager_default.so ./build/SYSTEM/$@/lib/directfb-2.0-0/interfaces/ICoreResourceManager/
+	-mv ./workspace/libidirectfbfont_dgiff.so ./build/SYSTEM/$@/lib/directfb-2.0-0/interfaces/IDirectFBFont/
+	-mv ./workspace/libidirectfbimageprovider_dfiff.so ./build/SYSTEM/$@/lib/directfb-2.0-0/interfaces/IDirectFBImageProvider/
+	-mv ./workspace/libidirectfbvideoprovider_dfvff.so ./build/SYSTEM/$@/lib/directfb-2.0-0/interfaces/IDirectFBVideoProvider/
+	-mv ./workspace/libidirectfbwindows_default.so ./build/SYSTEM/$@/lib/directfb-2.0-0/interfaces/IDirectFBWindows/

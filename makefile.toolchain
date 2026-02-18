@@ -20,7 +20,11 @@ $(INIT_IF_NECESSARY): $(GIT_IF_NECESSARY)
 
 $(GIT_IF_NECESSARY):
 	mkdir -p toolchains
+ifeq ($(PLATFORM),rg35xxplus)
+	git clone https://github.com/hp7hao/union-rg35xxplus-toolchain.git toolchains/$(PLATFORM)-toolchain
+else
 	git clone https://github.com/shauninman/union-$(PLATFORM)-toolchain/ toolchains/$(PLATFORM)-toolchain
+endif
 
 clean:
 	cd toolchains/$(PLATFORM)-toolchain && make clean

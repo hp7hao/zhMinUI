@@ -23,7 +23,9 @@ typedef struct Settings {
 	int unused[2]; // for future use
 	// NOTE: doesn't really need to be persisted but still needs to be shared
 	int jack; 
-	int hdmi; 
+	int hdmi;
+	// Lockscreen coordination
+	int device_inactive;
 } Settings;
 static Settings DefaultSettings = {
 	.version = SETTINGS_VERSION,
@@ -32,6 +34,7 @@ static Settings DefaultSettings = {
 	.speaker = 8,
 	.jack = 0,
 	.hdmi = 0,
+	.device_inactive = 0,
 };
 static Settings* settings;
 
@@ -199,3 +202,12 @@ void SetHDMI(int value) {
 
 int GetMute(void) { return 0; }
 void SetMute(int value) {}
+
+// Lockscreen coordination functions
+int GetDeviceInactive(void) {
+	return settings->device_inactive;
+}
+
+void SetDeviceInactive(int value) {
+	settings->device_inactive = value;
+}

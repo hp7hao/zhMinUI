@@ -16,6 +16,9 @@ export HDMI_EXPORT_PATH="/tmp/hdmi_export.sh"
 
 export PATH=$SYSTEM_PATH/bin:$PATH
 export LD_LIBRARY_PATH=$SYSTEM_PATH/lib:$LD_LIBRARY_PATH
+export DFB_MODULES_DIR="$SYSTEM_PATH/lib/directfb-2.0-0"
+export D_ARGS="module-dir=$DFB_MODULES_DIR"
+export DFBARGS="system=fbdev,fbdev=/dev/fb0,inputdrivers=linux_input,no-banner"
 
 #######################################
 
@@ -38,7 +41,7 @@ esac
 		
 #######################################
 
-keymon.elf & # > $LOGS_PATH/keymon.txt 2>&1 &
+keymon.elf > $LOGS_PATH/keymon.txt 2>&1 &
 
 #######################################
 
@@ -72,7 +75,7 @@ NEXT_PATH="/tmp/next"
 touch "$EXEC_PATH" && sync
 while [ -f "$EXEC_PATH" ]; do
 	. $HDMI_EXPORT_PATH
-	minui.elf > $LOGS_PATH/minui.txt 2>&1
+	minwm.elf > $LOGS_PATH/minwm.txt 2>&1
 	echo `date +'%F %T'` > "$DATETIME_PATH"
 	sync
 	

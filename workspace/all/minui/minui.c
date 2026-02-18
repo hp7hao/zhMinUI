@@ -14,7 +14,7 @@
 #include "theme.h"
 #include "font.h"
 #include "perf.h"
-#include "lockscreen.h"
+// Lockscreen handled by minwm
 
 ///////////////////////////////////////
 
@@ -1384,6 +1384,10 @@ int main (int argc, char *argv[]) {
 	int show_version = 0;
 	int show_setting = 0; // 1=brightness,2=volume
 	int was_online = PLAT_isOnline();
+
+	// Input may be blocked by an external lockscreen controller (minwm).
+	// Default to unblocked so legacy builds compile and run.
+	static int input_blocked = 0;
 	
 	// Main menu variables
 	int show_main_menu = 0;
@@ -1503,8 +1507,7 @@ int main (int argc, char *argv[]) {
 	// Initialize performance counter
 	PERF_init();
 	
-	// Initialize lockscreen
-	LOCKSCREEN_init();
+	// Lockscreen handled by minwm
 	
 	// LOG_info("- loop start: %lu\n", SDL_GetTicks() - main_begin);
 	while (!quit) {
@@ -1513,28 +1516,7 @@ int main (int argc, char *argv[]) {
 		
 		PAD_poll();
 		
-		// Update lockscreen (non-blocking) - check BEFORE anything else to prevent UI flash
-		if (LOCKSCREEN_isActive()) {
-			int should_sleep = LOCKSCREEN_update();
-			LOCKSCREEN_draw(screen);
-			GFX_flip(screen);
-			
-			if (should_sleep) {
-				// Lockscreen timed out, trigger sleep through PWR_update
-				// Set last_input to old time to trigger timeout
-				// (PWR_update will handle sleep + re-activate lockscreen)
-			}
-			
-			// Still call PWR_update to handle power button while locked
-			int dummy_dirty = 0;
-			PWR_update(&dummy_dirty, NULL, LOCKSCREEN_activate, LOCKSCREEN_activate);
-			
-			// Skip normal UI while locked
-			continue;
-		}
-		
-		// Block input for 500ms after unlocking to prevent accidental actions
-		int input_blocked = LOCKSCREEN_isInputBlocked();
+		// Lockscreen handled by minwm
 		
 		// Update FPS counter
 		PERF_update();
@@ -1543,8 +1525,8 @@ int main (int argc, char *argv[]) {
 		int selected = top->selected;
 		int total = top->entries->count;
 		
-		// Pass lockscreen callbacks to PWR_update
-		PWR_update(&dirty, &show_setting, LOCKSCREEN_activate, LOCKSCREEN_activate);
+		// PWR_update without lockscreen callbacks (handled by minwm)
+		PWR_update(&dirty, &show_setting, NULL, NULL);
 		
 		int is_online = PLAT_isOnline();
 		if (was_online!=is_online) dirty = 1;
