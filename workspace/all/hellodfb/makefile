@@ -18,22 +18,16 @@ include ../../$(PLATFORM)/platform/makefile.env
 
 ###########################################################
 
-TARGET = minwm
-INCDIR = -I. -I../common/ -I../../$(PLATFORM)/platform/ -I$(PREFIX)/include/directfb -I$(PREFIX)/include
-SOURCE = $(TARGET).c
-
+TARGET = hellodfb
 CC = $(CROSS_COMPILE)gcc
-CFLAGS   = $(ARCH) -fomit-frame-pointer
-CFLAGS  += $(INCDIR) -DPLATFORM=\"$(PLATFORM)\" -Ofast -std=gnu99
-CFLAGS	+= -Os -flto
-LDFLAGS	 = -L$(PREFIX)/lib -Wl,-rpath-link,$(PREFIX)/lib -ldirectfb-2.0 -ldirect-2.0 -lfusion-2.0 -lm
+CFLAGS  = $(ARCH) -Ofast -std=gnu99
+LDFLAGS = $(LIBS)
 
-PRODUCT= build/$(PLATFORM)/$(TARGET).elf
+PRODUCT = build/$(PLATFORM)/$(TARGET).elf
 
 all:
 	mkdir -p build/$(PLATFORM)
-	$(CC) $(SOURCE) -o $(PRODUCT) $(CFLAGS) $(LDFLAGS)
+	$(CC) $(TARGET).c -o $(PRODUCT) $(CFLAGS) $(LDFLAGS)
 
 clean:
 	rm -f $(PRODUCT)
-

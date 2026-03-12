@@ -949,7 +949,7 @@ static Array* getEntries(char* path){
 ///////////////////////////////////////
 
 static void queueNext(char* cmd) {
-	LOG_info("cmd: %s\n", cmd);
+	LOG_info("minui: queueNext cmd: %s\n", cmd);
 	putFile("/tmp/next", cmd);
 	quit = 1;
 }
@@ -1065,6 +1065,7 @@ static int autoResume(void) {
 	sprintf(cmd, "'%s' '%s'", escapeSingleQuotes(emu_path), escapeSingleQuotes(sd_path));
 	putInt(RESUME_SLOT_PATH, AUTO_RESUME_SLOT);
 	queueNext(cmd);
+	LOG_info("minui: autoResume triggered, queueNext done\n");
 	return 1;
 }
 
@@ -1340,40 +1341,60 @@ static SDL_Surface* loadArtwork(const char* platform_name, int screen_width, int
 ///////////////////////////////////////
 
 int main (int argc, char *argv[]) {
+	// Unbuffered debug: write directly to fd 2 (stderr) to survive crashes
+	#define CRASH_DBG(msg) write(STDERR_FILENO, msg, sizeof(msg)-1)
+
+	CRASH_DBG("DBG: minui main entered\n");
+
 	// LOG_info("time from launch to:\n");
 	// unsigned long main_begin = SDL_GetTicks();
 	// unsigned long first_draw = 0;
-	
-	if (autoResume()) return 0; // nothing to do
-	
+
+	LOG_info("minui: main() pid=%d\n", getpid());
+	fflush(stdout); fflush(stderr);
+	CRASH_DBG("DBG: before autoResume\n");
+	if (autoResume()) {
+		LOG_info("minui: autoResume triggered, exiting\n");
+		fflush(stdout); fflush(stderr);
+		return 0; // nothing to do
+	}
+
+	CRASH_DBG("DBG: before simple_mode\n");
 	simple_mode = exists(SIMPLE_MODE_PATH);
 
 	LOG_info("MinUI\n");
-	
+
+	CRASH_DBG("DBG: before I18N_init\n");
 	// Initialize i18n
 	I18N_init();
-	
+	LOG_info("minui: after I18N_init\n"); fflush(stdout);
+
+	CRASH_DBG("DBG: before InitSettings\n");
 	InitSettings();
-	
+	LOG_info("minui: after InitSettings\n"); fflush(stdout);
+
+	CRASH_DBG("DBG: before GFX_init\n");
 	SDL_Surface* screen = GFX_init(MODE_MAIN);
-	// LOG_info("- graphics init: %lu\n", SDL_GetTicks() - main_begin);
-	
+	CRASH_DBG("DBG: after GFX_init\n");
+	LOG_info("minui: after GFX_init\n"); fflush(stdout);
+
 	// Initialize theme colors for assets
 	GFX_updateThemeColors();
-	
+	LOG_info("minui: after GFX_updateThemeColors\n"); fflush(stdout);
+
 	PAD_init();
-	// LOG_info("- input init: %lu\n", SDL_GetTicks() - main_begin);
-	
+	LOG_info("minui: after PAD_init\n"); fflush(stdout);
+
 	PWR_init();
 	if (!HAS_POWER_BUTTON && !simple_mode) PWR_disableSleep();
-	// LOG_info("- power init: %lu\n", SDL_GetTicks() - main_begin);
-	
+	LOG_info("minui: after PWR_init\n"); fflush(stdout);
+
 	SDL_Surface* version = NULL;
 	SDL_Surface* background = NULL;
 	char current_bg_platform[256] = "";
-	
+
 	Menu_init();
-	// LOG_info("- menu init: %lu\n", SDL_GetTicks() - main_begin);
+	LOG_info("minui: after Menu_init\n"); fflush(stdout);
 	
 	// now that (most of) the heavy lifting is done, take a load off
 	PWR_setCPUSpeed(CPU_SPEED_MENU);
@@ -1506,10 +1527,10 @@ int main (int argc, char *argv[]) {
 	
 	// Initialize performance counter
 	PERF_init();
-	
+
 	// Lockscreen handled by minwm
-	
-	// LOG_info("- loop start: %lu\n", SDL_GetTicks() - main_begin);
+
+	LOG_info("minui: entering main loop, quit=%d\n", quit); fflush(stdout);
 	while (!quit) {
 		GFX_startFrame();
 		unsigned long now = SDL_GetTicks();
@@ -2249,10 +2270,12 @@ int main (int argc, char *argv[]) {
 			LOG_info("restarting after HDMI change... (%s)\n", entry->path);
 			saveLast(entry->path); // NOTE: doesn't work in Recents (by design)
 			sleep(4);
+			LOG_info("minui: HDMI change quit\n");
 			quit = 1;
 		}
 	}
-	
+
+	LOG_info("minui: main loop exited (quit=%d)\n", quit);
 	if (version) SDL_FreeSurface(version);
 	if (background) SDL_FreeSurface(background);
 

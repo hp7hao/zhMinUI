@@ -19,6 +19,7 @@ all:
 	cd ./$(PLATFORM) && make early # eg. other libs
 	cd ./$(PLATFORM)/keymon && make
 	cd ./all/minui/ && make
+	cd ./all/hellodfb/ && make
 	cd ./all/minarch/ && make
 	cd ./all/clock/ && make
 	cd ./all/minput/ && make

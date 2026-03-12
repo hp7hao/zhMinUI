@@ -42,31 +42,33 @@ extern int on_hdmi;
 
 ///////////////////////////////
 
-#define CODE_UP			CODE_NA
-#define CODE_DOWN		CODE_NA
-#define CODE_LEFT		CODE_NA
-#define CODE_RIGHT		CODE_NA
+// SDL scancodes resulting from DirectFB2 gamepad-to-keyboard remapping:
+// evdev BTN → linux_input remaps to KEY_* → key_translate() → SDL scancode
+#define CODE_UP			82	/* SDL_SCANCODE_UP    (KEY_UP(103))       */
+#define CODE_DOWN		81	/* SDL_SCANCODE_DOWN  (KEY_DOWN(108))     */
+#define CODE_LEFT		80	/* SDL_SCANCODE_LEFT  (KEY_LEFT(105))     */
+#define CODE_RIGHT		79	/* SDL_SCANCODE_RIGHT (KEY_RIGHT(106))    */
 
-#define CODE_SELECT		CODE_NA
-#define CODE_START		CODE_NA
+#define CODE_SELECT		228	/* SDL_SCANCODE_RCTRL (BTN_TL(310)→KEY_RIGHTCTRL(97))  */
+#define CODE_START		40	/* SDL_SCANCODE_RETURN (BTN_TR(311)→KEY_ENTER(28))     */
 
-#define CODE_A			CODE_NA
-#define CODE_B			CODE_NA
-#define CODE_X			CODE_NA
-#define CODE_Y			CODE_NA
+#define CODE_A			44	/* SDL_SCANCODE_SPACE  (BTN_SOUTH(304)→KEY_SPACE(57))  */
+#define CODE_B			224	/* SDL_SCANCODE_LCTRL  (BTN_EAST(305)→KEY_LEFTCTRL(29)) */
+#define CODE_X			225	/* SDL_SCANCODE_LSHIFT (BTN_NORTH(307)→KEY_LEFTSHIFT(42)) */
+#define CODE_Y			226	/* SDL_SCANCODE_LALT   (BTN_C(306)→KEY_LEFTALT(56))    */
 
-#define CODE_L1			CODE_NA
-#define CODE_R1			CODE_NA
-#define CODE_L2			CODE_NA
-#define CODE_R2			CODE_NA
-#define CODE_L3			CODE_NA
-#define CODE_R3			CODE_NA
+#define CODE_L1			43	/* SDL_SCANCODE_TAB       (BTN_WEST(308)→KEY_TAB(15))      */
+#define CODE_R1			42	/* SDL_SCANCODE_BACKSPACE (BTN_Z(309)→KEY_BACKSPACE(14))   */
+#define CODE_L2			227	/* SDL_SCANCODE_LGUI   (BTN_SELECT(314)→KEY_LEFTMETA(125)) */
+#define CODE_R2			231	/* SDL_SCANCODE_RGUI   (BTN_START(315)→KEY_RIGHTMETA(126)) */
+#define CODE_L3			230	/* SDL_SCANCODE_RALT   (BTN_TR2(313)→KEY_RIGHTALT(100))    */
+#define CODE_R3			101	/* SDL_SCANCODE_APPLICATION (BTN_THUMBR(318)→KEY_KPSLASH(98)) */
 
-#define CODE_MENU		CODE_NA
-#define CODE_POWER		102
+#define CODE_MENU		41	/* SDL_SCANCODE_ESCAPE (BTN_TL2(312)→KEY_ESC(1))       */
+#define CODE_POWER		102	/* SDL_SCANCODE_POWER  (KEY_POWER(116), no remap)      */
 
-#define CODE_PLUS		CODE_NA
-#define CODE_MINUS		CODE_NA
+#define CODE_PLUS		128	/* SDL_SCANCODE_VOLUMEUP   (KEY_VOLUMEUP(115))         */
+#define CODE_MINUS		129	/* SDL_SCANCODE_VOLUMEDOWN (KEY_VOLUMEDOWN(114))       */
 
 ///////////////////////////////
 

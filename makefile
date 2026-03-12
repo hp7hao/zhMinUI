@@ -52,6 +52,7 @@ system:
 	cp ./workspace/$(PLATFORM)/libmsettings/libmsettings.so ./build/SYSTEM/$(PLATFORM)/lib
 	cp ./workspace/all/minui/build/$(PLATFORM)/minui.elf ./build/SYSTEM/$(PLATFORM)/bin/
 	cp ./workspace/all/minarch/build/$(PLATFORM)/minarch.elf ./build/SYSTEM/$(PLATFORM)/bin/
+	-cp ./workspace/all/hellodfb/build/$(PLATFORM)/hellodfb.elf ./build/SYSTEM/$(PLATFORM)/bin/
 	cp ./workspace/all/syncsettings/build/$(PLATFORM)/syncsettings.elf ./build/SYSTEM/$(PLATFORM)/bin/
 	cp ./workspace/all/minwm/build/$(PLATFORM)/minwm.elf ./build/SYSTEM/$(PLATFORM)/bin/
 	cp ./workspace/all/clock/build/$(PLATFORM)/clock.elf ./build/EXTRAS/Tools/$(PLATFORM)/Clock.pak/
@@ -200,7 +201,94 @@ package: tidy
 	cd ./build/BASE && zip -r ../../releases/$(RELEASE_NAME)-base.zip Bios Roms Saves miyoo miyoo354 trimui rg35xx rg35xxplus gkdpixel miyoo355 magicx em_ui.sh MinUI.zip README.txt
 	cd ./build/EXTRAS && zip -r ../../releases/$(RELEASE_NAME)-extras.zip Bios Emus Roms Saves Tools README.txt
 	echo "$(RELEASE_NAME)" > ./build/latest.txt
-	
+
+###########################################################
+
+release:
+ifndef PLATFORM
+	$(error PLATFORM is required, eg. make release PLATFORM=rg35xxplus)
+endif
+	# ----------------------------------------------------
+	# Assemble single-platform release
+	rm -rf ./build/RELEASE
+	mkdir -p ./build/RELEASE
+
+	# .system/ — platform binaries + shared resources
+	mkdir -p ./build/RELEASE/.system
+	cp -R ./build/SYSTEM/$(PLATFORM) ./build/RELEASE/.system/
+	# legacy compat for rg40xxcube (if present)
+	if [ -d ./build/SYSTEM/rg40xxcube ]; then \
+		cp -R ./build/SYSTEM/rg40xxcube ./build/RELEASE/.system/; \
+	fi
+	# shared resources
+	if [ -d ./build/SYSTEM/res ]; then \
+		cp -R ./build/SYSTEM/res ./build/RELEASE/.system/; \
+	fi
+	if [ -d ./build/SYSTEM/locale ]; then \
+		cp -R ./build/SYSTEM/locale ./build/RELEASE/.system/; \
+	fi
+	# version
+	echo "$(RELEASE_BASE)\n$(BUILD_HASH)" > ./build/RELEASE/.system/version.txt
+
+	# Bootstrap dir (dmenu.bin)
+	if [ -d ./build/BASE/$(PLATFORM) ]; then \
+		cp -R ./build/BASE/$(PLATFORM) ./build/RELEASE/; \
+	fi
+
+	# Merge BASE + EXTRAS content dirs
+	cp -R ./build/BASE/Bios ./build/RELEASE/
+	cp -R ./build/BASE/Roms ./build/RELEASE/
+	cp -R ./build/BASE/Saves ./build/RELEASE/
+	# Merge extras Bios/Roms/Saves on top
+	if [ -d ./build/EXTRAS/Bios ]; then \
+		cp -Rn ./build/EXTRAS/Bios/* ./build/RELEASE/Bios/ 2>/dev/null; true; \
+	fi
+	if [ -d ./build/EXTRAS/Roms ]; then \
+		cp -Rn ./build/EXTRAS/Roms/* ./build/RELEASE/Roms/ 2>/dev/null; true; \
+	fi
+	if [ -d ./build/EXTRAS/Saves ]; then \
+		cp -Rn ./build/EXTRAS/Saves/* ./build/RELEASE/Saves/ 2>/dev/null; true; \
+	fi
+
+	# Extra emulators for this platform
+	if [ -d ./build/EXTRAS/Emus/$(PLATFORM) ]; then \
+		mkdir -p ./build/RELEASE/Emus/$(PLATFORM); \
+		cp -R ./build/EXTRAS/Emus/$(PLATFORM)/* ./build/RELEASE/Emus/$(PLATFORM)/; \
+	fi
+
+	# Tools for this platform
+	if [ -d ./build/EXTRAS/Tools/$(PLATFORM) ]; then \
+		mkdir -p ./build/RELEASE/Tools/$(PLATFORM); \
+		cp -R ./build/EXTRAS/Tools/$(PLATFORM)/* ./build/RELEASE/Tools/$(PLATFORM)/; \
+	fi
+
+	# README
+	if [ -f ./build/BASE/README.txt ]; then \
+		cp ./build/BASE/README.txt ./build/RELEASE/; \
+	fi
+
+	# Clean OS junk
+	cd ./build/RELEASE && find . -name '.DS_Store' -delete && find . -name '.keep' -delete
+
+	# Create ZIP
+	mkdir -p ./releases
+	cd ./build/RELEASE && zip -r ../../releases/MinUI-$(PLATFORM)-$(RELEASE_TIME)-$(BUILD_HASH).zip .
+	@echo "Release: releases/MinUI-$(PLATFORM)-$(RELEASE_TIME)-$(BUILD_HASH).zip"
+
+dist:
+ifndef PLATFORM
+	$(error PLATFORM is required, eg. make dist PLATFORM=rg35xxplus)
+endif
+	make setup
+	make convert-artworks
+	make common PLATFORM=$(PLATFORM)
+	# rg40xxcube legacy compat
+	if [ "$(PLATFORM)" = "rg35xxplus" ]; then \
+		mkdir -p ./build/SYSTEM/rg40xxcube/bin/; \
+		cp ./build/SYSTEM/rg35xxplus/bin/install.sh ./build/SYSTEM/rg40xxcube/bin/; \
+	fi
+	make release PLATFORM=$(PLATFORM)
+
 ###########################################################
 
 .DEFAULT:

@@ -1,0 +1,37 @@
+--- a/inputdrivers/linux_input/linux_input.c
++++ b/inputdrivers/linux_input/linux_input.c
+@@ -681,6 +681,32 @@
+ {
+      int code = levt->code;
+
++     /* Remap gamepad buttons (BTN_GAMEPAD range 0x130-0x13e) to keyboard codes
++        so they pass through key_translate() instead of being dropped.
++        Codes 136-351 fall in a gap between basic_keycodes[] and ext_keycodes[],
++        causing key_translate() to return DIKI_UNKNOWN and silently drop them. */
++     if (code >= 0x130 && code <= 0x13e) {
++          static const unsigned short gamepad_to_key[] = {
++               [0]  = 57,   /* BTN_SOUTH(0x130/304) -> KEY_SPACE      */
++               [1]  = 29,   /* BTN_EAST(0x131/305)  -> KEY_LEFTCTRL   */
++               [2]  = 56,   /* BTN_C(0x132/306)     -> KEY_LEFTALT    */
++               [3]  = 42,   /* BTN_NORTH(0x133/307) -> KEY_LEFTSHIFT  */
++               [4]  = 15,   /* BTN_WEST(0x134/308)  -> KEY_TAB        */
++               [5]  = 14,   /* BTN_Z(0x135/309)     -> KEY_BACKSPACE  */
++               [6]  = 97,   /* BTN_TL(0x136/310)    -> KEY_RIGHTCTRL  */
++               [7]  = 28,   /* BTN_TR(0x137/311)    -> KEY_ENTER      */
++               [8]  = 1,    /* BTN_TL2(0x138/312)   -> KEY_ESC        */
++               [9]  = 100,  /* BTN_TR2(0x139/313)   -> KEY_RIGHTALT   */
++               [10] = 125,  /* BTN_SELECT(0x13a/314) -> KEY_LEFTMETA  */
++               [11] = 126,  /* BTN_START(0x13b/315)  -> KEY_RIGHTMETA */
++               [12] = 127,  /* BTN_MODE(0x13c/316)   -> KEY_COMPOSE   */
++               [13] = 96,   /* BTN_THUMBL(0x13d/317) -> KEY_KPENTER   */
++               [14] = 98,   /* BTN_THUMBR(0x13e/318) -> KEY_KPSLASH   */
++          };
++          unsigned short mapped = gamepad_to_key[code - 0x130];
++          if (mapped == 0)
++               return false;
++          code = mapped;
++     }
++
+      /* Map touchscreen events to button mouse. */
+      if (code == BTN_TOUCH || code == BTN_TOOL_FINGER)
+           code = BTN_MOUSE;

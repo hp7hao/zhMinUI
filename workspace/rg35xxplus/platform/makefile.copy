@@ -31,6 +31,11 @@ $(PLATFORM):
 	# systems
 	-mv ./workspace/libdirectfb_fbdev.so ./build/SYSTEM/$@/lib/directfb-2.0-0/systems/
 	-mv ./workspace/libdirectfb_dummy.so ./build/SYSTEM/$@/lib/directfb-2.0-0/systems/
+	# egl-mali system module
+	-mv ./workspace/libdirectfb_egl_mali_fbdev.so ./build/SYSTEM/$@/lib/directfb-2.0-0/systems/
+	# gfxdrivers
+	-mkdir -p ./build/SYSTEM/$@/lib/directfb-2.0-0/gfxdrivers
+	-mv ./workspace/libdirectfb_gles2.so ./build/SYSTEM/$@/lib/directfb-2.0-0/gfxdrivers/
 	# wm
 	-mv ./workspace/libdirectfbwm_default.so ./build/SYSTEM/$@/lib/directfb-2.0-0/wm/
 	# inputdrivers
@@ -38,6 +43,8 @@ $(PLATFORM):
 	# interfaces
 	-mv ./workspace/libicoreresourcemanager_default.so ./build/SYSTEM/$@/lib/directfb-2.0-0/interfaces/ICoreResourceManager/
 	-mv ./workspace/libidirectfbfont_dgiff.so ./build/SYSTEM/$@/lib/directfb-2.0-0/interfaces/IDirectFBFont/
+	-mv ./workspace/libidirectfbfont_stb.so ./build/SYSTEM/$@/lib/directfb-2.0-0/interfaces/IDirectFBFont/
 	-mv ./workspace/libidirectfbimageprovider_dfiff.so ./build/SYSTEM/$@/lib/directfb-2.0-0/interfaces/IDirectFBImageProvider/
+	-mv ./workspace/libidirectfbimageprovider_lodepng.so ./build/SYSTEM/$@/lib/directfb-2.0-0/interfaces/IDirectFBImageProvider/
 	-mv ./workspace/libidirectfbvideoprovider_dfvff.so ./build/SYSTEM/$@/lib/directfb-2.0-0/interfaces/IDirectFBVideoProvider/
 	-mv ./workspace/libidirectfbwindows_default.so ./build/SYSTEM/$@/lib/directfb-2.0-0/interfaces/IDirectFBWindows/

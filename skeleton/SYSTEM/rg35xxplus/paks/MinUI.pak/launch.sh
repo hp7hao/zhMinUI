@@ -17,14 +17,17 @@ export HDMI_EXPORT_PATH="/tmp/hdmi_export.sh"
 export PATH=$SYSTEM_PATH/bin:$PATH
 export LD_LIBRARY_PATH=$SYSTEM_PATH/lib:$LD_LIBRARY_PATH
 export DFB_MODULES_DIR="$SYSTEM_PATH/lib/directfb-2.0-0"
-export D_ARGS="module-dir=$DFB_MODULES_DIR"
-export DFBARGS="system=fbdev,fbdev=/dev/fb0,inputdrivers=linux_input,no-banner"
+export D_ARGS="module-dir=$DFB_MODULES_DIR,no-sighandler"
+export DFBARGS="system=egl_mali_fbdev,inputdrivers=linux_input,no-banner,no-cursor,no-core-sighandler"
+
+# SDL2 no longer uses DirectFB for display — platform.c calls DFB2 directly
+# SDL2 is only used for software surfaces, image loading, fonts, and audio
 
 #######################################
 
 systemctl disable ondemand
 echo performance > /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
-echo 0 > /sys/class/power_supply/axp2202-battery/work_led
+echo 1 > /sys/class/power_supply/axp2202-battery/work_led
 
 export RGXX_MODEL=`strings /mnt/vendor/bin/dmenu.bin | grep ^RG`
 # export RGXX_TIMESTAMP=`strings /mnt/vendor/bin/dmenu.bin | grep ^202`
@@ -70,22 +73,8 @@ fi
 
 #######################################
 
-EXEC_PATH="/tmp/minui_exec"
-NEXT_PATH="/tmp/next"
-touch "$EXEC_PATH" && sync
-while [ -f "$EXEC_PATH" ]; do
-	. $HDMI_EXPORT_PATH
-	minwm.elf > $LOGS_PATH/minwm.txt 2>&1
-	echo `date +'%F %T'` > "$DATETIME_PATH"
-	sync
-	
-	if [ -f $NEXT_PATH ]; then
-		. $HDMI_EXPORT_PATH
-		. $NEXT_PATH
-		rm -f $NEXT_PATH
-		echo `date +'%F %T'` > "$DATETIME_PATH"
-		sync
-	fi
-done
+# minwm runs in foreground — owns display + app lifecycle (minui/minarch loop)
+minwm.elf > $LOGS_PATH/minwm.txt 2>&1
 
+# Only reached after minwm exits (shutdown already initiated from within)
 shutdown

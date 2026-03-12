@@ -1,0 +1,176 @@
+--- a/src/video/directfb/SDL_DirectFB_window.c
++++ b/src/video/directfb/SDL_DirectFB_window.c
+@@ -50,14 +50,10 @@
+     windata = (DFB_WindowData *) window->driverdata;
+ 
+     windata->is_managed = devdata->has_own_wm;
+-#if 1
+-    SDL_DFB_CHECKERR(devdata->dfb->SetCooperativeLevel(devdata->dfb,
+-                                                       DFSCL_NORMAL));
+-    SDL_DFB_CHECKERR(dispdata->layer->SetCooperativeLevel(dispdata->layer,
+-                                                          DLSCL_ADMINISTRATIVE));
+-#endif
+-    /* FIXME ... ughh, ugly */
+-    if (window->x == -1000 && window->y == -1000)
++    /* Multi-app DFB2: master (minwm) holds DLSCL_ADMINISTRATIVE.
++       SDL2 slave apps must NOT grab it or surface operations will crash. */
++
++    if (window->x == -1000 && window->y == -1000) /* shaped window */
+         bshaped = 1;
+ 
+     /* Fill the window description. */
+
+--- a/src/video/directfb/SDL_DirectFB_modes.c
++++ b/src/video/directfb/SDL_DirectFB_modes.c
+@@ -90,8 +90,7 @@
+     DFBDisplayLayerConfig config;
+     DFBDisplayLayerConfigFlags failed;
+ 
+-    SDL_DFB_CHECKERR(data->layer->SetCooperativeLevel(data->layer,
+-                                                      DLSCL_ADMINISTRATIVE));
++    /* Multi-app DFB2: skip DLSCL_ADMINISTRATIVE, test at current level */
+     config.width = mode->w;
+     config.height = mode->h;
+     config.pixelformat = DirectFB_SDLToDFBPixelFormat(mode->format);
+@@ -102,8 +101,6 @@
+     }
+     failed = 0;
+     data->layer->TestConfiguration(data->layer, &config, &failed);
+-    SDL_DFB_CHECKERR(data->layer->SetCooperativeLevel(data->layer,
+-                                                      DLSCL_SHARED));
+     if (failed == 0)
+     {
+         SDL_AddDisplayMode(display, mode);
+@@ -189,10 +186,9 @@
+                                                        screencbdata->gralayer
+                                                        [i], &layer));
+ 
+-        SDL_DFB_CHECKERR(layer->SetCooperativeLevel(layer,
+-                                                    DLSCL_ADMINISTRATIVE));
+-        layer->EnableCursor(layer, 1);
+-        SDL_DFB_CHECKERR(layer->SetCursorOpacity(layer, 0xC0));
++        /* Multi-app DFB2: do NOT grab DLSCL_ADMINISTRATIVE during init.
++           The master (minwm) owns the layer; we just query its config. */
++        SDL_DFB_CHECKERR(layer->SetCooperativeLevel(layer, DLSCL_SHARED));
+ 
+         if (devdata->use_yuv_underlays) {
+             dlc.flags = DLCONF_PIXELFORMAT | DLCONF_OPTIONS;
+@@ -245,11 +241,9 @@
+         dlc.flags =
+             DLCONF_WIDTH | DLCONF_HEIGHT | DLCONF_PIXELFORMAT |
+             DLCONF_OPTIONS;
+-        ret = layer->SetConfiguration(layer, &dlc);
++        /* Multi-app DFB2: skip SetConfiguration — slave must not reconfigure layer */
+ #endif
+ 
+-        SDL_DFB_CHECKERR(layer->SetCooperativeLevel(layer, DLSCL_SHARED));
+-
+         SDL_AddVideoDisplay(&display, SDL_FALSE);
+     }
+     SDL_DFB_FREE(screencbdata);
+@@ -297,67 +291,17 @@
+ 
+ int DirectFB_SetDisplayMode(_THIS, SDL_VideoDisplay * display, SDL_DisplayMode * mode)
+ {
+-    /*
+-     * FIXME: video mode switch is currently broken for 1.2.0
+-     *
+-     */
+-
+-    SDL_DFB_DEVICEDATA(_this);
+     DFB_DisplayData *data = (DFB_DisplayData *) display->driverdata;
+-    DFBDisplayLayerConfig config, rconfig;
+-    DFBDisplayLayerConfigFlags fail = 0;
+-
+-    SDL_DFB_CHECKERR(data->layer->SetCooperativeLevel(data->layer,
+-                                                      DLSCL_ADMINISTRATIVE));
+-
+-    SDL_DFB_CHECKERR(data->layer->GetConfiguration(data->layer, &config));
+-    config.flags = DLCONF_WIDTH | DLCONF_HEIGHT;
+-    if (mode->format != SDL_PIXELFORMAT_UNKNOWN) {
+-        config.flags |= DLCONF_PIXELFORMAT;
+-        config.pixelformat = DirectFB_SDLToDFBPixelFormat(mode->format);
+-        data->pixelformat = config.pixelformat;
+-    }
+-    config.width = mode->w;
+-    config.height = mode->h;
+-
+-    if (devdata->use_yuv_underlays) {
+-        config.flags |= DLCONF_OPTIONS;
+-        config.options = DLOP_ALPHACHANNEL;
+-    }
+-
+-    data->layer->TestConfiguration(data->layer, &config, &fail);
+-
+-    if (fail &
+-        (DLCONF_WIDTH | DLCONF_HEIGHT | DLCONF_PIXELFORMAT |
+-         DLCONF_OPTIONS)) {
+-        SDL_DFB_ERR("Error setting mode %dx%d-%x\n", mode->w, mode->h,
+-                    mode->format);
+-        return -1;
+-    }
++    DFBDisplayLayerConfig rconfig;
+ 
+-    config.flags &= ~fail;
+-    SDL_DFB_CHECKERR(data->layer->SetConfiguration(data->layer, &config));
+-#if (DFB_VERSION_ATLEAST(1,2,0))
+-    /* Need to call this twice ! */
+-    SDL_DFB_CHECKERR(data->layer->SetConfiguration(data->layer, &config));
+-#endif
++    /* Multi-app DFB2: slave cannot change display mode.
++       Just read current config and report it back. */
+ 
+-    /* Double check */
+     SDL_DFB_CHECKERR(data->layer->GetConfiguration(data->layer, &rconfig));
+-    SDL_DFB_CHECKERR(data->
+-                     layer->SetCooperativeLevel(data->layer, DLSCL_SHARED));
+-
+-    if ((config.width != rconfig.width) || (config.height != rconfig.height)
+-        || ((mode->format != SDL_PIXELFORMAT_UNKNOWN)
+-            && (config.pixelformat != rconfig.pixelformat))) {
+-        SDL_DFB_ERR("Error setting mode %dx%d-%x\n", mode->w, mode->h,
+-                    mode->format);
+-        return -1;
+-    }
+ 
+     data->pixelformat = rconfig.pixelformat;
+-    data->cw = config.width;
+-    data->ch = config.height;
++    data->cw = rconfig.width;
++    data->ch = rconfig.height;
+     display->current_mode = *mode;
+ 
+     return 0;
+@@ -367,30 +311,14 @@
+ 
+ void DirectFB_QuitModes(_THIS)
+ {
+-    SDL_DisplayMode tmode;
+     int i;
+ 
+     for (i = 0; i < _this->num_displays; ++i) {
+         SDL_VideoDisplay *display = &_this->displays[i];
+         DFB_DisplayData *dispdata = (DFB_DisplayData *) display->driverdata;
+ 
+-        SDL_GetDesktopDisplayMode(i, &tmode);
+-        tmode.format = SDL_PIXELFORMAT_UNKNOWN;
+-        DirectFB_SetDisplayMode(_this, display, &tmode);
+-
+-        SDL_GetDesktopDisplayMode(i, &tmode);
+-        DirectFB_SetDisplayMode(_this, display, &tmode);
+-
+-        if (dispdata->layer) {
+-            SDL_DFB_CHECK(dispdata->
+-                          layer->SetCooperativeLevel(dispdata->layer,
+-                                                     DLSCL_ADMINISTRATIVE));
+-            SDL_DFB_CHECK(dispdata->
+-                          layer->SetCursorOpacity(dispdata->layer, 0x00));
+-            SDL_DFB_CHECK(dispdata->
+-                          layer->SetCooperativeLevel(dispdata->layer,
+-                                                     DLSCL_SHARED));
+-        }
++        /* Multi-app DFB2: do not restore modes or touch layer admin on quit.
++           Just release our references. */
+ 
+         SDL_DFB_RELEASE(dispdata->layer);
+         SDL_DFB_RELEASE(dispdata->vidlayer);
