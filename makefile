@@ -25,9 +25,10 @@ RELEASE_NAME=$(RELEASE_BASE)-$(RELEASE_DOT)
 
 ###########################################################
 
-.PHONY: build
+.PHONY: build dev
 
 export MAKEFLAGS=--no-print-directory
+export PLATFORM
 
 all: setup convert-artworks $(PLATFORMS) special package done
 
@@ -49,6 +50,7 @@ system:
 	
 	# populate system
 	cp ./workspace/$(PLATFORM)/keymon/keymon.elf ./build/SYSTEM/$(PLATFORM)/bin/
+	cp ./workspace/$(PLATFORM)/lockscreen/lockscreen.elf ./build/SYSTEM/$(PLATFORM)/bin/
 	cp ./workspace/$(PLATFORM)/libmsettings/libmsettings.so ./build/SYSTEM/$(PLATFORM)/lib
 	cp ./workspace/all/minui/build/$(PLATFORM)/minui.elf ./build/SYSTEM/$(PLATFORM)/bin/
 	cp ./workspace/all/minarch/build/$(PLATFORM)/minarch.elf ./build/SYSTEM/$(PLATFORM)/bin/
@@ -91,7 +93,26 @@ ifneq ($(PLATFORM),gkdpixel)
 endif
 
 common: build system cores
-	
+
+dev: setup convert-artworks common
+	# ----------------------------------------------------
+	# package MinUI.zip for $(PLATFORM)
+	cd ./build/SYSTEM && echo "$(RELEASE_NAME)\n$(BUILD_HASH)" > version.txt
+	cd ./build && find . -type f -name '.DS_Store' -delete
+	mkdir -p ./build/PAYLOAD
+	cp -R ./build/SYSTEM ./build/PAYLOAD/.system
+	if [ -d ./build/BOOT/.tmp_update ]; then \
+		cp -R ./build/BOOT/.tmp_update ./build/PAYLOAD/; \
+	elif [ -d ./build/BOOT/common ]; then \
+		cp -R ./build/BOOT/common ./build/PAYLOAD/.tmp_update; \
+	fi
+	cd ./build/PAYLOAD && zip -r MinUI.zip .system .tmp_update
+	mv ./build/PAYLOAD/MinUI.zip ./build/
+	@echo ""
+	@echo "=========================================="
+	@echo "  MinUI.zip ready at: build/MinUI.zip"
+	@echo "=========================================="
+
 clean:
 	rm -rf ./build
 

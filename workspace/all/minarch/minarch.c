@@ -23,7 +23,6 @@
 #include "theme.h"
 #include "font.h"
 #include "perf.h"
-#include "lockscreen.h"
 
 ///////////////////////////////////////
 
@@ -1647,17 +1646,6 @@ static void OptionList_setOptionValue(OptionList* list, const char* key, const c
 static void Menu_beforeSleep(void);
 static void Menu_afterSleep(void);
 
-// Wrapper callbacks that combine lockscreen + menu logic
-static void beforeSleep_withLockscreen(void) {
-	LOCKSCREEN_activate();  // Activate lockscreen before sleep
-	Menu_beforeSleep();     // Save game state
-}
-
-static void afterSleep_withLockscreen(void) {
-	Menu_afterSleep();      // Restore game state
-	LOCKSCREEN_activate();  // Activate lockscreen after wake
-}
-
 static void Menu_saveState(void);
 static void Menu_loadState(void);
 
@@ -1683,7 +1671,7 @@ static void input_poll_callback(void) {
 
 	int show_setting = 0;
 	// Use wrapper callbacks that handle both lockscreen + menu state
-	PWR_update(NULL, &show_setting, beforeSleep_withLockscreen, afterSleep_withLockscreen);
+	PWR_update(NULL, &show_setting, Menu_beforeSleep, Menu_afterSleep);
 
 	// I _think_ this can stay as is...
 	if (PAD_justPressed(BTN_MENU)) {
@@ -3209,7 +3197,7 @@ static int Menu_message(char* message, char** pairs) {
 
 		if (PAD_justPressed(BTN_A) || PAD_justPressed(BTN_B)) break;
 		
-		PWR_update(&dirty, NULL, beforeSleep_withLockscreen, afterSleep_withLockscreen);
+		PWR_update(&dirty, NULL, Menu_beforeSleep, Menu_afterSleep);
 		
 		if (dirty) {
 			GFX_clear(screen);
@@ -3789,7 +3777,7 @@ static int Menu_options(MenuList* list) {
 			}
 		}
 		
-		if (!defer_menu) PWR_update(&dirty, &show_settings, beforeSleep_withLockscreen, afterSleep_withLockscreen);
+		if (!defer_menu) PWR_update(&dirty, &show_settings, Menu_beforeSleep, Menu_afterSleep);
 		
 		if (defer_menu && PAD_justReleased(BTN_MENU)) defer_menu = false;
 		
@@ -4437,7 +4425,7 @@ static void Menu_loop(void) {
 			if (!show_menu) break;
 		}
 
-		PWR_update(&dirty, &show_setting, beforeSleep_withLockscreen, afterSleep_withLockscreen);
+		PWR_update(&dirty, &show_setting, Menu_beforeSleep, Menu_afterSleep);
 		
 		if (dirty) {
 			GFX_clear(screen);
@@ -4759,9 +4747,7 @@ int main(int argc , char* argv[]) {
 	// Initialize performance counter (caches config once at startup)
 	PERF_init();
 	
-	// Initialize lockscreen
-	LOCKSCREEN_init();
-	
+
 	PAD_init();
 	DEVICE_WIDTH = screen->w;
 	DEVICE_HEIGHT = screen->h;
@@ -4827,44 +4813,7 @@ int main(int argc , char* argv[]) {
 	sec_start = SDL_GetTicks();
 	while (!quit) {
 		GFX_startFrame();
-		
-		// Handle lockscreen (non-blocking) - check BEFORE game runs to prevent flash
-		if (LOCKSCREEN_isActive()) {
-			// Poll input for lockscreen (core won't run so callback won't be called)
-			PAD_poll();
-			
-			int should_sleep = LOCKSCREEN_update();
-			LOCKSCREEN_draw(screen);
-			GFX_flip(screen);
-			
-			if (should_sleep) {
-				// Lockscreen timed out, sleep and re-activate after wake
-				beforeSleep_withLockscreen();
-				PWR_fauxSleep();
-				afterSleep_withLockscreen();
-			}
-			
-			// Check for manual power button while locked
-			if (PAD_justReleased(BTN_SLEEP)) {
-				// User pressed power button - sleep and re-activate after wake
-				beforeSleep_withLockscreen();
-				PWR_fauxSleep();
-				afterSleep_withLockscreen();
-			}
-			
-			// Skip game execution and menu while locked
-			hdmimon();
-			continue;
-		}
-		
-		// Block input for 500ms after unlocking (pause game to prevent accidental actions)
-		if (LOCKSCREEN_isInputBlocked()) {
-			// Don't run core, just maintain frame timing
-			GFX_sync();
-			hdmimon();
-			continue;
-		}
-		
+
 		if (!thread_video) {
 			core.run();
 			limitFF();

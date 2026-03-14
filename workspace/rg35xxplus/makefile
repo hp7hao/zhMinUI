@@ -21,6 +21,7 @@ all: readmes
 	cd boot && ./build.sh
 	cd init && make
 	cd show && make
+	cd lockscreen && make
 
 early: $(REQUIRES_UNZIP60) $(REQUIRES_SDL2) $(REQUIRES_DTC) $(REQUIRES_FBSET)
 	mkdir -p other

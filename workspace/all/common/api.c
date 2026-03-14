@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#include <signal.h>
 #include <sys/ioctl.h>
 #include <sys/mman.h>
 
@@ -20,6 +21,16 @@
 #include "utils.h"
 #include "config.h"
 #include "i18n.h"
+
+///////////////////////////////
+
+// SIGCONT handler — keymon sends SIGCONT after lockscreen unlock.
+// Reset power tracking to prevent false poweroff detection.
+static volatile sig_atomic_t got_sigcont = 0;
+static void sigcont_handler(int sig) {
+	(void)sig;
+	got_sigcont = 1;
+}
 
 ///////////////////////////////
 
@@ -1134,9 +1145,9 @@ static struct SND_Context {
 	SND_Resampler resample;
 } snd = {0};
 static void SND_audioCallback(void* userdata, uint8_t* stream, int len) { // plat_sound_callback
-	
+
 	// return (void)memset(stream,0,len); // TODO: tmp, silent
-	
+
 	if (snd.frame_count==0) return;
 	
 	int16_t *out = (int16_t *)stream;
@@ -1297,10 +1308,10 @@ void SND_init(double sample_rate, double frame_rate) { // plat_sound_init
 }
 void SND_quit(void) { // plat_sound_finish
 	if (!snd.initialized) return;
-	
+
 	SDL_PauseAudio(1);
 	SDL_CloseAudio();
-	
+
 	if (snd.buffer) {
 		free(snd.buffer);
 		snd.buffer = NULL;
@@ -1669,13 +1680,20 @@ void PWR_init(void) {
 	pwr.can_sleep = 1;
 	pwr.can_poweroff = 1;
 	pwr.can_autosleep = 1;
-	
+
 	pwr.requested_sleep = 0;
 	pwr.requested_wake = 0;
-	
+
 	pwr.should_warn = 0;
 	pwr.charge = PWR_LOW_CHARGE;
-	
+
+	// Register SIGCONT handler for lockscreen unlock recovery
+	struct sigaction sa;
+	sa.sa_handler = sigcont_handler;
+	sa.sa_flags = SA_RESTART;
+	sigemptyset(&sa.sa_mask);
+	sigaction(SIGCONT, &sa, NULL);
+
 	PWR_initOverlay();
 
 	PWR_updateBatteryStatus();
@@ -1711,6 +1729,23 @@ void PWR_update(int* _dirty, int* _show_setting, PWR_callback_t before_sleep, PW
 	static uint32_t mod_unpressed_at = 0; // timestamp of last time settings modifier key was NOT down
 	static uint32_t was_muted = -1;
 	if (was_muted==-1) was_muted = GetMute();
+
+	// After SIGCONT from keymon (lockscreen unlock), force full redraw
+	// and reset power tracking to prevent stale power_pressed_at from triggering false poweroff
+	if (got_sigcont) {
+		got_sigcont = 0;
+		dirty = 1;
+		power_pressed_at = 0;
+		PAD_reset();
+
+		// keymon restored the fb0 snapshot before SIGCONT, so the display
+		// front buffer is correct. But SDL's GPU back buffer still has stale
+		// lockscreen content. Push vid.screen (which holds the last game
+		// frame) into both GPU buffers via two flip cycles. No black flash
+		// because we're drawing the game image, not clearing.
+		GFX_flip(gfx.screen);
+		GFX_flip(gfx.screen);
+	}
 	
 	static int was_charging = -1;
 	if (was_charging==-1) was_charging = pwr.is_charging;
@@ -1732,35 +1767,13 @@ void PWR_update(int* _dirty, int* _show_setting, PWR_callback_t before_sleep, PW
 		if (before_sleep) before_sleep();
 		PWR_powerOff();
 	}
-	
+
 	if (PAD_justPressed(BTN_POWER)) {
 		power_pressed_at = now;
 	}
-	
-	#define SLEEP_DELAY 60000 // 60 seconds (1 minute)
-	if (now-last_input_at>=SLEEP_DELAY && PWR_preventAutosleep()) last_input_at = now;
-	
-	if (
-		pwr.requested_sleep || // hardware requested sleep
-		now-last_input_at>=SLEEP_DELAY || // autosleep
-		(pwr.can_sleep && PAD_justReleased(BTN_SLEEP)) // manual sleep
-	) {
-		pwr.requested_sleep = 0;
-		
-		// Call before_sleep callback (for app state: save game, etc.)
-		if (before_sleep) before_sleep();
-		
-		// Sleep
-		PWR_fauxSleep();
-		
-		// Call after_sleep callback (for app state: restore, etc.)
-		if (after_sleep) after_sleep();
-		
-		last_input_at = now = SDL_GetTicks();
-		power_pressed_at = 0;
-		dirty = 1;
-	}
-	
+
+	// Sleep/lock is now handled externally by keymon
+
 	int was_dirty = dirty; // dirty list (not including settings/battery)
 	
 	// TODO: only delay hiding setting changes if that setting didn't require a modifier button be held, otherwise release as soon as modifier is released

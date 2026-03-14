@@ -14,7 +14,6 @@
 #include "theme.h"
 #include "font.h"
 #include "perf.h"
-#include "lockscreen.h"
 
 ///////////////////////////////////////
 
@@ -1188,6 +1187,67 @@ static void closeDirectory(void) {
 	restore_relative = top->selected;
 }
 
+// Ease-out cubic: decelerates towards the end
+static float easeOutCubic(float t) {
+	t = t - 1.0f;
+	return t * t * t + 1.0f;
+}
+
+// Launch animation: selected game name slides from list position to screen center
+static void playLaunchAnimation(SDL_Surface* screen, Entry* entry) {
+	int UI_PILL_SIZE = THEME_getUIPillSize();
+	int UI_PADDING = THEME_getUIPadding();
+	int UI_BUTTON_PADDING = THEME_getUIButtonPadding();
+
+	char* entry_name = entry->name;
+	trimSortingMeta(&entry_name);
+
+	// Measure text at full available width (no truncation for the animation)
+	char display_name[256];
+	GFX_truncateText(font.large, entry_name, display_name, screen->w - UI_PADDING * 2, UI_BUTTON_PADDING * 2);
+
+	SDL_Surface* text = TTF_RenderUTF8_Blended(font.large, display_name, COLOR_WHITE);
+	if (!text) return;
+
+	int text_w = text->w;
+	int text_h = text->h;
+
+	// Start position: where the selected item was in the list
+	int selected_row = top->selected - top->start;
+	int start_x = UI_PADDING;
+	int start_y = UI_PADDING + selected_row * UI_PILL_SIZE;
+
+	// End position: centered on screen
+	int pill_w = text_w + UI_BUTTON_PADDING * 2;
+	int end_x = (screen->w - pill_w) / 2;
+	int end_y = (screen->h - UI_PILL_SIZE) / 2;
+
+	#define LAUNCH_ANIM_FRAMES 20 // ~333ms at 60fps
+
+	for (int frame = 0; frame <= LAUNCH_ANIM_FRAMES; frame++) {
+		float t = (float)frame / LAUNCH_ANIM_FRAMES;
+		float ease = easeOutCubic(t);
+
+		int cur_x = start_x + (int)((end_x - start_x) * ease);
+		int cur_y = start_y + (int)((end_y - start_y) * ease);
+
+		GFX_clear(screen);
+
+		GFX_blitPill(ASSET_WHITE_PILL, screen, &(SDL_Rect){
+			cur_x, cur_y, pill_w, UI_PILL_SIZE
+		});
+
+		SDL_BlitSurface(text, NULL, screen, &(SDL_Rect){
+			cur_x + UI_BUTTON_PADDING,
+			cur_y + GFX_getTextVerticalCenter(text, UI_PILL_SIZE)
+		});
+
+		GFX_flip(screen);
+	}
+
+	SDL_FreeSurface(text);
+}
+
 static void Entry_open(Entry* self) {
 	recent_alias = self->name;  // yiiikes
 	if (self->type==ENTRY_ROM) {
@@ -1503,62 +1563,27 @@ int main (int argc, char *argv[]) {
 	// Initialize performance counter
 	PERF_init();
 	
-	// Initialize lockscreen
-	LOCKSCREEN_init();
-	
+
 	// LOG_info("- loop start: %lu\n", SDL_GetTicks() - main_begin);
 	while (!quit) {
 		GFX_startFrame();
 		unsigned long now = SDL_GetTicks();
 		
 		PAD_poll();
-		
-		// Update lockscreen (non-blocking) - check BEFORE anything else to prevent UI flash
-		if (LOCKSCREEN_isActive()) {
-			int should_sleep = LOCKSCREEN_update();
-			LOCKSCREEN_draw(screen);
-			GFX_flip(screen);
-			
-			if (should_sleep) {
-				// Lockscreen timed out, trigger sleep through PWR_update
-				// Set last_input to old time to trigger timeout
-				// (PWR_update will handle sleep + re-activate lockscreen)
-			}
-			
-			// Still call PWR_update to handle power button while locked
-			int dummy_dirty = 0;
-			PWR_update(&dummy_dirty, NULL, LOCKSCREEN_activate, LOCKSCREEN_activate);
-			
-			// Skip normal UI while locked
-			continue;
-		}
-		
-		// Block input for 500ms after unlocking to prevent accidental actions
-		int input_blocked = LOCKSCREEN_isInputBlocked();
-		
+
 		// Update FPS counter
 		PERF_update();
 		if (PERF_isEnabled()) dirty = 1; // Force redraw to update FPS display
-			
+
 		int selected = top->selected;
 		int total = top->entries->count;
-		
-		// Pass lockscreen callbacks to PWR_update
-		PWR_update(&dirty, &show_setting, LOCKSCREEN_activate, LOCKSCREEN_activate);
+
+		PWR_update(&dirty, &show_setting, NULL, NULL);
 		
 		int is_online = PLAT_isOnline();
 		if (was_online!=is_online) dirty = 1;
 		was_online = is_online;
-		
-		// Skip input processing if blocked
-		if (input_blocked) {
-			if (dirty) {
-				// Just redraw without processing input
-				goto skip_input_draw_only;
-			}
-			continue;
-		}
-		
+
 		if (show_version) {
 			if (PAD_justPressed(BTN_B) || PAD_tappedMenu(now)) {
 				show_version = 0;
@@ -1859,13 +1884,19 @@ int main (int argc, char *argv[]) {
 
 			if (total>0 && can_resume && PAD_justReleased(BTN_RESUME)) {
 				should_resume = 1;
-				Entry_open(top->entries->items[top->selected]);
-				dirty = 1;
+				Entry* entry = top->entries->items[top->selected];
+				if (entry->type == ENTRY_ROM || entry->type == ENTRY_PAK)
+					playLaunchAnimation(screen, entry);
+				Entry_open(entry);
+				if (!quit) dirty = 1;
 			}
 			else if (total>0 && PAD_justPressed(BTN_A)) {
-				Entry_open(top->entries->items[top->selected]);
+				Entry* entry = top->entries->items[top->selected];
+				if (entry->type == ENTRY_ROM || entry->type == ENTRY_PAK)
+					playLaunchAnimation(screen, entry);
+				Entry_open(entry);
 				total = top->entries->count;
-				dirty = 1;
+				if (!quit) dirty = 1;
 
 				if (total>0) readyResume(top->entries->items[top->selected]);
 			}
@@ -1877,8 +1908,11 @@ int main (int argc, char *argv[]) {
 				if (total>0) readyResume(top->entries->items[top->selected]);
 			}
 		}
-		
-	skip_input_draw_only:
+
+		// Exit immediately after game launch so the animation's final frame
+		// stays on screen until minarch takes over.
+		if (quit) break;
+
 		if (dirty) {
 			GFX_clear(screen);
 			
